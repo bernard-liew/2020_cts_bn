@@ -9,3 +9,9 @@ editor_options:
 ---
 
 Welcome to my research website.
+
+[This code cleans data](01-Explore.html)
+
+[This code performs BN analysis ](2-bn_analysis.html)
+
+[This code performs network analysis](3-network.html)

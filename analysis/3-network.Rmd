@@ -107,38 +107,38 @@ nw <- estimateNetwork(df,
 
 
 centr <- centralityTable(nw)
-
-centr_stb <- bootnet(nw, 
-                     default="EBICglasso",
-                     corMethod = "cor",
-                      tuning = 0.5,
-                      lambda.min.ratio = 0.001,
-                      nBoots = 1000,
-                      type = "case",
-                      statistics = stats_type,
-                      corArgs =
-                        list(method = "pearson",
-                             use = "pairwise.complete.obs"))
-
-cor_stb <-  corStability (centr_stb)
-
-edgewts <- bootnet(nw, 
-                   default="EBICglasso",
-                    corMethod = "cor",
-                    tuning = 0.5,
-                    lambda.min.ratio = 0.001,
-                    nBoots = 1000,
-                    statistics = stats_type,
-                    corArgs =
-                      list(method = "pearson",
-                           use = "pairwise.complete.obs"))
-
-mgm_fit <-  mgm (df,
-                type= rep('g', 10),
-                level=rep(1,10))
-
-               
-pred <-  predict(mgm_fit, df)
+# 
+# centr_stb <- bootnet(nw, 
+#                      default="EBICglasso",
+#                      corMethod = "cor",
+#                       tuning = 0.5,
+#                       lambda.min.ratio = 0.001,
+#                       nBoots = 1000,
+#                       type = "case",
+#                       statistics = stats_type,
+#                       corArgs =
+#                         list(method = "pearson",
+#                              use = "pairwise.complete.obs"))
+# 
+# cor_stb <-  corStability (centr_stb)
+# 
+# edgewts <- bootnet(nw, 
+#                    default="EBICglasso",
+#                     corMethod = "cor",
+#                     tuning = 0.5,
+#                     lambda.min.ratio = 0.001,
+#                     nBoots = 1000,
+#                     statistics = stats_type,
+#                     corArgs =
+#                       list(method = "pearson",
+#                            use = "pairwise.complete.obs"))
+# 
+# mgm_fit <-  mgm (df,
+#                 type= rep('g', 10),
+#                 level=rep(1,10))
+# 
+#                
+# pred <-  predict(mgm_fit, df)
 
 ```
 
@@ -179,38 +179,38 @@ nw <- estimateNetwork(df,
 
 
 centr <- centralityTable(nw)
-
-centr_stb <- bootnet(nw, 
-                     default="EBICglasso",
-                     corMethod = "cor",
-                      tuning = 0.5,
-                      lambda.min.ratio = 0.001,
-                      nBoots = 1000,
-                      type = "case",
-                      statistics = stats_type,
-                      corArgs =
-                        list(method = "pearson",
-                             use = "pairwise.complete.obs"))
-
-cor_stb <-  corStability (centr_stb)
-
-edgewts <- bootnet(nw, 
-                   default="EBICglasso",
-                    corMethod = "cor",
-                    tuning = 0.5,
-                    lambda.min.ratio = 0.001,
-                    nBoots = 1000,
-                    statistics = stats_type,
-                    corArgs =
-                      list(method = "pearson",
-                           use = "pairwise.complete.obs"))
-
-mgm_fit <-  mgm (df,
-                type= rep('g', 10),
-                level=rep(1,10))
-
-               
-pred <-  predict(mgm_fit, df)
+# 
+# centr_stb <- bootnet(nw, 
+#                      default="EBICglasso",
+#                      corMethod = "cor",
+#                       tuning = 0.5,
+#                       lambda.min.ratio = 0.001,
+#                       nBoots = 1000,
+#                       type = "case",
+#                       statistics = stats_type,
+#                       corArgs =
+#                         list(method = "pearson",
+#                              use = "pairwise.complete.obs"))
+# 
+# cor_stb <-  corStability (centr_stb)
+# 
+# edgewts <- bootnet(nw, 
+#                    default="EBICglasso",
+#                     corMethod = "cor",
+#                     tuning = 0.5,
+#                     lambda.min.ratio = 0.001,
+#                     nBoots = 1000,
+#                     statistics = stats_type,
+#                     corArgs =
+#                       list(method = "pearson",
+#                            use = "pairwise.complete.obs"))
+# 
+# mgm_fit <-  mgm (df,
+#                 type= rep('g', 10),
+#                 level=rep(1,10))
+# 
+#                
+# pred <-  predict(mgm_fit, df)
 
 ```
 
