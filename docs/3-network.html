@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="bernard-liew" />
+
+<meta name="date" content="2020-09-24" />
+
+<title>3-network</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">2020_cts_bn</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">3-network</h1>
+<h4 class="author">bernard-liew</h4>
+<h4 class="date">2020-09-24</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2020-10-26
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>2020_cts_bn/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20200907code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20200907)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20200907code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20200907)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree89af6df1115f4934171798684524ef78c51c8c68targetblank89af6dfa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bernard-liew/2020_cts_bn/tree/89af6df1115f4934171798684524ef78c51c8c68" target="_blank">89af6df</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree89af6df1115f4934171798684524ef78c51c8c68targetblank89af6dfa" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/bernard-liew/2020_cts_bn/tree/89af6df1115f4934171798684524ef78c51c8c68" target="_blank">89af6df</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/figure/
+
+Untracked files:
+    Untracked:  analysis/3-report.Rmd
+    Untracked:  data/cts_dat.sav
+    Untracked:  data/cts_dat.xlsx
+    Untracked:  data/cts_dat2.sav
+    Untracked:  data/cts_dat_mod.xlsx
+    Untracked:  output/dat.RDS
+    Untracked:  output/report.html
+
+Unstaged changes:
+    Deleted:    .Rprofile
+    Deleted:    .gitattributes
+    Modified:   .gitignore
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/3-network.Rmd</code>) and HTML (<code>docs/3-network.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bernard-liew/2020_cts_bn/blob/89af6df1115f4934171798684524ef78c51c8c68/analysis/3-network.Rmd" target="_blank">89af6df</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2020-10-26
+</td>
+<td>
+initial commit
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bernard-liew/2020_cts_bn/blob/fe17d91bd35857ea56432f9212ddaa0c3512d9bb/analysis/3-network.Rmd" target="_blank">fe17d91</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2020-10-26
+</td>
+<td>
+initial analysis
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="load-package" class="section level2">
+<h2>Load package</h2>
+<pre class="r"><code>if (!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;)</code></pre>
+<pre><code>Loading required package: pacman</code></pre>
+<pre><code>Warning: package &#39;pacman&#39; was built under R version 3.6.1</code></pre>
+<pre class="r"><code>pacman::p_load(tidyverse,
+               qgraph,
+               stats,
+               bootnet,
+               igraph,
+               mgm,
+               NetworkComparisonTest,
+               rio,
+               furrr,
+               cowplot,
+               huge,
+               EGAnet)</code></pre>
+</div>
+<div id="clean-data" class="section level2">
+<h2>Clean data</h2>
+<div id="import-data" class="section level3">
+<h3>Import data</h3>
+<pre class="r"><code>dat &lt;- readRDS (&quot;output/dat.RDS&quot;)</code></pre>
+</div>
+<div id="collapse-variables" class="section level3">
+<h3>Collapse variables</h3>
+<pre class="r"><code>dat &lt;- dat %&gt;%
+  mutate (ppt_medn_base = (ppt_medn_aff_base + ppt_medn_naff_base)/2,
+          ppt_uln_base = (ppt_uln_aff_base + ppt_uln_naff_base)/2,
+          ppt_radn_base = (ppt_radn_aff_base + ppt_radn_naff_base)/2,
+          ppt_neck_base = (ppt_neck_aff_base + ppt_neck_naff_base)/2,
+          ppt_cts_base = (ppt_cts_aff_base + ppt_cts_naff_base)/2,
+          ppt_ta_base = (ppt_ta_aff_base + ppt_ta_naff_base)/2) %&gt;%
+  select (-c(ppt_medn_aff_base:ppt_ta_naff_base))</code></pre>
+</div>
+</div>
+<div id="get-baseline-variables" class="section level1">
+<h1>Get baseline variables</h1>
+<pre class="r"><code>dat_base &lt;- dat[, grepl (&quot;base&quot;, names (dat))] %&gt;%
+  select (-worst_pain_base) %&gt;%
+  rename (func = cts_func_base,
+          severity = cts_severe_base)
+names (dat_base) &lt;- str_remove_all (names(dat_base), &quot;_base|ppt_|mean_&quot;)
+
+dat_base</code></pre>
+<pre><code>    pain func severity dep  medn   uln  radn  neck   cts    ta
+1      5 2.50     2.90   5  89.0 289.0 158.0 113.5 359.0 256.5
+2      8 2.10     1.90   4 156.0 217.5 263.0 182.0 459.0 338.5
+3      4 2.30     2.72   9 184.5 343.5 262.5 200.0 360.0 313.5
+4      4 2.25     2.72   4  80.5 160.5 152.5 103.5 262.0 110.5
+5      5 2.50     2.00   4 109.5 186.5 131.5  88.0 220.0 193.5
+6      7 2.37     2.80   6 277.0 376.5 284.5 247.5 547.0 404.0
+7      7 2.37     2.18   8 136.0 309.5 153.0 123.5 359.5 254.0
+8      4 2.12     2.45   2 153.0 263.0 160.0 118.5 247.0 230.0
+9      5 2.00     2.36   5 118.5 211.0 171.5 111.5 344.5 280.0
+10     4 2.25     3.09   3 228.5 396.0 302.5 149.5 474.0 314.0
+11     4 2.37     3.00   8 122.5 246.5 150.0 181.5 238.0 255.5
+12     6 2.23     2.18   3 181.0 252.5 274.5 197.5 372.0 316.5
+13     7 4.25     3.63   9 112.0 139.0 114.5  57.0 130.5 171.0
+14     8 3.50     3.27   5 181.0 272.5 224.5 191.5 503.0 300.0
+15     5 2.87     2.18   5 258.5 336.0 227.0 148.0 468.5 392.5
+16     6 2.25     2.10   8 217.0 276.5 205.0 136.0 397.5 284.0
+17     5 2.12     3.36   4 243.5 399.5 301.0 138.5 281.0 343.5
+18     7 2.12     2.27   3 213.0 351.0 309.5 202.0 381.5 377.5
+19     5 2.37     4.00   2 251.5 273.0 234.0 193.0 473.0 287.5
+20     6 2.37     2.72   2 183.0 331.0 243.0 207.0 369.5 346.5
+21     5 2.25     2.90   4 123.5 270.0 185.0 134.5 282.5 234.0
+22     4 2.25     2.18   3 175.0 320.5 157.5 147.0 326.0 230.0
+23     3 2.00     2.36   6 131.0 133.5 125.5 116.0 283.5 165.0
+24     3 2.25     2.09   7 294.5 458.5 305.0 306.0 511.0 385.0
+25     4 1.87     2.63   4 179.5 393.0 231.5 117.5 330.0 207.5
+26     4 2.25     1.50   1 180.5 275.5 194.0 214.0 306.0 323.5
+27     6 2.62     4.25   1 186.0 276.5 201.5 150.5 374.0 409.5
+28     4 2.12     2.09   3 245.0 367.0 272.5 191.5 585.0 357.0
+29     4 2.25     2.63   2 157.0 192.0 148.0 186.0 339.5 210.0
+30     7 2.62     2.72   6 167.5 254.0 187.0 158.0 326.0 356.0
+31     5 2.75     2.45   4  96.0 249.5 143.0 100.5 198.5 169.5
+32     5 1.75     2.27   1 217.5 292.0 258.5 192.0 421.0 463.0
+33     3 2.62     2.18   2 157.0 205.5 198.5 124.5 259.0 298.0
+34     3 1.87     2.10   0 145.0 339.5 140.0 120.5 306.0 265.0
+35     5 2.12     2.10   2 172.5 282.5 268.0 159.0 304.0 287.5
+36     4 3.12     2.81   3 257.5 418.0 266.0 253.0 576.0 450.0
+37     5 1.87     2.63   3 235.5 332.5 267.5 136.5 370.5 461.5
+38     4 2.62     1.54   2 249.5 378.5 347.0 199.0 460.5 431.0
+39     7 2.00     2.09   2 242.0 295.5 277.5 167.5 371.0 366.0
+40     3 2.25     2.18   3 164.5 289.5 238.5 246.0 528.5 376.5
+41     4 2.37     2.45   3 159.0 265.0 197.5 138.5 371.0 474.5
+42     5 3.00     2.90   4 154.0 271.5 183.5 133.0 238.0 233.0
+43     6 2.12     2.27   1 110.0 323.0 150.5 121.5 222.5 176.0
+44     2 2.62     5.00   4 184.0 256.5 152.0 130.5 294.0 269.5
+45     3 1.87     2.00   0 264.0 407.5 319.0 210.0 543.0 420.0
+46     5 1.37     2.10   0 161.5 198.5 185.0 156.0 426.0 399.0
+47     4 2.00     1.81   1 180.0 394.5 164.0 146.5 432.0 358.5
+48     6 1.50     2.00   4 110.0 128.0 132.5 108.0 152.5 143.0
+49     5 2.12     2.46   6 170.0 238.5 210.5 131.0 260.5 356.0
+50     4 2.25     2.45   2 263.5 362.5 283.5 196.5 384.5 517.5
+51     3 2.00     1.81   1 136.5 115.5 168.0  90.0 225.0 208.5
+52     1 1.25     1.27   4 257.5 319.0 212.5 134.5 477.0 341.5
+53     6 3.50     3.72   3 248.0 305.0 258.0 201.5 303.0 303.5
+54     6 3.00     2.81   8 195.0 328.5 276.5 250.0 302.5 321.0
+55     6 3.25     2.72   7 200.0 234.0 166.5 207.5 306.5 284.0
+56     6 1.25     3.18   6 190.5 296.0 184.0 189.5 297.0 286.5
+57     5 2.50     2.63   7 203.0 309.0 221.0 198.0 308.0 320.0
+58     7 1.87     2.36   3 215.5 309.5 236.5 197.0 317.0 317.0
+59     7 2.87     2.45   6 239.5 272.0 278.0 200.0 302.5 308.0
+60     6 3.75     3.36   4 162.5 246.0 193.0 132.5 289.5 247.0
+61     6 3.25     3.45   8 170.0 196.5 190.0 143.5 240.0 257.5
+62     7 2.00     3.45   2 239.5 317.5 230.0 191.5 207.0 316.0
+63     7 2.60     2.45   2 214.5 324.5 230.0 217.0 273.5 300.5
+64     6 3.25     3.43   8 154.0 229.5 190.0 130.5 201.0 264.0
+65     7 3.50     3.54   6 163.0 220.0 207.0 136.0 207.5 232.5
+66     2 2.25     1.72   4 262.0 345.5 284.5 227.0 363.5 372.5
+67     7 2.50     3.60   4 239.5 381.0 296.5 222.5 403.5 369.0
+68     6 2.87     2.90   7 198.5 317.5 246.5 196.5 349.5 300.0
+69     5 2.00     2.36   8 210.5 295.0 240.5 153.5 295.0 354.0
+70     6 2.25     3.18   2 204.0 339.5 217.5 211.0 329.0 239.0
+71     5 1.87     2.36   2 241.5 332.5 273.0 219.0 404.5 298.0
+72     6 3.25     3.00   6 171.0 233.5 224.0 170.0 269.5 234.0
+73     6 3.25     3.00   4 232.0 331.5 228.5 172.0 320.0 277.5
+74     6 2.12     2.27   3 241.0 342.0 272.0 211.5 403.0 302.0
+75     7 2.37     2.81   6 255.5 338.0 283.5 210.5 377.0 323.5
+76     5 2.50     2.54   6 217.0 217.0 247.0 214.5 276.5 340.0
+77     7 2.75     2.81   2 202.0 372.0 268.5 230.5 297.0 373.0
+78     7 2.25     3.72   4 166.0 223.0 197.0 119.5 465.0 370.5
+79     6 1.75     2.54   1 190.5 381.5 246.5 239.0 434.5 414.0
+80     7 2.37     2.45   4 259.0 350.5 307.0 250.5 346.0 398.0
+81     6 2.12     3.45   2 249.0 373.5 281.0 230.5 397.5 320.0
+82     7 2.75     2.81   5 205.5 325.5 283.0 178.5 309.0 298.5
+83     3 2.25     2.90   4 223.0 296.0 273.5 215.5 444.0 383.5
+84     3 1.12     2.63   1 242.5 407.5 323.0 217.0 514.0 476.5
+85     2 2.25     3.10   2 245.5 302.0 223.5 233.5 488.0 485.5
+86     4 1.62     2.63   4 210.0 325.5 232.5 176.0 326.0 379.0
+87     4 2.87     4.00   7 132.0 207.5 161.0 117.0 216.0 300.0
+88     5 2.50     2.18   1 209.0 363.0 192.0 206.0 536.0 446.0
+89     2 1.12     1.63   0 172.5 357.0 255.0 216.0 234.5 345.5
+90     3 2.25     2.10   6 144.0 252.0 167.5 195.0 308.5 284.0
+91     7 2.00     3.90   1 161.0 301.5 219.0 197.5 290.5 263.5
+92     3 2.25     2.27   5 223.0 410.5 215.0 220.0 384.0 376.0
+93     1 2.12     2.45   5 224.5 392.0 215.5 235.5 528.0 516.5
+94     8 3.12     3.18   6 104.0 209.5 156.0  78.5 147.0 186.0
+95     0 1.50     1.45   0 103.5 203.5 223.0 141.5 284.5 273.0
+96     7 2.37     2.00   4 266.0 333.0 248.5 150.5 526.0 453.0
+97     6 2.25     1.72   3 176.0 316.5 189.0 180.0 326.5 317.5
+98     1 1.87     1.81   2 234.5 363.5 248.5 189.5 491.0 423.0
+99     5 2.37     3.00   1 147.5 270.0 211.0 140.0 282.5 273.0
+100    8 3.75     3.36   7 174.0 150.5 191.5 116.5 155.5 157.5
+101    3 2.12     2.10   0 134.5 271.5 191.5 105.5 260.5 359.5
+102    4 2.87     2.00   1 236.0 375.0 206.5 202.5 483.0 373.0
+103    8 1.87     3.45   4 147.5 253.0 202.0 148.0 207.5 267.0
+104    5 1.62     2.10   2 248.0 465.5 256.5 226.0 409.0 502.0
+105    4 2.25     3.36   9 232.0 363.0 383.0 231.5 557.5 540.0</code></pre>
+<pre class="r"><code>dat_base %&gt;%
+  pivot_longer(cols = everything (),
+               names_to = &quot;var&quot;,
+               values_to = &quot;val&quot;) %&gt;%
+  ggplot () +
+  geom_histogram (aes (val)) +
+  facet_wrap (~ var, ncol = 5, scales = &quot;free_x&quot;)</code></pre>
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="figure/3-network.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="get-pain-cts" class="section level1">
+<h1>Get pain, cts</h1>
+<pre class="r"><code>dat_pain &lt;- dat[, grepl (&quot;func|severe|mean|grp|emg&quot;, names (dat))]
+names (dat_pain) &lt;- str_remove_all (names(dat_pain), &quot;_base|cts_|mean_&quot;)
+dat_pain$grp &lt;- factor (dat_pain$grp)
+
+dat_base %&gt;%
+  pivot_longer(cols = everything (),
+               names_to = &quot;var&quot;,
+               values_to = &quot;val&quot;) %&gt;%
+  ggplot () +
+  geom_histogram (aes (val)) +
+  facet_wrap (~ var, ncol = 5, scales = &quot;free_x&quot;)</code></pre>
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="figure/3-network.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="network-analysis" class="section level2">
+<h2>Network analysis</h2>
+<div id="on-baseline-data" class="section level3">
+<h3>On baseline data</h3>
+<pre class="r"><code>stats_type &lt;- c(&quot;edge&quot;, &quot;strength&quot;, &quot;betweenness&quot;, &quot;expectedInfluence&quot;, &quot;closeness&quot;)
+
+df &lt;- dat_base
+df[, map_lgl (df, is.numeric)] &lt;- huge.npn (df[, map_lgl (df, is.numeric)])</code></pre>
+<pre><code>Conducting the nonparanormal (npn) transformation via shrunkun ECDF....done.</code></pre>
+<pre class="r"><code>df &lt;- map_df (df, as.numeric)
+n_var &lt;- ncol (df)
+
+nw &lt;- estimateNetwork(df, 
+                    default=&quot;EBICglasso&quot;,
+                    corMethod = &quot;cor&quot;,
+                    tuning = 0.5,
+                    lambda.min.ratio = 0.001,
+                    corArgs =
+                      list(method = &quot;pearson&quot;,
+                           use = &quot;pairwise.complete.obs&quot;))</code></pre>
+<pre><code>Estimating Network. Using package::function:
+  - qgraph::EBICglasso for EBIC model selection
+    - using glasso::glasso</code></pre>
+<pre><code>Warning in EBICglassoCore(S = S, n = n, gamma = gamma, penalize.diagonal =
+penalize.diagonal, : A dense regularized network was selected (lambda &lt; 0.1 *
+lambda.max). Recent work indicates a possible drop in specificity. Interpret the
+presence of the smallest edges with care. Setting threshold = TRUE will enforce
+higher specificity, at the cost of sensitivity.</code></pre>
+<pre class="r"><code>centr &lt;- centralityTable(nw)
+# 
+# centr_stb &lt;- bootnet(nw, 
+#                      default=&quot;EBICglasso&quot;,
+#                      corMethod = &quot;cor&quot;,
+#                       tuning = 0.5,
+#                       lambda.min.ratio = 0.001,
+#                       nBoots = 1000,
+#                       type = &quot;case&quot;,
+#                       statistics = stats_type,
+#                       corArgs =
+#                         list(method = &quot;pearson&quot;,
+#                              use = &quot;pairwise.complete.obs&quot;))
+# 
+# cor_stb &lt;-  corStability (centr_stb)
+# 
+# edgewts &lt;- bootnet(nw, 
+#                    default=&quot;EBICglasso&quot;,
+#                     corMethod = &quot;cor&quot;,
+#                     tuning = 0.5,
+#                     lambda.min.ratio = 0.001,
+#                     nBoots = 1000,
+#                     statistics = stats_type,
+#                     corArgs =
+#                       list(method = &quot;pearson&quot;,
+#                            use = &quot;pairwise.complete.obs&quot;))
+# 
+# mgm_fit &lt;-  mgm (df,
+#                 type= rep(&#39;g&#39;, 10),
+#                 level=rep(1,10))
+# 
+#                
+# pred &lt;-  predict(mgm_fit, df)</code></pre>
+<div id="plot-network" class="section level4">
+<h4>Plot network</h4>
+<pre class="r"><code>plot (nw)</code></pre>
+<p><img src="figure/3-network.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="plot-centrality" class="section level4">
+<h4>Plot centrality</h4>
+<pre class="r"><code>centralityPlot(nw)</code></pre>
+<pre><code>Note: z-scores are shown on x-axis rather than raw centrality indices.</code></pre>
+<p><img src="figure/3-network.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># plot (centr_stb, statistics = c(&quot;closeness&quot;, &quot;strength&quot;, &quot;betweenness&quot;))
+# cor_stb
+# plot (edgewts)
+# cor_stb</code></pre>
+</div>
+</div>
+<div id="on-pain-data" class="section level3">
+<h3>On pain data</h3>
+<pre class="r"><code>df &lt;- dat_pain
+df[, map_lgl (df, is.numeric)] &lt;- huge.npn (df[, map_lgl (df, is.numeric)])</code></pre>
+<pre><code>Conducting the nonparanormal (npn) transformation via shrunkun ECDF....done.</code></pre>
+<pre class="r"><code>df &lt;- map_df (df, as.numeric)
+n_var &lt;- ncol (df)
+
+nw &lt;- estimateNetwork(df, 
+                    default=&quot;EBICglasso&quot;,
+                    corMethod = &quot;cor&quot;,
+                    tuning = 0.5,
+                    lambda.min.ratio = 0.001,
+                    corArgs =
+                      list(method = &quot;pearson&quot;,
+                           use = &quot;pairwise.complete.obs&quot;))</code></pre>
+<pre><code>Estimating Network. Using package::function:
+  - qgraph::EBICglasso for EBIC model selection
+    - using glasso::glasso</code></pre>
+<pre class="r"><code>centr &lt;- centralityTable(nw)
+# 
+# centr_stb &lt;- bootnet(nw, 
+#                      default=&quot;EBICglasso&quot;,
+#                      corMethod = &quot;cor&quot;,
+#                       tuning = 0.5,
+#                       lambda.min.ratio = 0.001,
+#                       nBoots = 1000,
+#                       type = &quot;case&quot;,
+#                       statistics = stats_type,
+#                       corArgs =
+#                         list(method = &quot;pearson&quot;,
+#                              use = &quot;pairwise.complete.obs&quot;))
+# 
+# cor_stb &lt;-  corStability (centr_stb)
+# 
+# edgewts &lt;- bootnet(nw, 
+#                    default=&quot;EBICglasso&quot;,
+#                     corMethod = &quot;cor&quot;,
+#                     tuning = 0.5,
+#                     lambda.min.ratio = 0.001,
+#                     nBoots = 1000,
+#                     statistics = stats_type,
+#                     corArgs =
+#                       list(method = &quot;pearson&quot;,
+#                            use = &quot;pairwise.complete.obs&quot;))
+# 
+# mgm_fit &lt;-  mgm (df,
+#                 type= rep(&#39;g&#39;, 10),
+#                 level=rep(1,10))
+# 
+#                
+# pred &lt;-  predict(mgm_fit, df)</code></pre>
+<div id="plot-network-1" class="section level4">
+<h4>Plot network</h4>
+<pre class="r"><code>plot (nw)</code></pre>
+<p><img src="figure/3-network.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="plot-centrality-1" class="section level4">
+<h4>Plot centrality</h4>
+<pre class="r"><code>centralityPlot(nw)</code></pre>
+<pre><code>Note: z-scores are shown on x-axis rather than raw centrality indices.</code></pre>
+<p><img src="figure/3-network.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># plot (centr_stb, statistics = c(&quot;closeness&quot;, &quot;strength&quot;, &quot;betweenness&quot;))
+# cor_stb
+# plot (edgewts)
+# cor_stb</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.6.0 (2019-04-26)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 18362)
+
+Matrix products: default
+
+locale:
+[1] LC_COLLATE=English_United Kingdom.1252 
+[2] LC_CTYPE=English_United Kingdom.1252   
+[3] LC_MONETARY=English_United Kingdom.1252
+[4] LC_NUMERIC=C                           
+[5] LC_TIME=English_United Kingdom.1252    
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] EGAnet_0.9.6                huge_1.3.4.1               
+ [3] cowplot_1.0.0               furrr_0.1.0                
+ [5] future_1.12.0               rio_0.5.16                 
+ [7] NetworkComparisonTest_2.2.1 mgm_1.2-10                 
+ [9] igraph_1.2.4.2              bootnet_1.4.3              
+[11] qgraph_1.6.5                forcats_0.4.0              
+[13] stringr_1.4.0               dplyr_1.0.2                
+[15] purrr_0.3.3                 readr_1.3.1                
+[17] tidyr_1.0.2                 tibble_3.0.3               
+[19] ggplot2_3.2.1               tidyverse_1.3.0            
+[21] pacman_0.5.1               
+
+loaded via a namespace (and not attached):
+  [1] R.utils_2.8.0        tidyselect_1.1.0     lme4_1.1-21         
+  [4] htmlwidgets_1.5.1    grid_3.6.0           munsell_0.5.0       
+  [7] codetools_0.2-16     withr_2.1.2          colorspace_1.4-1    
+ [10] NetworkToolbox_1.4.0 knitr_1.27           rstudioapi_0.11     
+ [13] stats4_3.6.0         listenv_0.7.0        labeling_0.3        
+ [16] git2r_0.27.1         mnormt_1.5-5         farver_2.0.3        
+ [19] rprojroot_1.3-2      vctrs_0.3.4          generics_0.0.2      
+ [22] xfun_0.7             R6_2.4.0             doParallel_1.0.15   
+ [25] smacof_2.1-1         assertthat_0.2.1     promises_1.0.1      
+ [28] scales_1.1.1         nnet_7.3-12          gtable_0.3.0        
+ [31] globals_0.12.4       weights_1.0.1        workflowr_1.6.2     
+ [34] rlang_0.4.7          splines_3.6.0        lazyeval_0.2.2      
+ [37] acepack_1.4.1        wordcloud_2.6        broom_0.5.4         
+ [40] checkmate_1.9.3      yaml_2.2.0           reshape2_1.4.3      
+ [43] abind_1.4-5          modelr_0.1.5         d3Network_0.5.2.1   
+ [46] backports_1.1.4      httpuv_1.5.2         Hmisc_4.2-0         
+ [49] tools_3.6.0          psych_1.8.12         lavaan_0.6-5        
+ [52] ellipsis_0.3.0       RColorBrewer_1.1-2   polynom_1.4-0       
+ [55] Rcpp_1.0.2           plyr_1.8.4           base64enc_0.1-3     
+ [58] rpart_4.1-15         pbapply_1.4-0        haven_2.2.0         
+ [61] cluster_2.0.9        fs_1.3.0             survey_3.36         
+ [64] magrittr_1.5         data.table_1.12.8    openxlsx_4.1.4      
+ [67] reprex_0.3.0         mvtnorm_1.0-10       matrixcalc_1.0-3    
+ [70] whisker_0.3-2        mitml_0.3-7          hms_0.5.3           
+ [73] evaluate_0.14        jpeg_0.1-8           readxl_1.3.1        
+ [76] gridExtra_2.3        shape_1.4.4          compiler_3.6.0      
+ [79] ellipse_0.4.1        mice_3.7.0           crayon_1.3.4        
+ [82] minqa_1.2.4          R.oo_1.22.0          htmltools_0.4.0     
+ [85] corpcor_1.6.9        later_0.8.0          Formula_1.2-3       
+ [88] lubridate_1.7.4      DBI_1.0.0            relaimpo_2.2-3      
+ [91] dbplyr_1.4.4         MASS_7.3-51.4        boot_1.3-22         
+ [94] IsingSampler_0.2.1   Matrix_1.2-17        IsingFit_0.3.1      
+ [97] car_3.0-2            cli_2.0.1            heplots_1.3-5       
+[100] mitools_2.4          R.methodsS3_1.7.1    gdata_2.18.0        
+[103] parallel_3.6.0       pan_1.6              BDgraph_2.63        
+[106] pkgconfig_2.0.2      foreign_0.8-71       xml2_1.2.2          
+[109] foreach_1.4.4        pbivnorm_0.6.0       rvest_0.3.5         
+[112] digest_0.6.19        rmarkdown_2.3        cellranger_1.1.0    
+[115] htmlTable_1.13.1     curl_4.3             gtools_3.8.1        
+[118] jomo_2.6-7           rjson_0.2.20         nloptr_1.2.1        
+[121] lifecycle_0.2.0      nlme_3.1-139         glasso_1.11         
+[124] jsonlite_1.6         carData_3.0-2        fansi_0.4.0         
+[127] pillar_1.4.3         lattice_0.20-38      httr_1.4.1          
+[130] plotrix_3.7-5        survival_2.44-1.1    glue_1.4.2          
+[133] networktools_1.2.3   zip_2.0.4            fdrtool_1.2.15      
+[136] png_0.1-7            iterators_1.0.10     candisc_0.8-3       
+[139] glmnet_3.0-1         class_7.3-15         stringi_1.4.3       
+[142] nnls_1.4             blob_1.2.1           latticeExtra_0.6-28 
+[145] eigenmodel_1.11      e1071_1.7-1         </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
