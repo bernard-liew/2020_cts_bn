@@ -1,0 +1,78 @@
+---
+title: "01-Explore"
+author: "bernard-liew"
+date: "2020-09-08"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+```{r}
+# Helper
+library (tidyverse)
+library (rio)
+library (openxlsx)
+
+# Explore
+library (DataExplorer)
+```
+
+## Import data
+
+```{r}
+dat <- import ("data/cts_dat2.sav")
+write.xlsx(dat,
+           file = "data/cts_dat.xlsx")
+
+dat <- import("data/cts_dat_mod.xlsx",
+              sheet = "Sheet 1")
+
+headers <- import("data/cts_dat_mod.xlsx",
+              sheet = "headers")
+```
+
+## Explore 
+GROC = - 7 (very great deal worse) to 7 (very great deal better)
+aff_side = 1 - right, 2 - left, 3 - bilat
+emg = 1 - min, 2 - mod, 3 - sev
+
+```{r}
+#create_report(dat, output_dir = "./output")
+
+colnames (dat) <- headers$new_head
+
+groc_lvls <- as.character(seq(-7, 7, 1))
+aff_lvls <- as.character(seq(-7, 7, 1))
+emg_lvls <- as.character(seq(-7, 7, 1))
+```
+
+## Change variable type
+
+Make GROC, affected side and emg, factors
+
+```{r}
+dat2 <- dat %>%
+  mutate (groc_1m = factor (groc_1m, levels = groc_lvls),
+          groc_3m = factor (groc_3m, levels = groc_lvls),
+          groc_6m = factor (groc_6m, levels = groc_lvls),
+          groc_12m = factor (groc_12m, levels = groc_lvls),
+          aff_side = factor (aff_side),
+          emg = factor (emg))
+```
+
+## Export
+
+Save cleaned data
+
+```{r}
+saveRDS(dat2,
+           file = "output/dat.RDS")
+
+```
+
+
+
+
+

@@ -1,0 +1,211 @@
+---
+title: "2-bn_analysis"
+author: "Bernard"
+date: "2020-09-08"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+This is an example of a Bayesian network, with directed arcs. I only perform the analysis on a subset of provided variables.
+
+### Import libraries
+
+```{r, message=F, warning=F}
+
+rm (list = ls())
+# Helper
+library (tidyverse)
+
+# BN
+library (bnlearn)
+
+# Model
+library (caret)
+
+# Feature parallel
+library (doParallel)
+
+# Plot
+library (Rgraphviz)
+
+```
+
+### Import data
+```{r}
+
+dat <- readRDS ("output/dat.RDS")
+
+```
+
+### Collapse variables
+
+```{r}
+dat <- dat %>%
+  mutate (ppt_medn_base = (ppt_medn_aff_base + ppt_medn_naff_base)/2,
+          ppt_uln_base = (ppt_uln_aff_base + ppt_uln_naff_base)/2,
+          ppt_radn_base = (ppt_radn_aff_base + ppt_radn_naff_base)/2,
+          ppt_neck_base = (ppt_neck_aff_base + ppt_neck_naff_base)/2,
+          ppt_cts_base = (ppt_cts_aff_base + ppt_cts_naff_base)/2,
+          ppt_ta_base = (ppt_ta_aff_base + ppt_ta_naff_base)/2) %>%
+  select (-c(ppt_medn_aff_base:ppt_ta_naff_base))
+```
+
+
+### BN analysis
+
+#### Create blacklist
+
+```{r}
+
+var.excl <- c(grep ("groc", names (dat), value = TRUE) ,
+              grep ("worst", names (dat), value = TRUE) ,
+              grep ("base", names (dat), value = TRUE) ,
+              "age", "pain_years", "pain_extent", "aff_side", "emg")
+df.bn = as.data.frame (dat)[, !names (dat) %in% var.excl] %>%
+  na.omit()
+
+df.bn$grp <- factor (df.bn$grp)
+
+rx.var <- "grp"
+demo.var = grep("age|sex|years|emg", colnames (df.bn), value = TRUE)
+base.var = grep("_base", colnames (df.bn), value = TRUE)
+mth1.var = grep("_1", colnames (df.bn), value = TRUE)
+mth3.var = grep("_3", colnames (df.bn), value = TRUE)
+mth6.var = grep("_6", colnames (df.bn), value = TRUE)
+outcome.var = grep("_12", colnames (df.bn), value = TRUE)
+
+pair_var <- expand.grid(from = names (df.bn),
+                        to = names (df.bn)) %>%
+  rownames_to_column()
+
+tiers_keep <- pair_var %>%
+  filter (!(grepl (paste0(outcome.var, collapse = "|"),from))) %>%
+  filter (!(grepl (paste0(rx.var, collapse = "|"),to))) %>%
+  filter (!(grepl (paste0(mth6.var, collapse = "|"), from) & 
+              grepl (paste0(c(demo.var, base.var, mth1.var, mth3.var), collapse = "|"),to))) %>%
+  filter (!(grepl (paste0(mth3.var, collapse = "|"), from) & 
+              grepl (paste0(c(demo.var, base.var, mth1.var), collapse = "|"),to))) #%>%
+  # filter (!(grepl (paste0(mth1.var, collapse = "|"), from) & 
+  #           grepl (paste0(c(demo.var, base.var), collapse = "|"),to))) %>%
+  # filter (!(grepl (paste0(base.var, collapse = "|"), from) & 
+  #         grepl (paste0(c(demo.var), collapse = "|"),to)))
+
+bl <- anti_join(pair_var, tiers_keep, by = "rowname")  %>%
+  filter (from != to) %>%
+  select (from, to)
+
+
+```
+
+
+#### Build the final model using model averaging
+
+```{r}
+
+boot <- boot.strength(df.bn,
+                      R = 200,
+                      algorithm = "hc",
+                      algorithm.args = list (blacklist = bl))
+
+  
+
+```
+
+#### Get averaged model
+
+```{r}
+
+avg <-  averaged.network(boot, threshold = 0.5)
+fit <-  bn.fit (avg, df.bn, method = "mle")
+g <- strength.plot(avg, boot, shape = "ellipse")
+graph::nodeRenderInfo(g) = list(fontsize=18)
+Rgraphviz::renderGraph(g)
+```
+
+#### Performance evaluation using nested cross validation. 
+Not run yet.
+
+Inner is bootstrap resampling for model averaging. 
+Outer is bootstrap resampling k = 25 for performance evaluation.
+
+```{r, eval= FALSE}
+
+set.seed (2564)
+
+flds <- createFolds(1:nrow(df.bn), 
+                            k = 10, returnTrain = TRUE)
+n_boot = 200
+doParallel::registerDoParallel(7)
+
+corr.df.list <- list()
+
+for (k in seq_along(flds)) {
+  
+  train <-  df.bn [flds[[k]], ] %>% as.data.frame()
+  test <- df.bn [-flds[[k]], ] %>% as.data.frame()
+  
+  doParallel::registerDoParallel(7)
+  ############
+  
+  boot  =  foreach (B = 1: n_boot) %dopar%{
+      boot.sample = train[sample(nrow(train), 
+                                            nrow(train), replace = TRUE), ]
+      bnlearn::structural.em(boot.sample, impute = "bayes-lw", max.iter = 5,
+                                maximize.args = list(blacklist = bl,  
+                                                      k = log(nrow(boot.sample))))
+  }
+  #############
+  stopImplicitCluster()
+  
+  bootstr <-  custom.strength(boot, nodes = names(train))
+  avg <-  averaged.network(bootstr, threshold = 0.7)
+  fit <-  bn.fit (avg, train, method = "mle")
+  
+  imp.list = impute (fit, data = test, method = "bayes-lw")
+  inames = names (imp.list) [-c(1:2)]
+  corr.df =  structure(numeric(length (inames)), names = inames)
+  
+  for (var in inames) {
+      corr.df[var] = cor(predict(fit, data = imp.list, var, method = "bayes-lw"), 
+                         imp.list[, var])
+    }
+  
+  corr.df.list[[k]] <- corr.df
+  
+
+}
+
+corr.df <- bind_cols (corr.df.list) %>%
+  apply (1, mean)
+
+names (corr.df) <- inames
+
+corr.df
+```
+
+# Save data
+
+```{r, eval= FALSE}
+
+save(avg, 
+     bl, 
+     demo.var,
+     mth3.var,
+     mth6.var,
+     outcome.var,
+     boot, 
+     bootstr, 
+     corr.df, 
+     corr.df.list, 
+     df.bn, 
+     fit,
+     file = "output/bn_data.RData")
+
+```
+
+
+
+

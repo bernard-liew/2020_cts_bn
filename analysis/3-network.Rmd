@@ -1,0 +1,234 @@
+---
+title: "3-network"
+author: "bernard-liew"
+date: "2020-09-24"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Load package
+
+```{r}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse,
+               qgraph,
+               stats,
+               bootnet,
+               igraph,
+               mgm,
+               NetworkComparisonTest,
+               rio,
+               furrr,
+               cowplot,
+               huge,
+               EGAnet)
+```
+
+## Clean data
+
+### Import data
+```{r}
+
+dat <- readRDS ("output/dat.RDS")
+
+```
+
+### Collapse variables
+
+```{r}
+dat <- dat %>%
+  mutate (ppt_medn_base = (ppt_medn_aff_base + ppt_medn_naff_base)/2,
+          ppt_uln_base = (ppt_uln_aff_base + ppt_uln_naff_base)/2,
+          ppt_radn_base = (ppt_radn_aff_base + ppt_radn_naff_base)/2,
+          ppt_neck_base = (ppt_neck_aff_base + ppt_neck_naff_base)/2,
+          ppt_cts_base = (ppt_cts_aff_base + ppt_cts_naff_base)/2,
+          ppt_ta_base = (ppt_ta_aff_base + ppt_ta_naff_base)/2) %>%
+  select (-c(ppt_medn_aff_base:ppt_ta_naff_base))
+```
+
+# Get baseline variables
+
+```{r}
+dat_base <- dat[, grepl ("base", names (dat))] %>%
+  select (-worst_pain_base) %>%
+  rename (func = cts_func_base,
+          severity = cts_severe_base)
+names (dat_base) <- str_remove_all (names(dat_base), "_base|ppt_|mean_")
+
+dat_base
+
+dat_base %>%
+  pivot_longer(cols = everything (),
+               names_to = "var",
+               values_to = "val") %>%
+  ggplot () +
+  geom_histogram (aes (val)) +
+  facet_wrap (~ var, ncol = 5, scales = "free_x")
+```
+
+# Get pain, cts
+
+```{r}
+dat_pain <- dat[, grepl ("func|severe|mean|grp|emg", names (dat))]
+names (dat_pain) <- str_remove_all (names(dat_pain), "_base|cts_|mean_")
+dat_pain$grp <- factor (dat_pain$grp)
+
+dat_base %>%
+  pivot_longer(cols = everything (),
+               names_to = "var",
+               values_to = "val") %>%
+  ggplot () +
+  geom_histogram (aes (val)) +
+  facet_wrap (~ var, ncol = 5, scales = "free_x")
+```
+
+## Network analysis
+
+### On baseline data
+
+```{r}
+
+stats_type <- c("edge", "strength", "betweenness", "expectedInfluence", "closeness")
+
+df <- dat_base
+df[, map_lgl (df, is.numeric)] <- huge.npn (df[, map_lgl (df, is.numeric)])
+df <- map_df (df, as.numeric)
+n_var <- ncol (df)
+
+nw <- estimateNetwork(df, 
+                    default="EBICglasso",
+                    corMethod = "cor",
+                    tuning = 0.5,
+                    lambda.min.ratio = 0.001,
+                    corArgs =
+                      list(method = "pearson",
+                           use = "pairwise.complete.obs"))
+
+
+centr <- centralityTable(nw)
+
+centr_stb <- bootnet(nw, 
+                     default="EBICglasso",
+                     corMethod = "cor",
+                      tuning = 0.5,
+                      lambda.min.ratio = 0.001,
+                      nBoots = 1000,
+                      type = "case",
+                      statistics = stats_type,
+                      corArgs =
+                        list(method = "pearson",
+                             use = "pairwise.complete.obs"))
+
+cor_stb <-  corStability (centr_stb)
+
+edgewts <- bootnet(nw, 
+                   default="EBICglasso",
+                    corMethod = "cor",
+                    tuning = 0.5,
+                    lambda.min.ratio = 0.001,
+                    nBoots = 1000,
+                    statistics = stats_type,
+                    corArgs =
+                      list(method = "pearson",
+                           use = "pairwise.complete.obs"))
+
+mgm_fit <-  mgm (df,
+                type= rep('g', 10),
+                level=rep(1,10))
+
+               
+pred <-  predict(mgm_fit, df)
+
+```
+
+#### Plot network
+
+```{r}
+plot (nw)
+```
+
+#### Plot centrality
+
+```{r}
+centralityPlot(nw)
+
+# plot (centr_stb, statistics = c("closeness", "strength", "betweenness"))
+# cor_stb
+# plot (edgewts)
+# cor_stb
+```
+
+### On pain data
+
+```{r}
+
+df <- dat_pain
+df[, map_lgl (df, is.numeric)] <- huge.npn (df[, map_lgl (df, is.numeric)])
+df <- map_df (df, as.numeric)
+n_var <- ncol (df)
+
+nw <- estimateNetwork(df, 
+                    default="EBICglasso",
+                    corMethod = "cor",
+                    tuning = 0.5,
+                    lambda.min.ratio = 0.001,
+                    corArgs =
+                      list(method = "pearson",
+                           use = "pairwise.complete.obs"))
+
+
+centr <- centralityTable(nw)
+
+centr_stb <- bootnet(nw, 
+                     default="EBICglasso",
+                     corMethod = "cor",
+                      tuning = 0.5,
+                      lambda.min.ratio = 0.001,
+                      nBoots = 1000,
+                      type = "case",
+                      statistics = stats_type,
+                      corArgs =
+                        list(method = "pearson",
+                             use = "pairwise.complete.obs"))
+
+cor_stb <-  corStability (centr_stb)
+
+edgewts <- bootnet(nw, 
+                   default="EBICglasso",
+                    corMethod = "cor",
+                    tuning = 0.5,
+                    lambda.min.ratio = 0.001,
+                    nBoots = 1000,
+                    statistics = stats_type,
+                    corArgs =
+                      list(method = "pearson",
+                           use = "pairwise.complete.obs"))
+
+mgm_fit <-  mgm (df,
+                type= rep('g', 10),
+                level=rep(1,10))
+
+               
+pred <-  predict(mgm_fit, df)
+
+```
+
+#### Plot network
+
+```{r}
+plot (nw)
+```
+
+#### Plot centrality
+
+```{r}
+centralityPlot(nw)
+
+# plot (centr_stb, statistics = c("closeness", "strength", "betweenness"))
+# cor_stb
+# plot (edgewts)
+# cor_stb
+```
+
+
