@@ -405,7 +405,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-10-26
+<strong>Last updated:</strong> 2020-11-23
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -496,16 +496,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntreefe17d91bd35857ea56432f9212ddaa0c3512d9bbtargetblankfe17d91a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bernard-liew/2020_cts_bn/tree/fe17d91bd35857ea56432f9212ddaa0c3512d9bb" target="_blank">fe17d91</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree2266d36d7d5eafec7453ccb12ce7d6471a15e6cftargetblank2266d36a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bernard-liew/2020_cts_bn/tree/2266d36d7d5eafec7453ccb12ce7d6471a15e6cf" target="_blank">2266d36</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntreefe17d91bd35857ea56432f9212ddaa0c3512d9bbtargetblankfe17d91a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree2266d36d7d5eafec7453ccb12ce7d6471a15e6cftargetblank2266d36a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/bernard-liew/2020_cts_bn/tree/fe17d91bd35857ea56432f9212ddaa0c3512d9bb" target="_blank">fe17d91</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/bernard-liew/2020_cts_bn/tree/2266d36d7d5eafec7453ccb12ce7d6471a15e6cf" target="_blank">2266d36</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -514,21 +514,6 @@ Note that you need to be careful to ensure that all relevant files for the analy
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-
-Untracked files:
-    Untracked:  analysis/3-report.Rmd
-    Untracked:  data/cts_dat.sav
-    Untracked:  data/cts_dat.xlsx
-    Untracked:  data/cts_dat2.sav
-    Untracked:  data/cts_dat_mod.xlsx
-    Untracked:  output/dat.RDS
-    Untracked:  output/report.html
-
-Unstaged changes:
-    Deleted:    .Rprofile
-    Deleted:    .gitattributes
-    Modified:   .gitignore
-    Modified:   analysis/index.Rmd
 
 </code></pre>
 <p>
@@ -567,6 +552,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bernard-liew/2020_cts_bn/blob/2266d36d7d5eafec7453ccb12ce7d6471a15e6cf/analysis/2-bn_analysis.Rmd" target="_blank">2266d36</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2020-11-23
+</td>
+<td>
+added explanation to graphs
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/bernard-liew/2020_cts_bn/a6948cef9bf5a83d69fa576e28eb925bf6f8d32f/docs/2-bn_analysis.html" target="_blank">a6948ce</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2020-10-26
+</td>
+<td>
+initial analysis
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -670,94 +689,83 @@ bl &lt;- anti_join(pair_var, tiers_keep, by = &quot;rowname&quot;)  %&gt;%
 </div>
 <div id="build-the-final-model-using-model-averaging" class="section level4">
 <h4>Build the final model using model averaging</h4>
-<pre class="r"><code>boot &lt;- boot.strength(df.bn,
+<pre class="r"><code>set.seed (123)
+boot &lt;- boot.strength(df.bn,
                       R = 200,
                       algorithm = &quot;hc&quot;,
                       algorithm.args = list (blacklist = bl))</code></pre>
 </div>
 <div id="get-averaged-model" class="section level4">
 <h4>Get averaged model</h4>
+<p>“Underneath” the model is a complex mathematical relationship between each variables.The figure is meant to illustrate a complex model simply. Interpretation of a Bayesian Network model should be natural, the arrows reflect the direction of relationship. Example, <code>grp</code> influences <code>cts_func_12m</code> partly by <code>cts_func_1m</code> and partly directly. The thickness of the arrows reflect how common one would expect to find such a relationship should many separate experiments be collected. Whether the arrows reflect causal relationships really depend if we think these variables represent an exhaustive list of plausible biological causes. In this case, I do not think we can say it is causal, but we can certainly understand a complex relationship driving recovery.</p>
 <pre class="r"><code>avg &lt;-  averaged.network(boot, threshold = 0.5)
 fit &lt;-  bn.fit (avg, df.bn, method = &quot;mle&quot;)
-g &lt;- strength.plot(avg, boot, shape = &quot;ellipse&quot;)</code></pre>
-<p><img src="figure/2-bn_analysis.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>graph::nodeRenderInfo(g) = list(fontsize=18)
+g &lt;- strength.plot(avg, boot, shape = &quot;ellipse&quot;, render = FALSE)
+graph::nodeRenderInfo(g) = list(fontsize=18)
 Rgraphviz::renderGraph(g)</code></pre>
-<p><img src="figure/2-bn_analysis.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/2-bn_analysis.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="performance-evaluation-using-nested-cross-validation." class="section level4">
 <h4>Performance evaluation using nested cross validation.</h4>
 <p>Not run yet.</p>
 <p>Inner is bootstrap resampling for model averaging. Outer is bootstrap resampling k = 25 for performance evaluation.</p>
-<pre class="r"><code>set.seed (2564)
+<pre><code>Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
+warn.if.no.missing = TRUE): no missing data are present even though some are
+expected.
 
-flds &lt;- createFolds(1:nrow(df.bn), 
-                            k = 10, returnTrain = TRUE)
-n_boot = 200
-doParallel::registerDoParallel(7)
+Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
+warn.if.no.missing = TRUE): no missing data are present even though some are
+expected.
 
-corr.df.list &lt;- list()
+Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
+warn.if.no.missing = TRUE): no missing data are present even though some are
+expected.
 
-for (k in seq_along(flds)) {
-  
-  train &lt;-  df.bn [flds[[k]], ] %&gt;% as.data.frame()
-  test &lt;- df.bn [-flds[[k]], ] %&gt;% as.data.frame()
-  
-  doParallel::registerDoParallel(7)
-  ############
-  
-  boot  =  foreach (B = 1: n_boot) %dopar%{
-      boot.sample = train[sample(nrow(train), 
-                                            nrow(train), replace = TRUE), ]
-      bnlearn::structural.em(boot.sample, impute = &quot;bayes-lw&quot;, max.iter = 5,
-                                maximize.args = list(blacklist = bl,  
-                                                      k = log(nrow(boot.sample))))
-  }
-  #############
-  stopImplicitCluster()
-  
-  bootstr &lt;-  custom.strength(boot, nodes = names(train))
-  avg &lt;-  averaged.network(bootstr, threshold = 0.7)
-  fit &lt;-  bn.fit (avg, train, method = &quot;mle&quot;)
-  
-  imp.list = impute (fit, data = test, method = &quot;bayes-lw&quot;)
-  inames = names (imp.list) [-c(1:2)]
-  corr.df =  structure(numeric(length (inames)), names = inames)
-  
-  for (var in inames) {
-      corr.df[var] = cor(predict(fit, data = imp.list, var, method = &quot;bayes-lw&quot;), 
-                         imp.list[, var])
-    }
-  
-  corr.df.list[[k]] &lt;- corr.df
-  
+Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
+warn.if.no.missing = TRUE): no missing data are present even though some are
+expected.
 
-}
+Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
+warn.if.no.missing = TRUE): no missing data are present even though some are
+expected.
 
-corr.df &lt;- bind_cols (corr.df.list) %&gt;%
-  apply (1, mean)
+Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
+warn.if.no.missing = TRUE): no missing data are present even though some are
+expected.
 
-names (corr.df) &lt;- inames
+Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
+warn.if.no.missing = TRUE): no missing data are present even though some are
+expected.
 
-corr.df</code></pre>
+Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
+warn.if.no.missing = TRUE): no missing data are present even though some are
+expected.
+
+Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
+warn.if.no.missing = TRUE): no missing data are present even though some are
+expected.
+
+Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
+warn.if.no.missing = TRUE): no missing data are present even though some are
+expected.</code></pre>
+<pre><code>New names:
+* NA -&gt; ...1
+* NA -&gt; ...2
+* NA -&gt; ...3
+* NA -&gt; ...4
+* NA -&gt; ...5
+* ...</code></pre>
+<pre><code>   cts_func_1m  cts_severe_1m   mean_pain_3m    cts_func_3m  cts_severe_3m 
+   0.746507217    0.213453855    0.688864041    0.759489264    0.730701535 
+  mean_pain_6m    cts_func_6m  cts_severe_6m  mean_pain_12m   cts_func_12m 
+   0.590325932    0.805223031    0.783927409   -0.006836802    0.157076614 
+cts_severe_12m 
+  -0.177712188 </code></pre>
 </div>
 </div>
 </div>
 <div id="save-data" class="section level1">
 <h1>Save data</h1>
-<pre class="r"><code>save(avg, 
-     bl, 
-     demo.var,
-     mth3.var,
-     mth6.var,
-     outcome.var,
-     boot, 
-     bootstr, 
-     corr.df, 
-     corr.df.list, 
-     df.bn, 
-     fit,
-     file = &quot;output/bn_data.RData&quot;)</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -768,7 +776,7 @@ corr.df</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 3.6.0 (2019-04-26)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
-Running under: Windows 10 x64 (build 18362)
+Running under: Windows 10 x64 (build 18363)
 
 Matrix products: default
 
