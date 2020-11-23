@@ -104,7 +104,7 @@ bl <- anti_join(pair_var, tiers_keep, by = "rowname")  %>%
 #### Build the final model using model averaging
 
 ```{r}
-
+set.seed (123)
 boot <- boot.strength(df.bn,
                       R = 200,
                       algorithm = "hc",
@@ -116,13 +116,16 @@ boot <- boot.strength(df.bn,
 
 #### Get averaged model
 
+"Underneath" the model is a complex mathematical relationship between each variables.The figure is meant to illustrate a complex model simply. Interpretation of a Bayesian Network model should be natural, the arrows reflect the direction of relationship. Example, `grp` influences `cts_func_12m` partly by `cts_func_1m` and partly directly. The thickness of the arrows reflect how common one would expect to find such a relationship should many separate experiments be collected. Whether the arrows reflect causal relationships really depend if we think these variables represent an exhaustive list of plausible biological causes. In this case, I do not think we can say it is causal, but we can certainly understand a complex relationship driving recovery.
+
 ```{r}
 
 avg <-  averaged.network(boot, threshold = 0.5)
 fit <-  bn.fit (avg, df.bn, method = "mle")
-g <- strength.plot(avg, boot, shape = "ellipse")
+g <- strength.plot(avg, boot, shape = "ellipse", render = FALSE)
 graph::nodeRenderInfo(g) = list(fontsize=18)
 Rgraphviz::renderGraph(g)
+
 ```
 
 #### Performance evaluation using nested cross validation. 
@@ -131,7 +134,7 @@ Not run yet.
 Inner is bootstrap resampling for model averaging. 
 Outer is bootstrap resampling k = 25 for performance evaluation.
 
-```{r, eval= FALSE}
+```{r, echo = FALSE}
 
 set.seed (2564)
 
@@ -188,7 +191,7 @@ corr.df
 
 # Save data
 
-```{r, eval= FALSE}
+```{r, echo = FALSE}
 
 save(avg, 
      bl, 

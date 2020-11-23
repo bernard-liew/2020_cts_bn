@@ -144,14 +144,30 @@ centr <- centralityTable(nw)
 
 #### Plot network
 
+Arcs in blue means a positive correlation between connecting variables.
+
+Arcs in red means a netative correlation between connecting variables.
+
+Thickness of arcs gives you a qualitative indication of correlation magnitude.
+
 ```{r}
 plot (nw)
 ```
 
 #### Plot centrality
 
+Degree centrality is defined as the number of connections incident to the node of interest.
+
+Degree can be straightforwardly generalized to weighted networks by considering the sum of the weights of the connections (in absolute value), instead of their number. This generalization is called strength.
+
+Closeness centrality is defined as the inverse of the sum of the distances of the focal node from all the other nodes in the network.
+
+Betweenness centrality is defined as the number of the geodesics between any two nodes that pass through the focal one.
+
+The greater the value of centrality indices to one, the more important the variable.
+
 ```{r}
-centralityPlot(nw)
+centralityPlot(nw, scale = "relative")
 
 # plot (centr_stb, statistics = c("closeness", "strength", "betweenness"))
 # cor_stb
@@ -216,14 +232,30 @@ centr <- centralityTable(nw)
 
 #### Plot network
 
+Arcs in blue means a positive correlation between connecting variables.
+
+Arcs in red means a netative correlation between connecting variables.
+
+Thickness of arcs gives you a qualitative indication of correlation magnitude.
+
 ```{r}
 plot (nw)
 ```
 
 #### Plot centrality
 
+Degree centrality is defined as the number of connections incident to the node of interest.
+
+Degree can be straightforwardly generalized to weighted networks by considering the sum of the weights of the connections (in absolute value), instead of their number. This generalization is called strength.
+
+Closeness centrality is defined as the inverse of the sum of the distances of the focal node from all the other nodes in the network.
+
+Betweenness centrality is defined as the number of the geodesics between any two nodes that pass through the focal one.
+
+The greater the value of centrality indices to one, the more important the variable.
+
 ```{r}
-centralityPlot(nw)
+centralityPlot(nw, scale = "relative")
 
 # plot (centr_stb, statistics = c("closeness", "strength", "betweenness"))
 # cor_stb
