@@ -7,7 +7,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-## Load package
+# Load package
 
 ```{r}
 if (!require("pacman")) install.packages("pacman")
@@ -17,132 +17,109 @@ pacman::p_load(tidyverse,
                bootnet,
                igraph,
                mgm,
-               NetworkComparisonTest,
-               rio,
-               furrr,
                cowplot,
                huge,
                EGAnet)
 ```
 
-## Clean data
+# Clean data
 
-### Import data
+## Import data
 ```{r}
 
-dat <- readRDS ("output/dat.RDS")
+if (file.exists("output/network_res.RDS")) {
+  
+  dat <- readRDS("output/network_res.RDS")
+  
+  list2env(dat ,.GlobalEnv)
+  
+  skip_eval <- TRUE
+
+  } else {
+  
+  dat <- readRDS ("output/dat.RDS")
+  
+  skip_eval <- FALSE
+}
+
 
 ```
 
-### Collapse variables
+## Collapse variables
 
 ```{r}
-dat <- dat %>%
-  mutate (ppt_medn_base = (ppt_medn_aff_base + ppt_medn_naff_base)/2,
-          ppt_uln_base = (ppt_uln_aff_base + ppt_uln_naff_base)/2,
-          ppt_radn_base = (ppt_radn_aff_base + ppt_radn_naff_base)/2,
-          ppt_neck_base = (ppt_neck_aff_base + ppt_neck_naff_base)/2,
-          ppt_cts_base = (ppt_cts_aff_base + ppt_cts_naff_base)/2,
-          ppt_ta_base = (ppt_ta_aff_base + ppt_ta_naff_base)/2) %>%
+
+if (skip_eval == FALSE) {
+  dat <- dat %>%
+  mutate (ppt_medn = (ppt_medn_aff_base + ppt_medn_naff_base)/2,
+          ppt_uln = (ppt_uln_aff_base + ppt_uln_naff_base)/2,
+          ppt_radn = (ppt_radn_aff_base + ppt_radn_naff_base)/2,
+          ppt_neck = (ppt_neck_aff_base + ppt_neck_naff_base)/2,
+          ppt_cts = (ppt_cts_aff_base + ppt_cts_naff_base)/2,
+          ppt_ta = (ppt_ta_aff_base + ppt_ta_naff_base)/2) %>%
   select (-c(ppt_medn_aff_base:ppt_ta_naff_base))
+  
+}
+
 ```
 
-# Get baseline variables
-
-```{r}
-dat_base <- dat[, grepl ("base", names (dat))] %>%
-  select (-worst_pain_base) %>%
-  rename (func = cts_func_base,
-          severity = cts_severe_base)
-names (dat_base) <- str_remove_all (names(dat_base), "_base|ppt_|mean_")
-
-dat_base
-
-dat_base %>%
-  pivot_longer(cols = everything (),
-               names_to = "var",
-               values_to = "val") %>%
-  ggplot () +
-  geom_histogram (aes (val)) +
-  facet_wrap (~ var, ncol = 5, scales = "free_x")
-```
-
-# Get pain, cts
-
-```{r}
-dat_pain <- dat[, grepl ("func|severe|mean|grp|emg", names (dat))]
-names (dat_pain) <- str_remove_all (names(dat_pain), "_base|cts_|mean_")
-dat_pain$grp <- factor (dat_pain$grp)
-
-dat_base %>%
-  pivot_longer(cols = everything (),
-               names_to = "var",
-               values_to = "val") %>%
-  ggplot () +
-  geom_histogram (aes (val)) +
-  facet_wrap (~ var, ncol = 5, scales = "free_x")
-```
-
-## Network analysis
-
-### On baseline data
+## Get baseline variables
 
 ```{r}
 
-stats_type <- c("edge", "strength", "betweenness", "expectedInfluence", "closeness")
+if (skip_eval == FALSE) {
+  
+  dat_base <- dat[, !grepl ("naff.*base", names (dat))] 
+  dat_base <- dat_base[, grepl ("aff|base", names (dat_base))] 
+  dat_base <- dat_base %>%
+    select (-worst_pain_base, - aff_side) %>%
+    rename (func = cts_func_base,
+            severity = cts_severe_base) 
+  names (dat_base) <- str_remove_all (names(dat_base), "_base|mean_|_aff")
+  
+  node_labs <- names(dat_base)
+  
+  names(dat_base) <- paste0("V", 1:ncol(dat_base))
+  
+  dat_base %>%
+    pivot_longer(cols = everything (),
+                 names_to = "var",
+                 values_to = "val") %>%
+    ggplot () +
+    geom_histogram (aes (val)) +
+    facet_wrap (~ var, ncol = 5, scales = "free_x")
+  
+}
+```
 
-df <- dat_base
-df[, map_lgl (df, is.numeric)] <- huge.npn (df[, map_lgl (df, is.numeric)])
-df <- map_df (df, as.numeric)
-n_var <- ncol (df)
+# Network analysis
 
-nw <- estimateNetwork(df, 
-                    default="EBICglasso",
-                    corMethod = "cor",
-                    tuning = 0.5,
-                    lambda.min.ratio = 0.001,
-                    corArgs =
-                      list(method = "pearson",
-                           use = "pairwise.complete.obs"))
+## On baseline data
+
+```{r}
+
+if (skip_eval == FALSE) {
+  
+  df <- dat_base
+  df <- huge.npn (df)
+
+  set.seed (1)
+  nw <- estimateNetwork(df, 
+                      default="EBICglasso",
+                      corMethod = "cor",
+                      tuning = 0.5,
+                      lambda.min.ratio = 0.001,
+                      corArgs =
+                        list(method = "pearson",
+                             use = "pairwise.complete.obs"))
+  
+}
 
 
-centr <- centralityTable(nw)
-# 
-# centr_stb <- bootnet(nw, 
-#                      default="EBICglasso",
-#                      corMethod = "cor",
-#                       tuning = 0.5,
-#                       lambda.min.ratio = 0.001,
-#                       nBoots = 1000,
-#                       type = "case",
-#                       statistics = stats_type,
-#                       corArgs =
-#                         list(method = "pearson",
-#                              use = "pairwise.complete.obs"))
-# 
-# cor_stb <-  corStability (centr_stb)
-# 
-# edgewts <- bootnet(nw, 
-#                    default="EBICglasso",
-#                     corMethod = "cor",
-#                     tuning = 0.5,
-#                     lambda.min.ratio = 0.001,
-#                     nBoots = 1000,
-#                     statistics = stats_type,
-#                     corArgs =
-#                       list(method = "pearson",
-#                            use = "pairwise.complete.obs"))
-# 
-# mgm_fit <-  mgm (df,
-#                 type= rep('g', 10),
-#                 level=rep(1,10))
-# 
-#                
-# pred <-  predict(mgm_fit, df)
 
 ```
 
-#### Plot network
+## Plot network
 
 Arcs in blue means a positive correlation between connecting variables.
 
@@ -150,117 +127,105 @@ Arcs in red means a netative correlation between connecting variables.
 
 Thickness of arcs gives you a qualitative indication of correlation magnitude.
 
+
 ```{r}
-plot (nw)
+nw_plot <- plot (nw, nodeNames = node_labs,  layout = "spring", legend = TRUE)
+
+wts_df <- nw_plot$Edgelist %>%
+  bind_cols() %>%
+  select (from, to, weight) %>%
+  mutate_all (round, 2)
+
 ```
 
-#### Plot centrality
 
-Degree centrality is defined as the number of connections incident to the node of interest.
+## Centrality
+
+Reference for definition: Robinaugh, D. J., Millner, A. J., & McNally, R. J. (2016). Identifying highly influential nodes in the complicated grief network. Journal of Abnormal Psychology, 125(6), 747–757. doi:10.1037/abn0000181 
+
+High centrality nodes have strong connections to many other nodes, and act as hubs that connect otherwise disparate nodes to one another. 
+
+Low centrality nodes exist on the periphery of the network, with fewer and weaker connections to other nodes of the
+network.
+
+Strength is the sum of the absolute value of its connections with other nodes in the network.
 
 Degree can be straightforwardly generalized to weighted networks by considering the sum of the weights of the connections (in absolute value), instead of their number. This generalization is called strength.
 
-Closeness centrality is defined as the inverse of the sum of the distances of the focal node from all the other nodes in the network.
+Closeness centrality is defined as the inverse of the sum of the distances of the focal node from all the other nodes in the network. Closeness is the average shortest path between a given node and the remaining nodes in the network. Nodes with higher closeness are more proximally connected to the rest of the network.
 
-Betweenness centrality is defined as the number of the geodesics between any two nodes that pass through the focal one.
+Betweenness is the number of times in which a given node lies on the shortest path between two other nodes.
+
+Expected influence is the sum of a node’s connections and represents the relative importance of a node in a network (Robinaugh et al., 2016) --relative because even in weakly connected networks (with overall low edge weights), there will always be a node with a high expected influence in case of standardized results.
 
 The greater the value of centrality indices to one, the more important the variable.
 
 ```{r}
-centralityPlot(nw, scale = "relative")
 
-# plot (centr_stb, statistics = c("closeness", "strength", "betweenness"))
-# cor_stb
-# plot (edgewts)
-# cor_stb
+centr <- centralityPlot(nw,  
+                        include = "all", 
+                        scale = "relative", 
+                        labels = node_labs)
+
+
 ```
 
-### On pain data
+## Accuracy
+
+### Edge weights stability
+
+```{r message=FALSE, warning=FALSE}
+if (skip_eval == FALSE) {
+  edge_wts <- bootnet(nw,
+                    nBoots = 2000,
+                    nCores = 6,
+                    statistics = "edge")
+ 
+}
+
+plot (edge_wts, satistics = "edge", order = "sample")
+```
 
 ```{r}
-
-df <- dat_pain
-df[, map_lgl (df, is.numeric)] <- huge.npn (df[, map_lgl (df, is.numeric)])
-df <- map_df (df, as.numeric)
-n_var <- ncol (df)
-
-nw <- estimateNetwork(df, 
-                    default="EBICglasso",
-                    corMethod = "cor",
-                    tuning = 0.5,
-                    lambda.min.ratio = 0.001,
-                    corArgs =
-                      list(method = "pearson",
-                           use = "pairwise.complete.obs"))
-
-
-centr <- centralityTable(nw)
-# 
-# centr_stb <- bootnet(nw, 
-#                      default="EBICglasso",
-#                      corMethod = "cor",
-#                       tuning = 0.5,
-#                       lambda.min.ratio = 0.001,
-#                       nBoots = 1000,
-#                       type = "case",
-#                       statistics = stats_type,
-#                       corArgs =
-#                         list(method = "pearson",
-#                              use = "pairwise.complete.obs"))
-# 
-# cor_stb <-  corStability (centr_stb)
-# 
-# edgewts <- bootnet(nw, 
-#                    default="EBICglasso",
-#                     corMethod = "cor",
-#                     tuning = 0.5,
-#                     lambda.min.ratio = 0.001,
-#                     nBoots = 1000,
-#                     statistics = stats_type,
-#                     corArgs =
-#                       list(method = "pearson",
-#                            use = "pairwise.complete.obs"))
-# 
-# mgm_fit <-  mgm (df,
-#                 type= rep('g', 10),
-#                 level=rep(1,10))
-# 
-#                
-# pred <-  predict(mgm_fit, df)
-
+plot (edge_wts, plot = "difference", satistics = "edge", order = "sample", onlyNonZero = TRUE)
 ```
 
-#### Plot network
 
-Arcs in blue means a positive correlation between connecting variables.
-
-Arcs in red means a netative correlation between connecting variables.
-
-Thickness of arcs gives you a qualitative indication of correlation magnitude.
+### Centrality stability
 
 ```{r}
-plot (nw)
+if (skip_eval == FALSE) {
+  stats2boot <- c("edge", "strength", "expectedInfluence", "closeness", "betweenness")
+  centr_stb <- bootnet(nw,
+                       nBoots = 2000,
+                       nCores = 6,
+                       statistics = stats2boot,
+                       type = "case")
+  
+  cor_stb <-  corStability (centr_stb)
+
+}
+
+plot (centr_stb, statistics = stats2boot[-1])
 ```
 
-#### Plot centrality
-
-Degree centrality is defined as the number of connections incident to the node of interest.
-
-Degree can be straightforwardly generalized to weighted networks by considering the sum of the weights of the connections (in absolute value), instead of their number. This generalization is called strength.
-
-Closeness centrality is defined as the inverse of the sum of the distances of the focal node from all the other nodes in the network.
-
-Betweenness centrality is defined as the number of the geodesics between any two nodes that pass through the focal one.
-
-The greater the value of centrality indices to one, the more important the variable.
+# Save data
 
 ```{r}
-centralityPlot(nw, scale = "relative")
+dat2save <- list ("df" = df,
+                  "nw" = nw,
+                  "nw_plot" = nw_plot,
+                  "centr" = centr,
+                  "centr_stb" = centr_stb,
+                  "edge_wts" = edge_wts,
+                  "cor_stb" = cor_stb,
+                  "node_labs" = node_labs,
+                  "stats2boot" = stats2boot
+                  )
 
-# plot (centr_stb, statistics = c("closeness", "strength", "betweenness"))
-# cor_stb
-# plot (edgewts)
-# cor_stb
+saveRDS(dat2save,
+        "output/network_res.RDS")
 ```
+
 
 
