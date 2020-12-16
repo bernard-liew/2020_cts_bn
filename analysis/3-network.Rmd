@@ -136,8 +136,16 @@ wts_df <- nw_plot$Edgelist %>%
   select (from, to, weight) %>%
   mutate_all (round, 2)
 
+wts_df %>% 
+  mutate (weight_abs = abs (weight)) %>%
+  slice_max (weight_abs, n = 6)
 ```
 
+```{r, eval = FALSE}
+tiff(width = 15, height = 15, units = "in", res = 100, file = "../manuscript/fig_1.tiff")
+  plot (nw, nodeNames = node_labs,  layout = "spring", legend = TRUE, legend.cex = 1.2)
+dev.off()
+```
 
 ## Centrality
 
@@ -163,11 +171,19 @@ The greater the value of centrality indices to one, the more important the varia
 ```{r}
 
 centr <- centralityPlot(nw,  
-                        include = "all", 
+                        include = c("Strength", "Closeness", "Betweenness"), 
                         scale = "relative", 
                         labels = node_labs)
 
+centr
+```
 
+```{r, eval = FALSE}
+tiff(width = 10, height = 8, units = "in", res = 200, file = "../manuscript/fig_3.tiff")
+  centr + 
+    theme(text = element_text(size = 14)) +
+    xlim (0, 1)
+dev.off()
 ```
 
 ## Accuracy
@@ -183,11 +199,20 @@ if (skip_eval == FALSE) {
  
 }
 
-plot (edge_wts, satistics = "edge", order = "sample")
+f <- plot (edge_wts, satistics = "edge", order = "sample")
+wts
 ```
 
+```{r, eval = FALSE}
+tiff(width = 8, height = 15, units = "in", res = 200, file = "../manuscript/fig_2.tiff")
+  plot (edge_wts, satistics = "edge", order = "sample") + 
+    theme(text = element_text(size = 16)) 
+dev.off()
+```
+
+
 ```{r}
-plot (edge_wts, plot = "difference", satistics = "edge", order = "sample", onlyNonZero = TRUE)
+p_val <- plot (edge_wts, plot = "difference", satistics = "edge", order = "sample", onlyNonZero = TRUE)
 ```
 
 
@@ -209,6 +234,12 @@ if (skip_eval == FALSE) {
 plot (centr_stb, statistics = stats2boot[-1])
 ```
 
+```{r, eval = FALSE}
+tiff(width = 15, height = 15, units = "in", res = 100, file = "../manuscript/fig_4.tiff")
+  plot (centr_stb, statistics = c("strength", "closeness", "betweenness")) + 
+    theme(text = element_text(size = 14)) 
+dev.off()
+```
 # Save data
 
 ```{r}
