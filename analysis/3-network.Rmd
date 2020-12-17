@@ -16,22 +16,22 @@ pacman::p_load(tidyverse,
                stats,
                bootnet,
                igraph,
-               mgm,
+               arsenal,
+               flextable,
+               officer,
                cowplot,
-               huge,
-               EGAnet)
+               huge)
 ```
 
-# Clean data
+# Import data
 
-## Import data
 ```{r}
 
 if (file.exists("output/network_res.RDS")) {
   
-  dat <- readRDS("output/network_res.RDS")
+  dat2 <- readRDS("output/network_res.RDS")
   
-  list2env(dat ,.GlobalEnv)
+  list2env(dat2 ,.GlobalEnv)
   
   skip_eval <- TRUE
 
@@ -40,30 +40,25 @@ if (file.exists("output/network_res.RDS")) {
   dat <- readRDS ("output/dat.RDS")
   
   skip_eval <- FALSE
+  }
+
+# Helper for nice descriptive table
+
+meanNsd_transform <- function (x) {
+
+  m <- round (x[[1]][1], 2)
+  s <- round (x[[1]][2], 2)
+
+  m_s <- paste0(m, "(", s, ")")
+
+  return (m_s)
 }
+
 
 
 ```
 
-## Collapse variables
-
-```{r}
-
-if (skip_eval == FALSE) {
-  dat <- dat %>%
-  mutate (ppt_medn = (ppt_medn_aff_base + ppt_medn_naff_base)/2,
-          ppt_uln = (ppt_uln_aff_base + ppt_uln_naff_base)/2,
-          ppt_radn = (ppt_radn_aff_base + ppt_radn_naff_base)/2,
-          ppt_neck = (ppt_neck_aff_base + ppt_neck_naff_base)/2,
-          ppt_cts = (ppt_cts_aff_base + ppt_cts_naff_base)/2,
-          ppt_ta = (ppt_ta_aff_base + ppt_ta_naff_base)/2) %>%
-  select (-c(ppt_medn_aff_base:ppt_ta_naff_base))
-  
-}
-
-```
-
-## Get baseline variables
+# Clean data
 
 ```{r}
 
@@ -91,6 +86,64 @@ if (skip_eval == FALSE) {
   
 }
 ```
+
+# Descriptive summary
+
+```{r, results = "asis" }
+
+dat_sub <- dat %>%
+  dplyr::select (age, 
+                 pain_years, 
+                 mean_pain_base,
+                 ppt_medn_aff_base, 
+                 ppt_uln_aff_base,
+                 ppt_radn_aff_base,
+                 ppt_neck_aff_base,
+                 ppt_cts_aff_base,
+                 ppt_ta_aff_base,
+                 cts_func_base,
+                 cts_severe_base,
+                 dep_base)
+
+names (dat_sub) <- str_remove_all (names(dat_sub), "_base|mean_|_aff")
+
+tab1 <- tableby ( ~. , data = dat_sub, digits = 2, digits.p = 2) 
+
+summary (tab1)
+```
+
+```{r eval = FALSE, include = FALSE}
+tab1 <- tab1 %>%
+  as.data.frame() %>%
+  filter (!term %in% c("Nmiss", "range")) %>%
+  select (-c(group.term:term, variable.type,Total)) 
+
+tab2 <-  tab1[-seq (1, 24, 2),]
+tab2$label <- tab1[seq (1, 24, 2),1]
+
+for(row in 1:nrow(tab2)) {
+  for(col in 2:ncol(tab2)) {
+    tab2[row, col] <- meanNsd_transform (tab2[row, col])
+  }
+}
+
+colnames (tab2) <- c ("Baseline variable", "Mean (SD)")
+
+my_path <- paste0("../manuscript/table_1_", 
+                  "baseline",
+                  ".docx")
+
+ft <- flextable(tab2) %>%
+  autofit()
+
+my_doc <- read_docx()  %>% 
+  body_add_flextable(ft) %>%
+  body_end_section_landscape()
+
+print (my_doc, target = my_path)
+```
+
+
 
 # Network analysis
 
@@ -138,18 +191,16 @@ wts_df <- nw_plot$Edgelist %>%
 
 wts_df %>% 
   mutate (weight_abs = abs (weight)) %>%
-  slice_max (weight_abs, n = 6)
+  slice_max (weight_abs, n = 10)
 ```
 
-```{r, eval = FALSE}
+```{r eval = FALSE, include = FALSE}
 tiff(width = 15, height = 15, units = "in", res = 100, file = "../manuscript/fig_1.tiff")
   plot (nw, nodeNames = node_labs,  layout = "spring", legend = TRUE, legend.cex = 1.2)
 dev.off()
 ```
 
 ## Centrality
-
-Reference for definition: Robinaugh, D. J., Millner, A. J., & McNally, R. J. (2016). Identifying highly influential nodes in the complicated grief network. Journal of Abnormal Psychology, 125(6), 747–757. doi:10.1037/abn0000181 
 
 High centrality nodes have strong connections to many other nodes, and act as hubs that connect otherwise disparate nodes to one another. 
 
@@ -158,13 +209,9 @@ network.
 
 Strength is the sum of the absolute value of its connections with other nodes in the network.
 
-Degree can be straightforwardly generalized to weighted networks by considering the sum of the weights of the connections (in absolute value), instead of their number. This generalization is called strength.
-
 Closeness centrality is defined as the inverse of the sum of the distances of the focal node from all the other nodes in the network. Closeness is the average shortest path between a given node and the remaining nodes in the network. Nodes with higher closeness are more proximally connected to the rest of the network.
 
 Betweenness is the number of times in which a given node lies on the shortest path between two other nodes.
-
-Expected influence is the sum of a node’s connections and represents the relative importance of a node in a network (Robinaugh et al., 2016) --relative because even in weakly connected networks (with overall low edge weights), there will always be a node with a high expected influence in case of standardized results.
 
 The greater the value of centrality indices to one, the more important the variable.
 
@@ -175,10 +222,9 @@ centr <- centralityPlot(nw,
                         scale = "relative", 
                         labels = node_labs)
 
-centr
 ```
 
-```{r, eval = FALSE}
+```{r eval = FALSE, include = FALSE}
 tiff(width = 10, height = 8, units = "in", res = 200, file = "../manuscript/fig_3.tiff")
   centr + 
     theme(text = element_text(size = 14)) +
@@ -199,20 +245,22 @@ if (skip_eval == FALSE) {
  
 }
 
-f <- plot (edge_wts, satistics = "edge", order = "sample")
-wts
+plot (edge_wts, satistics = "edge", plot = "area", order = "sample", CIstyle = "SE")
+
 ```
 
-```{r, eval = FALSE}
+```{r eval = FALSE, include = FALSE}
 tiff(width = 8, height = 15, units = "in", res = 200, file = "../manuscript/fig_2.tiff")
-  plot (edge_wts, satistics = "edge", order = "sample") + 
+  plot (edge_wts, satistics = "edge", plot = "area", order = "sample", CIstyle = "SE") + 
     theme(text = element_text(size = 16)) 
 dev.off()
 ```
 
 
-```{r}
-p_val <- plot (edge_wts, plot = "difference", satistics = "edge", order = "sample", onlyNonZero = TRUE)
+```{r eval = FALSE, include = FALSE}
+p_val <- plot (edge_wts, plot = "difference", satistics = "edge", order = "sample", onlyNonZero = TRUE, verbose = TRUE)
+p_val
+
 ```
 
 
@@ -231,19 +279,38 @@ if (skip_eval == FALSE) {
 
 }
 
-plot (centr_stb, statistics = stats2boot[-1])
+plot (centr_stb, statistics = c("strength", "closeness", "betweenness"))
 ```
 
-```{r, eval = FALSE}
-tiff(width = 15, height = 15, units = "in", res = 100, file = "../manuscript/fig_4.tiff")
+```{r eval = FALSE, include = FALSE}
+tiff(width = 5, height = 5, units = "in", res = 100, file = "../manuscript/fig_4.tiff")
   plot (centr_stb, statistics = c("strength", "closeness", "betweenness")) + 
     theme(text = element_text(size = 14)) 
 dev.off()
 ```
+
+```{r eval = FALSE, include = FALSE}
+Sim <- netSimulator(
+  input = nw$graph,
+  default = "EBICglasso",
+  nCases = c(100,250,500,1000,2500),
+  tuning = 0.5,
+  nReps = 1000,
+  nCores = 8
+)
+
+
+plot (Sim)
+
+plot(Sim5,
+     yvar = c("strength","closeness","betweenness"))
+```
+
 # Save data
 
-```{r}
-dat2save <- list ("df" = df,
+```{r, eval = FALSE}
+dat2save <- list ("dat" = dat,
+                  "df" = df,
                   "nw" = nw,
                   "nw_plot" = nw_plot,
                   "centr" = centr,
@@ -251,8 +318,8 @@ dat2save <- list ("df" = df,
                   "edge_wts" = edge_wts,
                   "cor_stb" = cor_stb,
                   "node_labs" = node_labs,
-                  "stats2boot" = stats2boot
-                  )
+                  "stats2boot" = stats2boot,
+                  "Sim" = Sim)
 
 saveRDS(dat2save,
         "output/network_res.RDS")
