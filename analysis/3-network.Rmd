@@ -54,7 +54,16 @@ meanNsd_transform <- function (x) {
   return (m_s)
 }
 
-
+new_labs <- c("Pain intensity",
+              "PPT median nerve",
+              "PPT ulnar nerve",
+              "PPT radial nerve",
+              "PPT neck",
+              "PPT carpal tunnel",
+              "PPT tibialis anterior",
+              "Function",
+              "Symptom severity",
+              "Depressive levels")
 
 ```
 
@@ -192,11 +201,15 @@ wts_df <- nw_plot$Edgelist %>%
 wts_df %>% 
   mutate (weight_abs = abs (weight)) %>%
   slice_max (weight_abs, n = 10)
+
+wts_df %>% 
+  mutate (weight_abs = abs (weight)) %>%
+  slice_min (weight_abs, n = 10)
 ```
 
 ```{r eval = FALSE, include = FALSE}
 tiff(width = 15, height = 15, units = "in", res = 100, file = "../manuscript/fig_1.tiff")
-  plot (nw, nodeNames = node_labs,  layout = "spring", legend = TRUE, legend.cex = 1.2)
+  plot (nw, nodeNames = new_labs,  layout = "spring", legend = TRUE, legend.cex = 1.2)
 dev.off()
 ```
 
@@ -220,7 +233,7 @@ The greater the value of centrality indices to one, the more important the varia
 centr <- centralityPlot(nw,  
                         include = c("Strength", "Closeness", "Betweenness"), 
                         scale = "relative", 
-                        labels = node_labs)
+                        labels = new_labs)
 
 ```
 
