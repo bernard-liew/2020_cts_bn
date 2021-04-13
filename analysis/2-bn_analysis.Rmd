@@ -50,7 +50,7 @@ dat <- dat %>%
           ppt_neck_base = (ppt_neck_aff_base + ppt_neck_naff_base)/2,
           ppt_cts_base = (ppt_cts_aff_base + ppt_cts_naff_base)/2,
           ppt_ta_base = (ppt_ta_aff_base + ppt_ta_naff_base)/2) %>%
-  select (-c(ppt_medn_aff_base:ppt_ta_naff_base))
+  select (-c(ppt_medn_aff_base:ppt_ta_naff_base)) 
 ```
 
 
@@ -61,21 +61,34 @@ dat <- dat %>%
 ```{r}
 
 var.excl <- c(grep ("groc", names (dat), value = TRUE) ,
-              grep ("worst", names (dat), value = TRUE) ,
-              grep ("base", names (dat), value = TRUE) ,
-              "age", "pain_years", "pain_extent", "aff_side", "emg")
+              grep ("mean", names (dat), value = TRUE),
+              #grep ("base", names (dat), value = TRUE), 
+              #"age", 
+              #"pain_years", 
+              #"pain_extent", 
+              "aff_side" 
+              #"emg"
+              )
 df.bn = as.data.frame (dat)[, !names (dat) %in% var.excl] %>%
   na.omit()
+
+names (df.bn)[grepl ("years", names (df.bn))] <- "duration"
+names (df.bn)[grepl ("extent", names (df.bn))] <- "area"
+names (df.bn)[grepl ("cts_base", names (df.bn))] <- "ct_base"
+names (df.bn)[grepl ("ppt", names (df.bn))] <- str_remove (names (df.bn)[grepl ("ppt", names (df.bn))], "ppt_")
+names (df.bn)[grepl ("cts", names (df.bn))] <- str_remove (names (df.bn)[grepl ("cts", names (df.bn))], "cts_")
+names (df.bn)[grepl ("worst", names (df.bn))] <- str_remove (names (df.bn)[grepl ("worst", names (df.bn))], "worst_")
+
 
 df.bn$grp <- factor (df.bn$grp)
 
 rx.var <- "grp"
-demo.var = grep("age|sex|years|emg", colnames (df.bn), value = TRUE)
+demo.var = grep("age|duration|emg", colnames (df.bn), value = TRUE)
 base.var = grep("_base", colnames (df.bn), value = TRUE)
-mth1.var = grep("_1", colnames (df.bn), value = TRUE)
-mth3.var = grep("_3", colnames (df.bn), value = TRUE)
-mth6.var = grep("_6", colnames (df.bn), value = TRUE)
-outcome.var = grep("_12", colnames (df.bn), value = TRUE)
+mth1.var = grep("_1m", colnames (df.bn), value = TRUE)
+mth3.var = grep("_3m", colnames (df.bn), value = TRUE)
+mth6.var = grep("_6m", colnames (df.bn), value = TRUE)
+outcome.var = grep("_12m", colnames (df.bn), value = TRUE)
 
 pair_var <- expand.grid(from = names (df.bn),
                         to = names (df.bn)) %>%
@@ -84,14 +97,16 @@ pair_var <- expand.grid(from = names (df.bn),
 tiers_keep <- pair_var %>%
   filter (!(grepl (paste0(outcome.var, collapse = "|"),from))) %>%
   filter (!(grepl (paste0(rx.var, collapse = "|"),to))) %>%
-  filter (!(grepl (paste0(mth6.var, collapse = "|"), from) & 
+  filter (!(grepl (paste0(mth6.var, collapse = "|"), from) &
               grepl (paste0(c(demo.var, base.var, mth1.var, mth3.var), collapse = "|"),to))) %>%
-  filter (!(grepl (paste0(mth3.var, collapse = "|"), from) & 
-              grepl (paste0(c(demo.var, base.var, mth1.var), collapse = "|"),to))) #%>%
-  # filter (!(grepl (paste0(mth1.var, collapse = "|"), from) & 
-  #           grepl (paste0(c(demo.var, base.var), collapse = "|"),to))) %>%
-  # filter (!(grepl (paste0(base.var, collapse = "|"), from) & 
-  #         grepl (paste0(c(demo.var), collapse = "|"),to)))
+  filter (!(grepl (paste0(mth3.var, collapse = "|"), from) &
+              grepl (paste0(c(demo.var, base.var, mth1.var), collapse = "|"),to))) %>%
+  filter (!(grepl (paste0(mth1.var, collapse = "|"), from) &
+            grepl (paste0(c(demo.var, base.var), collapse = "|"),to))) %>%
+  filter (!(grepl (paste0(base.var, collapse = "|"), from) &
+          grepl (paste0(c(demo.var), collapse = "|"),to))) %>%
+  filter (!(grepl (paste0(rx.var, collapse = "|"), from) &
+          grepl (paste0(c(demo.var, base.var), collapse = "|"),to)))
 
 bl <- anti_join(pair_var, tiers_keep, by = "rowname")  %>%
   filter (from != to) %>%
@@ -136,7 +151,7 @@ Outer is bootstrap resampling k = 25 for performance evaluation.
 
 ```{r, echo = FALSE}
 
-set.seed (2564)
+set.seed (1256)
 
 flds <- createFolds(1:nrow(df.bn), 
                             k = 10, returnTrain = TRUE)
@@ -153,28 +168,29 @@ for (k in seq_along(flds)) {
   doParallel::registerDoParallel(7)
   ############
   
-  boot  =  foreach (B = 1: n_boot) %dopar%{
-      boot.sample = train[sample(nrow(train), 
-                                            nrow(train), replace = TRUE), ]
-      bnlearn::structural.em(boot.sample, impute = "bayes-lw", max.iter = 5,
-                                maximize.args = list(blacklist = bl,  
-                                                      k = log(nrow(boot.sample))))
-  }
+  boot2 <- boot.strength(train,
+                      R = 200,
+                      algorithm = "hc",
+                      algorithm.args = list (blacklist = bl))
+
   #############
-  stopImplicitCluster()
   
-  bootstr <-  custom.strength(boot, nodes = names(train))
-  avg <-  averaged.network(bootstr, threshold = 0.7)
-  fit <-  bn.fit (avg, train, method = "mle")
+  avg2 <-  averaged.network(boot2, threshold = 0.5)
+  fit2 <-  bn.fit (avg2, train, method = "mle")
   
-  imp.list = impute (fit, data = test, method = "bayes-lw")
-  inames = names (imp.list) [-c(1:2)]
-  corr.df =  structure(numeric(length (inames)), names = inames)
+  num.var <- test %>%
+    select_if (is.numeric) %>%
+    names ()
   
-  for (var in inames) {
-      corr.df[var] = cor(predict(fit, data = imp.list, var, method = "bayes-lw"), 
-                         imp.list[, var])
-    }
+  corr.df =  structure(numeric(length (num.var)), names = num.var)
+  
+  for (n in num.var) {
+      corr.df[n] = cor(predict(fit2, 
+                               data = test, 
+                               node = n, 
+                               method = "bayes-lw"),
+                       test[n])
+  }
   
   corr.df.list[[k]] <- corr.df
   
@@ -184,7 +200,7 @@ for (k in seq_along(flds)) {
 corr.df <- bind_cols (corr.df.list) %>%
   apply (1, mean)
 
-names (corr.df) <- inames
+names (corr.df) <- num.var
 
 corr.df
 ```
@@ -195,14 +211,15 @@ corr.df
 
 save(avg, 
      bl, 
+     rx.var,
+     base.var,
      demo.var,
+     mth1.var,
      mth3.var,
      mth6.var,
      outcome.var,
      boot, 
-     bootstr, 
      corr.df, 
-     corr.df.list, 
      df.bn, 
      fit,
      file = "output/bn_data.RData")
