@@ -3,7 +3,6 @@ title: "2-bn_analysis"
 author: "Bernard"
 date: "2020-09-08"
 output: workflowr::wflow_html
-runtime: shiny
 editor_options:
   chunk_output_type: console
 ---
@@ -151,7 +150,7 @@ graph::nodeRenderInfo(g) = list(fontsize=18)
 #Rgraphviz::renderGraph(g)
 ```
 
-```{r, fig.height= 20}
+```{r, fig.height= 20, shinyapp}
 viewer(avg,
        bayesianNetwork.width = "100%",
        bayesianNetwork.height = "80vh",

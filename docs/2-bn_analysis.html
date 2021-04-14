@@ -15,6 +15,7 @@
 
 <title>2-bn_analysis</title>
 
+<script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
@@ -27,6 +28,11 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<link href="site_libs/vis-4.20.1/vis.css" rel="stylesheet" />
+<script src="site_libs/vis-4.20.1/vis.min.js"></script>
+<script src="site_libs/visNetwork-binding-2.0.9/visNetwork.js"></script>
+<link href="site_libs/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 
 <link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
 <!-- Add a small amount of space between sections. -->
@@ -35,6 +41,17 @@ div.section {
   padding-top: 12px;
 }
 </style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -80,6 +97,7 @@ h6 {
   text-align: left;
 }
 </style>
+
 
 
 
@@ -387,7 +405,7 @@ div.tocify {
 
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
-<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
 </button>
 </p>
 <div id="workflowr-report" class="collapse">
@@ -396,7 +414,7 @@ div.tocify {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -405,10 +423,10 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-11-23
+<strong>Last updated:</strong> 2021-04-14
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>2020_cts_bn/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
@@ -424,12 +442,12 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
 </div>
 </div>
 </div>
@@ -496,16 +514,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree2266d36d7d5eafec7453ccb12ce7d6471a15e6cftargetblank2266d36a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bernard-liew/2020_cts_bn/tree/2266d36d7d5eafec7453ccb12ce7d6471a15e6cf" target="_blank">2266d36</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree5ff7ce66f745663091e8197aea394270437afb49targetblank5ff7ce6a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bernard-liew/2020_cts_bn/tree/5ff7ce66f745663091e8197aea394270437afb49" target="_blank">5ff7ce6</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree2266d36d7d5eafec7453ccb12ce7d6471a15e6cftargetblank2266d36a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree5ff7ce66f745663091e8197aea394270437afb49targetblank5ff7ce6a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/bernard-liew/2020_cts_bn/tree/2266d36d7d5eafec7453ccb12ce7d6471a15e6cf" target="_blank">2266d36</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/bernard-liew/2020_cts_bn/tree/5ff7ce66f745663091e8197aea394270437afb49" target="_blank">5ff7ce6</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -514,6 +532,9 @@ Note that you need to be careful to ensure that all relevant files for the analy
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+
+Unstaged changes:
+    Modified:   analysis/2-bn_analysis.Rmd
 
 </code></pre>
 <p>
@@ -552,6 +573,57 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bernard-liew/2020_cts_bn/blob/5ff7ce66f745663091e8197aea394270437afb49/analysis/2-bn_analysis.Rmd" target="_blank">5ff7ce6</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2021-04-14
+</td>
+<td>
+Added bnviewer
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bernard-liew/2020_cts_bn/blob/880adc7ce18e88cfc37a211a32646b7a033031d0/analysis/2-bn_analysis.Rmd" target="_blank">880adc7</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2021-04-13
+</td>
+<td>
+updated bn analysis
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/bernard-liew/2020_cts_bn/c1420983475486b82443a4bc5a144fdf0040c66c/docs/2-bn_analysis.html" target="_blank">c142098</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2020-11-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -629,11 +701,14 @@ library (caret)
 library (doParallel)
 
 # Plot
-library (Rgraphviz)</code></pre>
+library (Rgraphviz)
+library (bnviewer)</code></pre>
 </div>
 <div id="import-data" class="section level3">
 <h3>Import data</h3>
-<pre class="r"><code>dat &lt;- readRDS (&quot;output/dat.RDS&quot;)</code></pre>
+<pre class="r"><code>dat &lt;- readRDS (&quot;output/dat.RDS&quot;)
+
+load (&quot;output/bn_data.RData&quot;)</code></pre>
 </div>
 <div id="collapse-variables" class="section level3">
 <h3>Collapse variables</h3>
@@ -644,28 +719,41 @@ library (Rgraphviz)</code></pre>
           ppt_neck_base = (ppt_neck_aff_base + ppt_neck_naff_base)/2,
           ppt_cts_base = (ppt_cts_aff_base + ppt_cts_naff_base)/2,
           ppt_ta_base = (ppt_ta_aff_base + ppt_ta_naff_base)/2) %&gt;%
-  select (-c(ppt_medn_aff_base:ppt_ta_naff_base))</code></pre>
+  select (-c(ppt_medn_aff_base:ppt_ta_naff_base)) </code></pre>
 </div>
 <div id="bn-analysis" class="section level3">
 <h3>BN analysis</h3>
 <div id="create-blacklist" class="section level4">
 <h4>Create blacklist</h4>
 <pre class="r"><code>var.excl &lt;- c(grep (&quot;groc&quot;, names (dat), value = TRUE) ,
-              grep (&quot;worst&quot;, names (dat), value = TRUE) ,
-              grep (&quot;base&quot;, names (dat), value = TRUE) ,
-              &quot;age&quot;, &quot;pain_years&quot;, &quot;pain_extent&quot;, &quot;aff_side&quot;, &quot;emg&quot;)
+              grep (&quot;mean&quot;, names (dat), value = TRUE),
+              #grep (&quot;base&quot;, names (dat), value = TRUE), 
+              #&quot;age&quot;, 
+              #&quot;pain_years&quot;, 
+              #&quot;pain_extent&quot;, 
+              &quot;aff_side&quot; 
+              #&quot;emg&quot;
+              )
 df.bn = as.data.frame (dat)[, !names (dat) %in% var.excl] %&gt;%
   na.omit()
+
+names (df.bn)[grepl (&quot;years&quot;, names (df.bn))] &lt;- &quot;duration&quot;
+names (df.bn)[grepl (&quot;extent&quot;, names (df.bn))] &lt;- &quot;area&quot;
+names (df.bn)[grepl (&quot;cts_base&quot;, names (df.bn))] &lt;- &quot;ct_base&quot;
+names (df.bn)[grepl (&quot;ppt&quot;, names (df.bn))] &lt;- str_remove (names (df.bn)[grepl (&quot;ppt&quot;, names (df.bn))], &quot;ppt_&quot;)
+names (df.bn)[grepl (&quot;cts&quot;, names (df.bn))] &lt;- str_remove (names (df.bn)[grepl (&quot;cts&quot;, names (df.bn))], &quot;cts_&quot;)
+names (df.bn)[grepl (&quot;worst&quot;, names (df.bn))] &lt;- str_remove (names (df.bn)[grepl (&quot;worst&quot;, names (df.bn))], &quot;worst_&quot;)
+
 
 df.bn$grp &lt;- factor (df.bn$grp)
 
 rx.var &lt;- &quot;grp&quot;
-demo.var = grep(&quot;age|sex|years|emg&quot;, colnames (df.bn), value = TRUE)
+demo.var = grep(&quot;age|duration|emg&quot;, colnames (df.bn), value = TRUE)
 base.var = grep(&quot;_base&quot;, colnames (df.bn), value = TRUE)
-mth1.var = grep(&quot;_1&quot;, colnames (df.bn), value = TRUE)
-mth3.var = grep(&quot;_3&quot;, colnames (df.bn), value = TRUE)
-mth6.var = grep(&quot;_6&quot;, colnames (df.bn), value = TRUE)
-outcome.var = grep(&quot;_12&quot;, colnames (df.bn), value = TRUE)
+mth1.var = grep(&quot;_1m&quot;, colnames (df.bn), value = TRUE)
+mth3.var = grep(&quot;_3m&quot;, colnames (df.bn), value = TRUE)
+mth6.var = grep(&quot;_6m&quot;, colnames (df.bn), value = TRUE)
+outcome.var = grep(&quot;_12m&quot;, colnames (df.bn), value = TRUE)
 
 pair_var &lt;- expand.grid(from = names (df.bn),
                         to = names (df.bn)) %&gt;%
@@ -674,14 +762,16 @@ pair_var &lt;- expand.grid(from = names (df.bn),
 tiers_keep &lt;- pair_var %&gt;%
   filter (!(grepl (paste0(outcome.var, collapse = &quot;|&quot;),from))) %&gt;%
   filter (!(grepl (paste0(rx.var, collapse = &quot;|&quot;),to))) %&gt;%
-  filter (!(grepl (paste0(mth6.var, collapse = &quot;|&quot;), from) &amp; 
+  filter (!(grepl (paste0(mth6.var, collapse = &quot;|&quot;), from) &amp;
               grepl (paste0(c(demo.var, base.var, mth1.var, mth3.var), collapse = &quot;|&quot;),to))) %&gt;%
-  filter (!(grepl (paste0(mth3.var, collapse = &quot;|&quot;), from) &amp; 
-              grepl (paste0(c(demo.var, base.var, mth1.var), collapse = &quot;|&quot;),to))) #%&gt;%
-  # filter (!(grepl (paste0(mth1.var, collapse = &quot;|&quot;), from) &amp; 
-  #           grepl (paste0(c(demo.var, base.var), collapse = &quot;|&quot;),to))) %&gt;%
-  # filter (!(grepl (paste0(base.var, collapse = &quot;|&quot;), from) &amp; 
-  #         grepl (paste0(c(demo.var), collapse = &quot;|&quot;),to)))
+  filter (!(grepl (paste0(mth3.var, collapse = &quot;|&quot;), from) &amp;
+              grepl (paste0(c(demo.var, base.var, mth1.var), collapse = &quot;|&quot;),to))) %&gt;%
+  filter (!(grepl (paste0(mth1.var, collapse = &quot;|&quot;), from) &amp;
+            grepl (paste0(c(demo.var, base.var), collapse = &quot;|&quot;),to))) %&gt;%
+  filter (!(grepl (paste0(base.var, collapse = &quot;|&quot;), from) &amp;
+          grepl (paste0(c(demo.var), collapse = &quot;|&quot;),to))) %&gt;%
+  filter (!(grepl (paste0(rx.var, collapse = &quot;|&quot;), from) &amp;
+          grepl (paste0(c(demo.var, base.var), collapse = &quot;|&quot;),to)))
 
 bl &lt;- anti_join(pair_var, tiers_keep, by = &quot;rowname&quot;)  %&gt;%
   filter (from != to) %&gt;%
@@ -701,66 +791,84 @@ boot &lt;- boot.strength(df.bn,
 <pre class="r"><code>avg &lt;-  averaged.network(boot, threshold = 0.5)
 fit &lt;-  bn.fit (avg, df.bn, method = &quot;mle&quot;)
 g &lt;- strength.plot(avg, boot, shape = &quot;ellipse&quot;, render = FALSE)
-graph::nodeRenderInfo(g) = list(fontsize=18)
-Rgraphviz::renderGraph(g)</code></pre>
-<p><img src="figure/2-bn_analysis.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+graph::nodeRenderInfo(g) = list(fontsize=18)</code></pre>
+<pre class="r"><code>#Rgraphviz::renderGraph(g)</code></pre>
+<pre class="r"><code>viewer(avg,
+       bayesianNetwork.width = &quot;100%&quot;,
+       bayesianNetwork.height = &quot;80vh&quot;,
+       bayesianNetwork.layout = &quot;layout_with_sugiyama&quot;,
+       bayesianNetwork.title=&quot;Bayesian Network of CTS recovery&quot;,
+       node.font = list(color = &quot;black&quot;, face=&quot;Arial&quot;, size = 16),
+       bayesianNetwork.footer = &quot;Fig. 1 - Layout with Sugiyama&quot;
+)</code></pre>
+<div id="htmlwidget-f4e6b8a9f367a9d7473d" style="width:100%;height:80vh;" class="visNetwork html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f4e6b8a9f367a9d7473d">{"x":{"nodes":{"id":["grp","area","age","emg","duration","pain_base","func_base","severe_base","dep_base","pain_1m","func_1m","severe_1m","pain_3m","func_3m","severe_3m","pain_6m","func_6m","severe_6m","pain_12m","func_12m","severe_12m","medn_base","uln_base","radn_base","neck_base","ct_base","ta_base"],"label":[" grp"," area"," age"," emg"," duration"," pain_base"," func_base"," severe_base"," dep_base"," pain_1m"," func_1m"," severe_1m"," pain_3m"," func_3m"," severe_3m"," pain_6m"," func_6m"," severe_6m"," pain_12m"," func_12m"," severe_12m"," medn_base"," uln_base"," radn_base"," neck_base"," ct_base"," ta_base"],"x":[-0.625,0.125,0.875,0,1,-1,-0.625,-1,-0.5625,-0.875,-0.9375,-0.75,-0.6875,-0.8125,-0.4375,-0.8125,-0.8125,-0.6875,-0.9375,-0.0625,-0.625,0.5,0.25,0.5,0.375,0.625,0.6875],"y":[-1,-1,-1,-1,-1,-1,-0.75,-0.5,-0.5,-0.5,-0.75,-1,-0.25,0,0.25,0.75,0.25,0.5,1,0.5,0.75,-1,-0.75,-0.75,-0.5,-0.75,-0.5]},"edges":{"from":["grp","grp","grp","age","emg","pain_base","pain_base","func_base","func_base","dep_base","pain_1m","func_1m","func_1m","func_1m","severe_1m","severe_1m","severe_1m","pain_3m","pain_3m","pain_3m","func_3m","func_3m","severe_3m","pain_6m","func_6m","func_6m","func_6m","func_6m","func_6m","severe_6m","severe_6m","medn_base","medn_base","medn_base","medn_base","medn_base","uln_base","radn_base","radn_base","ct_base"],"to":["func_1m","severe_3m","func_12m","ta_base","func_12m","func_base","severe_base","severe_base","dep_base","pain_3m","pain_3m","pain_1m","pain_3m","func_3m","pain_1m","func_1m","severe_3m","func_3m","severe_3m","pain_6m","severe_3m","func_6m","severe_6m","pain_12m","pain_6m","severe_6m","pain_12m","func_12m","severe_12m","pain_6m","severe_12m","uln_base","radn_base","neck_base","ct_base","ta_base","neck_base","neck_base","ta_base","ta_base"],"smooth":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"dashes":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"width":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"font.size":[18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18],"font.color":["black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black"],"shadow":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot","physics":false},"manipulation":{"enabled":false},"edges":{"arrows":"to","smooth":false},"physics":{"stabilization":false}},"groups":null,"width":"100%","height":"80vh","idselection":{"enabled":false,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":{"text":"Bayesian Network of CTS recovery","style":"font-family:Georgia, Times New Roman, Times, serif;font-weight:bold;font-size:20px;text-align:center;"},"submain":{"text":"","style":"font-family:Georgia, Times New Roman, Times, serif;font-size:12px;text-align:center;"},"footer":{"text":"Fig. 1 - Layout with Sugiyama","style":"font-family:Georgia, Times New Roman, Times, serif;font-size:12px;text-align:center;"},"background":null,"iconsRedraw":true,"highlight":{"enabled":true,"hoverNearest":false,"degree":1,"algorithm":"all","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":false,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"},"igraphlayout":{"type":"square"}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="performance-evaluation-using-nested-cross-validation." class="section level4">
 <h4>Performance evaluation using nested cross validation.</h4>
 <p>Not run yet.</p>
 <p>Inner is bootstrap resampling for model averaging. Outer is bootstrap resampling k = 25 for performance evaluation.</p>
-<pre><code>Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
-warn.if.no.missing = TRUE): no missing data are present even though some are
-expected.
+<pre class="r"><code>set.seed (1256)
 
-Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
-warn.if.no.missing = TRUE): no missing data are present even though some are
-expected.
+flds &lt;- createFolds(1:nrow(df.bn), 
+                            k = 10, returnTrain = TRUE)
+n_boot = 200
+doParallel::registerDoParallel(7)
 
-Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
-warn.if.no.missing = TRUE): no missing data are present even though some are
-expected.
+corr.df.list &lt;- list()
 
-Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
-warn.if.no.missing = TRUE): no missing data are present even though some are
-expected.
+for (k in seq_along(flds)) {
+  
+  train &lt;-  df.bn [flds[[k]], ] %&gt;% as.data.frame()
+  test &lt;- df.bn [-flds[[k]], ] %&gt;% as.data.frame()
+  
+  doParallel::registerDoParallel(7)
+  ############
+  
+  boot2 &lt;- boot.strength(train,
+                      R = 200,
+                      algorithm = &quot;hc&quot;,
+                      algorithm.args = list (blacklist = bl))
 
-Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
-warn.if.no.missing = TRUE): no missing data are present even though some are
-expected.
+  #############
+  
+  avg2 &lt;-  averaged.network(boot2, threshold = 0.5)
+  fit2 &lt;-  bn.fit (avg2, train, method = &quot;mle&quot;)
+  
+  num.var &lt;- test %&gt;%
+    select_if (is.numeric) %&gt;%
+    names ()
+  
+  corr.df =  structure(numeric(length (num.var)), names = num.var)
+  
+  for (n in num.var) {
+      corr.df[n] = cor(predict(fit2, 
+                               data = test, 
+                               node = n, 
+                               method = &quot;bayes-lw&quot;),
+                       test[n])
+  }
+  
+  corr.df.list[[k]] &lt;- corr.df
+  
 
-Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
-warn.if.no.missing = TRUE): no missing data are present even though some are
-expected.
+}
 
-Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
-warn.if.no.missing = TRUE): no missing data are present even though some are
-expected.
+corr.df &lt;- bind_cols (corr.df.list) %&gt;%
+  apply (1, mean)
 
-Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
-warn.if.no.missing = TRUE): no missing data are present even though some are
-expected.
-
-Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
-warn.if.no.missing = TRUE): no missing data are present even though some are
-expected.
-
-Warning in check.data(data, allow.levels = TRUE, allow.missing = TRUE,
-warn.if.no.missing = TRUE): no missing data are present even though some are
-expected.</code></pre>
-<pre><code>New names:
-* NA -&gt; ...1
-* NA -&gt; ...2
-* NA -&gt; ...3
-* NA -&gt; ...4
-* NA -&gt; ...5
-* ...</code></pre>
-<pre><code>   cts_func_1m  cts_severe_1m   mean_pain_3m    cts_func_3m  cts_severe_3m 
-   0.746507217    0.213453855    0.688864041    0.759489264    0.730701535 
-  mean_pain_6m    cts_func_6m  cts_severe_6m  mean_pain_12m   cts_func_12m 
-   0.590325932    0.805223031    0.783927409   -0.006836802    0.157076614 
-cts_severe_12m 
-  -0.177712188 </code></pre>
+names (corr.df) &lt;- num.var</code></pre>
+<pre class="r"><code>corr.df</code></pre>
+<pre><code>       area         age    duration   pain_base   func_base severe_base 
+ 0.06639855 -0.10427296  0.03138296  0.21201146  0.45468078  0.49379270 
+   dep_base     pain_1m     func_1m   severe_1m     pain_3m     func_3m 
+ 0.33910836  0.68501290  0.79584542  0.57758982  0.78845325  0.69547839 
+  severe_3m     pain_6m     func_6m   severe_6m    pain_12m    func_12m 
+ 0.79161182  0.70549565  0.85728936  0.79530070  0.64397620  0.80991103 
+ severe_12m   medn_base    uln_base   radn_base   neck_base     ct_base 
+ 0.67490796  0.76113173  0.58105758  0.74690423  0.70459492  0.68785777 
+    ta_base 
+ 0.75301214 </code></pre>
 </div>
 </div>
 </div>
@@ -774,7 +882,7 @@ cts_severe_12m
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 3.6.0 (2019-04-26)
+<pre><code>R version 4.0.2 (2020-06-22)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 Running under: Windows 10 x64 (build 18363)
 
@@ -792,35 +900,42 @@ attached base packages:
 [8] methods   base     
 
 other attached packages:
- [1] Rgraphviz_2.22.0    graph_1.56.0        BiocGenerics_0.24.0
- [4] doParallel_1.0.15   iterators_1.0.10    foreach_1.4.4      
- [7] caret_6.0-84        lattice_0.20-38     bnlearn_4.5        
-[10] forcats_0.4.0       stringr_1.4.0       dplyr_1.0.2        
-[13] purrr_0.3.3         readr_1.3.1         tidyr_1.0.2        
-[16] tibble_3.0.3        ggplot2_3.2.1       tidyverse_1.3.0    
+ [1] bnviewer_0.1.6      Rgraphviz_2.34.0    graph_1.68.0       
+ [4] BiocGenerics_0.36.0 doParallel_1.0.16   iterators_1.0.13   
+ [7] foreach_1.5.1       caret_6.0-86        lattice_0.20-41    
+[10] bnlearn_4.6.1       forcats_0.5.0       stringr_1.4.0      
+[13] dplyr_1.0.2         purrr_0.3.4         readr_1.4.0        
+[16] tidyr_1.1.2         tibble_3.0.4        ggplot2_3.3.3      
+[19] tidyverse_1.3.0    
 
 loaded via a namespace (and not attached):
- [1] nlme_3.1-139       fs_1.3.0           lubridate_1.7.4    DiceDesign_1.8-1  
- [5] httr_1.4.1         rprojroot_1.3-2    tools_3.6.0        backports_1.1.4   
- [9] R6_2.4.0           rpart_4.1-15       DBI_1.0.0          lazyeval_0.2.2    
-[13] colorspace_1.4-1   nnet_7.3-12        withr_2.1.2        tidyselect_1.1.0  
-[17] compiler_3.6.0     git2r_0.27.1       cli_2.0.1          rvest_0.3.5       
-[21] xml2_1.2.2         scales_1.1.1       digest_0.6.19      rmarkdown_2.3     
-[25] pkgconfig_2.0.2    htmltools_0.4.0    lhs_1.0.1          dbplyr_1.4.4      
-[29] rlang_0.4.7        readxl_1.3.1       rstudioapi_0.11    generics_0.0.2    
-[33] jsonlite_1.6       ModelMetrics_1.2.2 magrittr_1.5       Matrix_1.2-17     
-[37] Rcpp_1.0.2         munsell_0.5.0      fansi_0.4.0        GPfit_1.0-8       
-[41] lifecycle_0.2.0    stringi_1.4.3      whisker_0.3-2      yaml_2.2.0        
-[45] MASS_7.3-51.4      plyr_1.8.4         recipes_0.1.9      blob_1.2.1        
-[49] promises_1.0.1     crayon_1.3.4       haven_2.2.0        splines_3.6.0     
-[53] hms_0.5.3          knitr_1.27         pillar_1.4.3       dials_0.0.4       
-[57] stats4_3.6.0       reshape2_1.4.3     codetools_0.2-16   parsnip_0.0.5     
-[61] reprex_0.3.0       glue_1.4.2         evaluate_0.14      data.table_1.12.8 
-[65] modelr_0.1.5       vctrs_0.3.4        httpuv_1.5.2       cellranger_1.1.0  
-[69] gtable_0.3.0       assertthat_0.2.1   xfun_0.7           gower_0.2.0       
-[73] prodlim_2018.04.18 broom_0.5.4        later_0.8.0        class_7.3-15      
-[77] survival_2.44-1.1  timeDate_3043.102  workflowr_1.6.2    lava_1.6.5        
-[81] workflows_0.1.0    ellipsis_0.3.0     ipred_0.9-9       </code></pre>
+ [1] nlme_3.1-151         fs_1.5.0             lubridate_1.7.9.2   
+ [4] httr_1.4.2           rprojroot_2.0.2      tools_4.0.2         
+ [7] backports_1.2.1      R6_2.5.0             rpart_4.1-15        
+[10] DBI_1.1.0            colorspace_2.0-0     nnet_7.3-14         
+[13] withr_2.3.0          tidyselect_1.1.0     compiler_4.0.2      
+[16] git2r_0.27.1         cli_2.2.0            rvest_0.3.6         
+[19] xml2_1.3.2           scales_1.1.1         digest_0.6.27       
+[22] rmarkdown_2.6        pkgconfig_2.0.3      htmltools_0.5.0     
+[25] dbplyr_2.0.0         htmlwidgets_1.5.3    rlang_0.4.10        
+[28] readxl_1.3.1         rstudioapi_0.13      visNetwork_2.0.9    
+[31] generics_0.1.0       jsonlite_1.7.2       ModelMetrics_1.2.2.2
+[34] magrittr_2.0.1       Matrix_1.2-18        Rcpp_1.0.6          
+[37] munsell_0.5.0        fansi_0.4.1          lifecycle_0.2.0     
+[40] stringi_1.5.3        whisker_0.4          pROC_1.16.2         
+[43] yaml_2.2.1           MASS_7.3-53          plyr_1.8.6          
+[46] recipes_0.1.15       promises_1.1.1       crayon_1.3.4        
+[49] haven_2.3.1          splines_4.0.2        hms_0.5.3           
+[52] knitr_1.30           pillar_1.4.7         igraph_1.2.6        
+[55] reshape2_1.4.4       codetools_0.2-18     stats4_4.0.2        
+[58] reprex_0.3.0         glue_1.4.2           evaluate_0.14       
+[61] data.table_1.14.0    modelr_0.1.8         vctrs_0.3.6         
+[64] httpuv_1.5.4         cellranger_1.1.0     gtable_0.3.0        
+[67] assertthat_0.2.1     xfun_0.20            gower_0.2.2         
+[70] prodlim_2019.11.13   broom_0.7.4.9000     later_1.1.0.1       
+[73] class_7.3-17         survival_3.2-7       timeDate_3043.102   
+[76] workflowr_1.6.2      lava_1.6.8.1         ellipsis_0.3.1      
+[79] ipred_0.9-9         </code></pre>
 </div>
 </div>
 
@@ -838,6 +953,8 @@ footer is added to webpages before the MathJax javascript. -->
 </script>
 
 
+
+
 </div>
 </div>
 
@@ -847,7 +964,7 @@ footer is added to webpages before the MathJax javascript. -->
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
