@@ -18,7 +18,8 @@ This is an example of a Bayesian network, with directed arcs. I only perform the
 rm (list = ls())
 # Helper
 library (tidyverse)
-
+library (cowplot)
+library (ggpubr)
 # BN
 library (bnlearn)
 
@@ -34,7 +35,7 @@ library (bnviewer)
 
 ```
 
-### Import data
+# Import data
 
 ```{r}
 
@@ -44,7 +45,7 @@ load ("output/bn_data.RData")
 
 ```
 
-### Collapse variables
+## Collapse variables
 
 ```{r}
 dat <- dat %>%
@@ -66,7 +67,7 @@ dat <- dat %>%
 
 var.excl <- c(grep ("groc", names (dat), value = TRUE) ,
               grep ("mean", names (dat), value = TRUE),
-              #grep ("base", names (dat), value = TRUE), 
+              grep ("ppt", names (dat), value = TRUE), 
               #"age", 
               #"pain_years", 
               #"pain_extent", 
@@ -119,6 +120,42 @@ bl <- anti_join(pair_var, tiers_keep, by = "rowname")  %>%
 
 ```
 
+## Explore
+
+```{r}
+df.bn.num <- df.bn %>%
+  select_if(is.numeric)
+
+M <- cor(df.bn.num)
+corrplot::corrplot(M, method = "circle")
+```
+
+## Discriptive
+
+```{r}
+
+ord <- names (df.bn) [!grepl ("emg", names (df.bn))]
+df_plot <- df.bn %>% 
+  select (-emg) %>%
+  pivot_longer(cols = -grp,
+               names_to = "var",
+               values_to = "val") %>%
+  mutate (var = factor (var, levels = ord )) %>%
+  group_by(grp, var) %>%
+  summarize (Mean = mean (val),
+             Sd = sd (val)) %>%
+  ggplot () +
+  geom_point (aes (x = grp, y = Mean), stat = "identity") + 
+  geom_errorbar(aes (x = grp, ymin = Mean - Sd, ymax = Mean + Sd), width = 0) + 
+  scale_x_discrete(labels=c("1" = "MT", 
+                          "2" = "Surgery")) +
+  xlab ("Group") +
+  ylab ("Scores") +
+  facet_wrap(~ var, ncol = 4, scales = "free") + 
+  theme_cowplot()
+  
+```
+
 
 #### Build the final model using model averaging
 
@@ -142,12 +179,15 @@ boot <- boot.strength(df.bn,
 avg <-  averaged.network(boot, threshold = 0.5)
 fit <-  bn.fit (avg, df.bn, method = "mle")
 g <- strength.plot(avg, boot, shape = "ellipse", render = FALSE)
-graph::nodeRenderInfo(g) = list(fontsize=18)
+graph::nodeRenderInfo(g) = list(fontsize=14)
 ```
 
 
 ```{r}
-#Rgraphviz::renderGraph(g)
+
+pdf ("../manuscript_bn/bn_plot.pdf", width = 8, height = 8)
+Rgraphviz::renderGraph(g)
+dev.off()
 ```
 
 ```{r, fig.height= 20, shinyapp}
@@ -170,12 +210,11 @@ Outer is bootstrap resampling k = 25 for performance evaluation.
 
 ```{r, eval = FALSE}
 
-set.seed (1256)
+set.seed (1245)
 
 flds <- createFolds(1:nrow(df.bn), 
                             k = 10, returnTrain = TRUE)
 n_boot = 200
-doParallel::registerDoParallel(7)
 
 corr.df.list <- list()
 
@@ -184,7 +223,7 @@ for (k in seq_along(flds)) {
   train <-  df.bn [flds[[k]], ] %>% as.data.frame()
   test <- df.bn [-flds[[k]], ] %>% as.data.frame()
   
-  doParallel::registerDoParallel(7)
+  
   ############
   
   boot2 <- boot.strength(train,
@@ -250,5 +289,226 @@ save(avg,
 ```
 
 
+```{r, eval = FALSE, include = FALSE}
+
+# Alternative BN modelling with change scores
 
 
+var.excl <- c(grep ("groc", names (dat), value = TRUE) ,
+              grep ("mean", names (dat), value = TRUE),
+              grep ("ppt", names (dat), value = TRUE), 
+              #"age", 
+              #"pain_years", 
+              #"pain_extent", 
+              "aff_side" 
+              #"emg"
+)
+dat2 = as.data.frame (dat)[, !names (dat) %in% var.excl] %>%
+  na.omit()
+
+dat3 <- dat2 %>%
+  mutate (dpain_1 = (worst_pain_1m - worst_pain_base)/1,
+          dpain_3 = (worst_pain_3m - worst_pain_base)/3,
+          dpain_6 = (worst_pain_6m - worst_pain_base)/6,
+          dpain_12 = (worst_pain_12m - worst_pain_base)/12,
+          dfunc_1 = (cts_func_1m - cts_func_base)/1,
+          dfunc_3 = (cts_func_3m - cts_func_base)/3,
+          dfunc_6 = (cts_func_6m - cts_func_base)/6,
+          dfunc_12 = (cts_func_12m - cts_func_base)/12,
+          dsevere_1 = (cts_severe_1m - cts_severe_base)/1,
+          dsevere_3 = (cts_severe_3m - cts_severe_base)/3,
+          dsevere_6 = (cts_severe_6m - cts_severe_base)/6,
+          dsevere_12 = (cts_severe_12m - cts_severe_base)/12,
+          .keep = "unused")
+
+dat3 <- dat3 %>%
+  pivot_longer(cols = matches ("dpain|dfunc|dsevere"),
+               names_to = c(".value", "time"),
+               names_pattern = "(\\D+)_(.*)") %>%
+  mutate (time = as.numeric (time)) %>%
+  rename (
+          area = pain_extent,
+          duration = pain_years,
+          dep = dep_base
+          )
+
+
+df.bn <- dat3 %>%
+  mutate (grp = factor (grp))
+
+df.bn2 <- df.bn %>%
+  mutate_all (as.numeric)
+
+rx.var <- "grp"
+demo.var = grep("area|age|emg|duration", colnames (df.bn), value = TRUE)
+time.var = grep("time", colnames (df.bn), value = TRUE)
+fup.var =  grep("dsevere|dfunc|dpain", colnames (df.bn), value = TRUE)
+
+
+pair_var <- expand.grid(from = names (df.bn),
+                        to = names (df.bn)) %>%
+  rownames_to_column()
+
+
+tiers_keep <- pair_var %>%
+  filter (!(grepl (paste0(c(rx.var, time.var), collapse = "|"),to))) %>%
+  filter (!(grepl (paste0(fup.var, collapse = "|"), from) &
+              grepl (paste0(demo.var, collapse = "|"),to))) %>%
+  filter (!(grepl (paste0(time.var, collapse = "|"), from) &
+              grepl (paste0(demo.var, collapse = "|"),to))) %>%
+  filter (!(grepl (paste0(rx.var, collapse = "|"), from) &
+              grepl (paste0(demo.var, collapse = "|"),to))) 
+
+bl <- anti_join(pair_var, tiers_keep, by = "rowname")  %>%
+  filter (from != to) %>%
+  select (from, to)
+
+
+set.seed (123)
+boot <- boot.strength(df.bn,
+                      R = 200,
+                      algorithm = "hc",
+                      algorithm.args = list (blacklist = bl))
+
+
+avg <-  averaged.network(boot, threshold = 0.5)
+fit <-  bn.fit (avg, df.bn2)
+g <- strength.plot(avg, boot, shape = "ellipse", render = FALSE)
+graph::nodeRenderInfo(g) = list(fontsize=18)
+renderGraph(g)
+
+```
+
+# Report
+
+##  Influence on group on function at 12 month
+
+```{r}
+set.seed (123)
+
+sim = cpdist(fit, nodes = c("grp", "func_12m"), n = 10^4,
+               evidence = (TRUE))
+
+mod <- lm(func_12m ~ grp, data = sim)
+
+summary (mod)
+
+sim %>%
+  group_by(grp) %>%
+  summarize (Mean = mean (func_12m),
+             Sd = sd (func_12m)) %>%
+  ggplot () +
+  geom_bar (aes (x = grp, y = Mean), stat = "identity") + 
+  scale_x_discrete(labels=c("1" = "MT", 
+                            "2" = "Surgery")) +
+  geom_errorbar(aes (x = grp, ymin = Mean - Sd, ymax = Mean + Sd), width = 0) + 
+  xlab ("Group") +
+  ylab ("Function 12m") +
+  theme_cowplot()
+```
+
+### What happens when func_1m was unchanged
+
+```{r}
+avg.mutilated = mutilated(avg, evidence = list(func_1m  = 0))
+strength.plot(avg.mutilated, boot)
+
+fitted.mutilated = bn.fit (avg.mutilated , df.bn, method = "mle")
+fitted.mutilated$func_1m = list(coef = c("(Intercept)" = 0), sd = 0)
+
+sim = cpdist(fit, nodes = c("grp", "func_12m"), n = 10^4,
+               evidence = (TRUE))
+
+mod <- lm(func_12m ~ grp, data = sim)
+
+summary (mod)
+
+
+```
+
+
+##  Influence on baseline pain on function at 12 month
+
+```{r}
+set.seed (123)
+
+sim = cpdist(fit, nodes = c("pain_base", "func_12m"), n = 10^4,
+               evidence = (TRUE))
+
+mod <- lm(func_12m ~ pain_base, data = sim)
+
+summary (mod)
+
+sim %>%
+  ggscatter(x = "pain_base", y = "func_12m", add = "reg.line") +
+  stat_regline_equation(label.x = 3, label.y = 4)
+
+```
+
+### What happens when dep_base was unchanged
+
+```{r}
+avg.mutilated = mutilated(avg, evidence = list(dep_base  = 0))
+strength.plot(avg.mutilated, boot)
+
+fitted.mutilated = bn.fit (avg.mutilated , df.bn, method = "mle")
+fitted.mutilated$dep_base = list(coef = c("(Intercept)" = 0), sd = 0)
+
+sim = cpdist(fit, nodes = c("pain_base", "func_12m"), n = 10^4,
+               evidence = (TRUE))
+
+mod <- lm(func_12m ~ pain_base, data = sim)
+
+summary (mod)
+
+sim %>%
+  ggscatter(x = "pain_base", y = "func_12m", add = "reg.line") +
+  stat_regline_equation(label.x = 3, label.y = 4)
+
+
+```
+
+##  Influence on severity at 1month  on function at 12 month
+
+```{r}
+set.seed (123)
+
+sim = cpdist(fit, nodes = c("severe_1m", "func_12m"), n = 10^4,
+               evidence = (TRUE))
+
+mod <- lm(func_12m ~ severe_1m, data = sim)
+
+summary (mod)
+
+sim %>%
+  ggscatter(x = "severe_1m", y = "func_12m", add = "reg.line") +
+  stat_regline_equation(label.x = 3, label.y = 4)
+
+```
+
+##  Influence of emg on function at 12 month
+
+```{r}
+set.seed (123)
+
+sim = cpdist(fit, nodes = c("emg", "func_12m"), n = 10^4,
+               evidence = (TRUE))
+
+mod <- lm(func_12m ~ emg, data = sim)
+
+summary (mod)
+
+sim %>%
+  group_by(emg) %>%
+  summarize (Mean = mean (func_12m),
+             Sd = sd (func_12m)) %>%
+  ggplot () +
+  geom_bar (aes (x = emg, y = Mean), stat = "identity") + 
+  scale_x_discrete(labels=c("1" = "Min", 
+                            "2" = "Mod",
+                            "3" = "Sev")) +
+  geom_errorbar(aes (x = emg, ymin = Mean - Sd, ymax = Mean + Sd), width = 0) + 
+  xlab ("EMG classification") +
+  ylab ("Function 12m") +
+  theme_cowplot()
+```

@@ -37,6 +37,7 @@ headers <- import("data/cts_dat_mod.xlsx",
 GROC = - 7 (very great deal worse) to 7 (very great deal better)
 aff_side = 1 - right, 2 - left, 3 - bilat
 emg = 1 - min, 2 - mod, 3 - sev
+group = 1 (manual therapy), 2(surgery)
 
 ```{r}
 #create_report(dat, output_dir = "./output")
