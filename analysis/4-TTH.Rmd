@@ -1,0 +1,32 @@
+---
+title: "4-TTH"
+author: "bernard-liew"
+date: "2021-06-23"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+# Load package
+
+```{r, message=F, warning=F}
+
+rm (list = ls())
+# Helper
+library (tidyverse)
+library (skimr)
+library (cowplot)
+library (ggpubr)
+library (flextable)
+library (officer)
+
+```
+
+# Load data
+
+```{r}
+df <- rio::import("data/Tension Type Headache Database.sav")
+
+skim (df)
+```
+
