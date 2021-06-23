@@ -20,6 +20,8 @@ rm (list = ls())
 library (tidyverse)
 library (cowplot)
 library (ggpubr)
+library (flextable)
+library (officer)
 # BN
 library (bnlearn)
 
@@ -32,6 +34,15 @@ library (doParallel)
 # Plot
 library (Rgraphviz)
 library (bnviewer)
+
+# Helper
+return_marginal <- function (x) {
+  
+  x <-  x[-1, , drop = FALSE]
+  x <- apply (x, 1, mean)
+  
+  return (x)
+}
 
 ```
 
@@ -88,7 +99,7 @@ names (df.bn)[grepl ("worst", names (df.bn))] <- str_remove (names (df.bn)[grepl
 df.bn$grp <- factor (df.bn$grp)
 
 rx.var <- "grp"
-demo.var = grep("age|duration|emg", colnames (df.bn), value = TRUE)
+demo.var = grep("age|duration|emg|area", colnames (df.bn), value = TRUE)
 base.var = grep("_base", colnames (df.bn), value = TRUE)
 mth1.var = grep("_1m", colnames (df.bn), value = TRUE)
 mth3.var = grep("_3m", colnames (df.bn), value = TRUE)
@@ -153,6 +164,11 @@ df_plot <- df.bn %>%
   ylab ("Scores") +
   facet_wrap(~ var, ncol = 4, scales = "free") + 
   theme_cowplot()
+
+
+pdf ("../manuscript_bn/fig1.pdf", width = 10, height = 7)
+df_plot
+dev.off()
   
 ```
 
@@ -180,12 +196,49 @@ avg <-  averaged.network(boot, threshold = 0.5)
 fit <-  bn.fit (avg, df.bn, method = "mle")
 g <- strength.plot(avg, boot, shape = "ellipse", render = FALSE)
 graph::nodeRenderInfo(g) = list(fontsize=14)
+
+# Make color
+
+
+arc_col <- data.frame(arcs = names (edgeRenderInfo(g)$col)) %>%
+  separate(arcs, c("parent", "child"), sep = "~")
+
+coef_fit <- coef(fit) %>%
+  map_if (is.vector, ~.x[!grepl("Intercept", names (.x))]) %>%
+  map_if (is.matrix, return_marginal)  %>%
+  unlist ()
+
+coef_fit <- data.frame(arcs = names (coef_fit), coefs = coef_fit) %>%
+  separate(arcs, c ("child", "parent"), sep = "[.]") 
+
+new_col <- arc_col %>%
+  left_join(coef_fit, by = c("parent", "child")) %>%
+  mutate (coefs = replace_na(coefs,88)) %>%
+  mutate (col = ifelse (coefs < 0, "red", 
+                        ifelse (coefs == 88, "black", "blue"))) 
+
+new_arc_col <- new_col$col
+names (new_arc_col) <-   names (edgeRenderInfo(g)$col)
+
+nodeRenderInfo(g)$fill[base.var] = "cyan"
+nodeRenderInfo(g)$fill[demo.var] = "cornsilk"
+nodeRenderInfo(g)$fill[mth1.var] = "tan1"
+nodeRenderInfo(g)$fill[mth3.var] = "gold"
+nodeRenderInfo(g)$fill[mth6.var] = "yellow"
+nodeRenderInfo(g)$fill[outcome.var] = "tomato"
+edgeRenderInfo(g)$col <- new_arc_col
+graph::nodeRenderInfo(g) = list(fontsize=14)
+
+
+renderGraph(g)
+
+
 ```
 
 
 ```{r}
 
-pdf ("../manuscript_bn/bn_plot.pdf", width = 8, height = 8)
+pdf ("../manuscript_bn/fig2.pdf", width = 10, height = 7)
 Rgraphviz::renderGraph(g)
 dev.off()
 ```
@@ -264,6 +317,32 @@ names (corr.df) <- num.var
 
 ```{r}
 corr.df
+```
+
+# Correlation performance table
+
+```{r}
+
+corr.df_ord <- corr.df[grepl ("pain|func|severe", names (corr.df))] 
+correlation <- data.frame(Variable = names (corr.df_ord),
+                          Value = corr.df_ord %>% round (2)) %>%
+  mutate (Strength = ifelse (abs (Value) <= 0.3, "negligible",
+                             ifelse (abs(Value) > 0.3 & abs(Value <= 0.5), "low",
+                                     ifelse (abs(Value) > 0.5 & abs(Value <= 0.7), "moderate",
+                                             ifelse (abs(Value) > 0.7 & abs(Value <= 0.9), "high",
+                                                     "very high")))))
+
+ft <- flextable(correlation) %>%
+      set_caption(paste0("Correlation between observed and predicted change values")) %>%
+      autofit()
+
+my_path <- paste0("../manuscript_bn/table1_corr.docx")
+
+my_doc <- read_docx()  %>% 
+  body_add_flextable(ft)
+
+print (my_doc, target = my_path)
+
 ```
 
 
@@ -393,7 +472,7 @@ mod <- lm(func_12m ~ grp, data = sim)
 
 summary (mod)
 
-sim %>%
+df_plot <- sim %>%
   group_by(grp) %>%
   summarize (Mean = mean (func_12m),
              Sd = sd (func_12m)) %>%
@@ -405,18 +484,23 @@ sim %>%
   xlab ("Group") +
   ylab ("Function 12m") +
   theme_cowplot()
+
+pdf ("../manuscript_bn/fig3.pdf", width = 6, height = 5)
+df_plot
+dev.off()
 ```
 
 ### What happens when func_1m was unchanged
 
 ```{r}
+set.seed (123)
 avg.mutilated = mutilated(avg, evidence = list(func_1m  = 0))
 strength.plot(avg.mutilated, boot)
 
 fitted.mutilated = bn.fit (avg.mutilated , df.bn, method = "mle")
 fitted.mutilated$func_1m = list(coef = c("(Intercept)" = 0), sd = 0)
 
-sim = cpdist(fit, nodes = c("grp", "func_12m"), n = 10^4,
+sim = cpdist(fitted.mutilated , nodes = c("grp", "func_12m"), n = 10^4,
                evidence = (TRUE))
 
 mod <- lm(func_12m ~ grp, data = sim)
@@ -439,27 +523,30 @@ mod <- lm(func_12m ~ pain_base, data = sim)
 
 summary (mod)
 
+pdf ("../manuscript_bn/fig4.pdf", width = 6, height = 5)
 sim %>%
   ggscatter(x = "pain_base", y = "func_12m", add = "reg.line") +
   stat_regline_equation(label.x = 3, label.y = 4)
-
+dev.off()
 ```
 
 ### What happens when dep_base was unchanged
 
 ```{r}
+set.seed (123)
 avg.mutilated = mutilated(avg, evidence = list(dep_base  = 0))
 strength.plot(avg.mutilated, boot)
 
 fitted.mutilated = bn.fit (avg.mutilated , df.bn, method = "mle")
 fitted.mutilated$dep_base = list(coef = c("(Intercept)" = 0), sd = 0)
 
-sim = cpdist(fit, nodes = c("pain_base", "func_12m"), n = 10^4,
+sim = cpdist(fitted.mutilated, nodes = c("pain_base", "func_12m"), n = 10^4,
                evidence = (TRUE))
 
 mod <- lm(func_12m ~ pain_base, data = sim)
 
 summary (mod)
+
 
 sim %>%
   ggscatter(x = "pain_base", y = "func_12m", add = "reg.line") +
@@ -480,35 +567,33 @@ mod <- lm(func_12m ~ severe_1m, data = sim)
 
 summary (mod)
 
+pdf ("../manuscript_bn/fig5.pdf", width = 6, height = 5)
+sim %>%
+  ggscatter(x = "severe_1m", y = "func_12m", add = "reg.line") +
+  stat_regline_equation(label.x = 3, label.y = 4)
+dev.off()
+```
+### What happens when 6 month function was unchanged
+
+```{r}
+set.seed (123)
+avg.mutilated = mutilated(avg, evidence = list(func_6m  = 0))
+strength.plot(avg.mutilated, boot)
+
+fitted.mutilated = bn.fit (avg.mutilated , df.bn, method = "mle")
+fitted.mutilated$func_6m = list(coef = c("(Intercept)" = 0), sd = 0)
+
+sim = cpdist(fitted.mutilated, nodes = c("severe_1m", "func_12m"), n = 10^4,
+               evidence = (TRUE))
+
+mod <- lm(func_12m ~ severe_1m, data = sim)
+
+summary (mod)
+
+
 sim %>%
   ggscatter(x = "severe_1m", y = "func_12m", add = "reg.line") +
   stat_regline_equation(label.x = 3, label.y = 4)
 
-```
 
-##  Influence of emg on function at 12 month
-
-```{r}
-set.seed (123)
-
-sim = cpdist(fit, nodes = c("emg", "func_12m"), n = 10^4,
-               evidence = (TRUE))
-
-mod <- lm(func_12m ~ emg, data = sim)
-
-summary (mod)
-
-sim %>%
-  group_by(emg) %>%
-  summarize (Mean = mean (func_12m),
-             Sd = sd (func_12m)) %>%
-  ggplot () +
-  geom_bar (aes (x = emg, y = Mean), stat = "identity") + 
-  scale_x_discrete(labels=c("1" = "Min", 
-                            "2" = "Mod",
-                            "3" = "Sev")) +
-  geom_errorbar(aes (x = emg, ymin = Mean - Sd, ymax = Mean + Sd), width = 0) + 
-  xlab ("EMG classification") +
-  ylab ("Function 12m") +
-  theme_cowplot()
 ```
