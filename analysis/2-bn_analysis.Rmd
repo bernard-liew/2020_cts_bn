@@ -166,7 +166,7 @@ df_plot <- df.bn %>%
   theme_cowplot()
 
 
-pdf ("../manuscript_bn/fig1.pdf", width = 10, height = 7)
+png ("../manuscript_bn/fig1.png", width = 10, height = 7, units = "in", res = 300)
 df_plot
 dev.off()
   
@@ -238,7 +238,7 @@ renderGraph(g)
 
 ```{r}
 
-pdf ("../manuscript_bn/fig2.pdf", width = 10, height = 7)
+png ("../manuscript_bn/fig2.png", width = 10, height = 7, units = "in", res = 300)
 Rgraphviz::renderGraph(g)
 dev.off()
 ```
@@ -485,7 +485,7 @@ df_plot <- sim %>%
   ylab ("Function 12m") +
   theme_cowplot()
 
-pdf ("../manuscript_bn/fig3.pdf", width = 6, height = 5)
+png ("../manuscript_bn/fig3.png", width = 6, height = 5, units = "in", res = 300)
 df_plot
 dev.off()
 ```
@@ -523,7 +523,7 @@ mod <- lm(func_12m ~ pain_base, data = sim)
 
 summary (mod)
 
-pdf ("../manuscript_bn/fig4.pdf", width = 6, height = 5)
+png ("../manuscript_bn/fig4.png", width = 6, height = 5, units = "in", res = 300)
 sim %>%
   ggscatter(x = "pain_base", y = "func_12m", add = "reg.line") +
   stat_regline_equation(label.x = 3, label.y = 4)
@@ -567,7 +567,7 @@ mod <- lm(func_12m ~ severe_1m, data = sim)
 
 summary (mod)
 
-pdf ("../manuscript_bn/fig5.pdf", width = 6, height = 5)
+png ("../manuscript_bn/fig5.png", width = 6, height = 5, units = "in", res = 300)
 sim %>%
   ggscatter(x = "severe_1m", y = "func_12m", add = "reg.line") +
   stat_regline_equation(label.x = 3, label.y = 4)
@@ -596,4 +596,36 @@ sim %>%
   stat_regline_equation(label.x = 3, label.y = 4)
 
 
+```
+
+##  Influence of EMG on function at 12 month
+
+```{r}
+set.seed (123)
+
+sim = cpdist(fit, nodes = c("emg", "func_12m"), n = 10^4,
+               evidence = (TRUE))
+
+mod <- lm(func_12m ~ emg, data = sim)
+
+summary (aov(mod))
+TukeyHSD(aov(mod))
+
+df_plot <- sim %>%
+  group_by(emg) %>%
+  summarize (Mean = mean (func_12m),
+             Sd = sd (func_12m)) %>%
+  ggplot () +
+  geom_bar (aes (x = emg, y = Mean), stat = "identity") + 
+  scale_x_discrete(labels=c("1" = "Mild", 
+                            "2" = "Moderate",
+                            "3" = "Severe")) +
+  geom_errorbar(aes (x = emg, ymin = Mean - Sd, ymax = Mean + Sd), width = 0) + 
+  xlab ("EMG classification") +
+  ylab ("Function 12m") +
+  theme_cowplot()
+
+png ("../manuscript_bn/fig6.png", width = 6, height = 5, units = "in", res = 300)
+df_plot
+dev.off()
 ```
