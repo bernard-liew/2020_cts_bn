@@ -405,7 +405,7 @@ div.tocify {
 
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
-<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 </button>
 </p>
 <div id="workflowr-report" class="collapse">
@@ -414,7 +414,7 @@ div.tocify {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -423,10 +423,10 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-04-14
+<strong>Last updated:</strong> 2021-06-28
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>2020_cts_bn/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
@@ -442,12 +442,12 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
 </div>
 </div>
 </div>
@@ -514,16 +514,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree5ff7ce66f745663091e8197aea394270437afb49targetblank5ff7ce6a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bernard-liew/2020_cts_bn/tree/5ff7ce66f745663091e8197aea394270437afb49" target="_blank">5ff7ce6</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree9fc23496e1bcf2ef6b7efd83f292b1b513f4aa42targetblank9fc2349a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bernard-liew/2020_cts_bn/tree/9fc23496e1bcf2ef6b7efd83f292b1b513f4aa42" target="_blank">9fc2349</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree5ff7ce66f745663091e8197aea394270437afb49targetblank5ff7ce6a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree9fc23496e1bcf2ef6b7efd83f292b1b513f4aa42targetblank9fc2349a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/bernard-liew/2020_cts_bn/tree/5ff7ce66f745663091e8197aea394270437afb49" target="_blank">5ff7ce6</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/bernard-liew/2020_cts_bn/tree/9fc23496e1bcf2ef6b7efd83f292b1b513f4aa42" target="_blank">9fc2349</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -532,9 +532,6 @@ Note that you need to be careful to ensure that all relevant files for the analy
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-
-Unstaged changes:
-    Modified:   analysis/2-bn_analysis.Rmd
 
 </code></pre>
 <p>
@@ -573,6 +570,108 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bernard-liew/2020_cts_bn/blob/9fc23496e1bcf2ef6b7efd83f292b1b513f4aa42/analysis/2-bn_analysis.Rmd" target="_blank">9fc2349</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2021-06-28
+</td>
+<td>
+Publish BN results
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bernard-liew/2020_cts_bn/blob/f439ba8a4ae08dbd12300dfd5250f55ac082add6/analysis/2-bn_analysis.Rmd" target="_blank">f439ba8</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2021-06-25
+</td>
+<td>
+changed graph and added emg.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bernard-liew/2020_cts_bn/blob/53feb1cd2f677eff3075a2b7cbf497a1cef58ddb/analysis/2-bn_analysis.Rmd" target="_blank">53feb1c</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2021-06-23
+</td>
+<td>
+added bayesian networks analysis
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bernard-liew/2020_cts_bn/blob/c7e5ff7fbfba8c073795b3740d30e1549a89a139/analysis/2-bn_analysis.Rmd" target="_blank">c7e5ff7</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2021-04-29
+</td>
+<td>
+added reporting of analysis
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bernard-liew/2020_cts_bn/blob/278a36b6020406ccaa7cc51928583954fefbc0b4/analysis/2-bn_analysis.Rmd" target="_blank">278a36b</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2021-04-14
+</td>
+<td>
+added bn viewer
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/bernard-liew/2020_cts_bn/278a36b6020406ccaa7cc51928583954fefbc0b4/docs/2-bn_analysis.html" target="_blank">278a36b</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2021-04-14
+</td>
+<td>
+added bn viewer
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -690,7 +789,10 @@ initial analysis
 <pre class="r"><code>rm (list = ls())
 # Helper
 library (tidyverse)
-
+library (cowplot)
+library (ggpubr)
+library (flextable)
+library (officer)
 # BN
 library (bnlearn)
 
@@ -702,16 +804,25 @@ library (doParallel)
 
 # Plot
 library (Rgraphviz)
-library (bnviewer)</code></pre>
+library (bnviewer)
+
+# Helper
+return_marginal &lt;- function (x) {
+  
+  x &lt;-  x[-1, , drop = FALSE]
+  x &lt;- apply (x, 1, mean)
+  
+  return (x)
+}</code></pre>
 </div>
-<div id="import-data" class="section level3">
-<h3>Import data</h3>
+</div>
+<div id="import-data" class="section level1">
+<h1>Import data</h1>
 <pre class="r"><code>dat &lt;- readRDS (&quot;output/dat.RDS&quot;)
 
 load (&quot;output/bn_data.RData&quot;)</code></pre>
-</div>
-<div id="collapse-variables" class="section level3">
-<h3>Collapse variables</h3>
+<div id="collapse-variables" class="section level2">
+<h2>Collapse variables</h2>
 <pre class="r"><code>dat &lt;- dat %&gt;%
   mutate (ppt_medn_base = (ppt_medn_aff_base + ppt_medn_naff_base)/2,
           ppt_uln_base = (ppt_uln_aff_base + ppt_uln_naff_base)/2,
@@ -720,14 +831,13 @@ load (&quot;output/bn_data.RData&quot;)</code></pre>
           ppt_cts_base = (ppt_cts_aff_base + ppt_cts_naff_base)/2,
           ppt_ta_base = (ppt_ta_aff_base + ppt_ta_naff_base)/2) %&gt;%
   select (-c(ppt_medn_aff_base:ppt_ta_naff_base)) </code></pre>
-</div>
 <div id="bn-analysis" class="section level3">
 <h3>BN analysis</h3>
 <div id="create-blacklist" class="section level4">
 <h4>Create blacklist</h4>
 <pre class="r"><code>var.excl &lt;- c(grep (&quot;groc&quot;, names (dat), value = TRUE) ,
               grep (&quot;mean&quot;, names (dat), value = TRUE),
-              #grep (&quot;base&quot;, names (dat), value = TRUE), 
+              grep (&quot;ppt&quot;, names (dat), value = TRUE), 
               #&quot;age&quot;, 
               #&quot;pain_years&quot;, 
               #&quot;pain_extent&quot;, 
@@ -748,7 +858,7 @@ names (df.bn)[grepl (&quot;worst&quot;, names (df.bn))] &lt;- str_remove (names 
 df.bn$grp &lt;- factor (df.bn$grp)
 
 rx.var &lt;- &quot;grp&quot;
-demo.var = grep(&quot;age|duration|emg&quot;, colnames (df.bn), value = TRUE)
+demo.var = grep(&quot;age|duration|emg|area&quot;, colnames (df.bn), value = TRUE)
 base.var = grep(&quot;_base&quot;, colnames (df.bn), value = TRUE)
 mth1.var = grep(&quot;_1m&quot;, colnames (df.bn), value = TRUE)
 mth3.var = grep(&quot;_3m&quot;, colnames (df.bn), value = TRUE)
@@ -777,6 +887,41 @@ bl &lt;- anti_join(pair_var, tiers_keep, by = &quot;rowname&quot;)  %&gt;%
   filter (from != to) %&gt;%
   select (from, to)</code></pre>
 </div>
+</div>
+</div>
+<div id="explore" class="section level2">
+<h2>Explore</h2>
+<pre class="r"><code>df.bn.num &lt;- df.bn %&gt;%
+  select_if(is.numeric)
+
+M &lt;- cor(df.bn.num)
+corrplot::corrplot(M, method = &quot;circle&quot;)</code></pre>
+<p><img src="figure/2-bn_analysis.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="descriptive" class="section level2">
+<h2>Descriptive</h2>
+<pre class="r"><code>ord &lt;- names (df.bn) [!grepl (&quot;emg&quot;, names (df.bn))]
+df_plot &lt;- df.bn %&gt;% 
+  select (-emg) %&gt;%
+  pivot_longer(cols = -grp,
+               names_to = &quot;var&quot;,
+               values_to = &quot;val&quot;) %&gt;%
+  mutate (var = factor (var, levels = ord )) %&gt;%
+  group_by(grp, var) %&gt;%
+  summarize (Mean = mean (val),
+             Sd = sd (val)) %&gt;%
+  ggplot () +
+  geom_point (aes (x = grp, y = Mean), stat = &quot;identity&quot;) + 
+  geom_errorbar(aes (x = grp, ymin = Mean - Sd, ymax = Mean + Sd), width = 0) + 
+  scale_x_discrete(labels=c(&quot;1&quot; = &quot;MT&quot;, 
+                          &quot;2&quot; = &quot;Surgery&quot;)) +
+  xlab (&quot;Group&quot;) +
+  ylab (&quot;Scores&quot;) +
+  facet_wrap(~ var, ncol = 4, scales = &quot;free&quot;) + 
+  theme_cowplot()</code></pre>
+<pre><code>`summarise()` regrouping output by &#39;grp&#39; (override with `.groups` argument)</code></pre>
+<pre class="r"><code>df_plot</code></pre>
+<p><img src="figure/2-bn_analysis.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 <div id="build-the-final-model-using-model-averaging" class="section level4">
 <h4>Build the final model using model averaging</h4>
 <pre class="r"><code>set.seed (123)
@@ -787,12 +932,46 @@ boot &lt;- boot.strength(df.bn,
 </div>
 <div id="get-averaged-model" class="section level4">
 <h4>Get averaged model</h4>
-<p>“Underneath” the model is a complex mathematical relationship between each variables.The figure is meant to illustrate a complex model simply. Interpretation of a Bayesian Network model should be natural, the arrows reflect the direction of relationship. Example, <code>grp</code> influences <code>cts_func_12m</code> partly by <code>cts_func_1m</code> and partly directly. The thickness of the arrows reflect how common one would expect to find such a relationship should many separate experiments be collected. Whether the arrows reflect causal relationships really depend if we think these variables represent an exhaustive list of plausible biological causes. In this case, I do not think we can say it is causal, but we can certainly understand a complex relationship driving recovery.</p>
 <pre class="r"><code>avg &lt;-  averaged.network(boot, threshold = 0.5)
 fit &lt;-  bn.fit (avg, df.bn, method = &quot;mle&quot;)
 g &lt;- strength.plot(avg, boot, shape = &quot;ellipse&quot;, render = FALSE)
-graph::nodeRenderInfo(g) = list(fontsize=18)</code></pre>
-<pre class="r"><code>#Rgraphviz::renderGraph(g)</code></pre>
+graph::nodeRenderInfo(g) = list(fontsize=14)
+
+# Make color
+
+
+arc_col &lt;- data.frame(arcs = names (edgeRenderInfo(g)$col)) %&gt;%
+  separate(arcs, c(&quot;parent&quot;, &quot;child&quot;), sep = &quot;~&quot;)
+
+coef_fit &lt;- coef(fit) %&gt;%
+  map_if (is.vector, ~.x[!grepl(&quot;Intercept&quot;, names (.x))]) %&gt;%
+  map_if (is.matrix, return_marginal)  %&gt;%
+  unlist ()
+
+coef_fit &lt;- data.frame(arcs = names (coef_fit), coefs = coef_fit) %&gt;%
+  separate(arcs, c (&quot;child&quot;, &quot;parent&quot;), sep = &quot;[.]&quot;) 
+
+new_col &lt;- arc_col %&gt;%
+  left_join(coef_fit, by = c(&quot;parent&quot;, &quot;child&quot;)) %&gt;%
+  mutate (coefs = replace_na(coefs,88)) %&gt;%
+  mutate (col = ifelse (coefs &lt; 0, &quot;red&quot;, 
+                        ifelse (coefs == 88, &quot;black&quot;, &quot;blue&quot;))) 
+
+new_arc_col &lt;- new_col$col
+names (new_arc_col) &lt;-   names (edgeRenderInfo(g)$col)
+
+nodeRenderInfo(g)$fill[base.var] = &quot;cyan&quot;
+nodeRenderInfo(g)$fill[demo.var] = &quot;cornsilk&quot;
+nodeRenderInfo(g)$fill[mth1.var] = &quot;tan1&quot;
+nodeRenderInfo(g)$fill[mth3.var] = &quot;gold&quot;
+nodeRenderInfo(g)$fill[mth6.var] = &quot;yellow&quot;
+nodeRenderInfo(g)$fill[outcome.var] = &quot;tomato&quot;
+edgeRenderInfo(g)$col &lt;- new_arc_col
+graph::nodeRenderInfo(g) = list(fontsize=14)
+
+
+renderGraph(g)</code></pre>
+<p><img src="figure/2-bn_analysis.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>viewer(avg,
        bayesianNetwork.width = &quot;100%&quot;,
        bayesianNetwork.height = &quot;80vh&quot;,
@@ -802,18 +981,16 @@ graph::nodeRenderInfo(g) = list(fontsize=18)</code></pre>
        bayesianNetwork.footer = &quot;Fig. 1 - Layout with Sugiyama&quot;
 )</code></pre>
 <div id="htmlwidget-f4e6b8a9f367a9d7473d" style="width:100%;height:80vh;" class="visNetwork html-widget"></div>
-<script type="application/json" data-for="htmlwidget-f4e6b8a9f367a9d7473d">{"x":{"nodes":{"id":["grp","area","age","emg","duration","pain_base","func_base","severe_base","dep_base","pain_1m","func_1m","severe_1m","pain_3m","func_3m","severe_3m","pain_6m","func_6m","severe_6m","pain_12m","func_12m","severe_12m","medn_base","uln_base","radn_base","neck_base","ct_base","ta_base"],"label":[" grp"," area"," age"," emg"," duration"," pain_base"," func_base"," severe_base"," dep_base"," pain_1m"," func_1m"," severe_1m"," pain_3m"," func_3m"," severe_3m"," pain_6m"," func_6m"," severe_6m"," pain_12m"," func_12m"," severe_12m"," medn_base"," uln_base"," radn_base"," neck_base"," ct_base"," ta_base"],"x":[-0.625,0.125,0.875,0,1,-1,-0.625,-1,-0.5625,-0.875,-0.9375,-0.75,-0.6875,-0.8125,-0.4375,-0.8125,-0.8125,-0.6875,-0.9375,-0.0625,-0.625,0.5,0.25,0.5,0.375,0.625,0.6875],"y":[-1,-1,-1,-1,-1,-1,-0.75,-0.5,-0.5,-0.5,-0.75,-1,-0.25,0,0.25,0.75,0.25,0.5,1,0.5,0.75,-1,-0.75,-0.75,-0.5,-0.75,-0.5]},"edges":{"from":["grp","grp","grp","age","emg","pain_base","pain_base","func_base","func_base","dep_base","pain_1m","func_1m","func_1m","func_1m","severe_1m","severe_1m","severe_1m","pain_3m","pain_3m","pain_3m","func_3m","func_3m","severe_3m","pain_6m","func_6m","func_6m","func_6m","func_6m","func_6m","severe_6m","severe_6m","medn_base","medn_base","medn_base","medn_base","medn_base","uln_base","radn_base","radn_base","ct_base"],"to":["func_1m","severe_3m","func_12m","ta_base","func_12m","func_base","severe_base","severe_base","dep_base","pain_3m","pain_3m","pain_1m","pain_3m","func_3m","pain_1m","func_1m","severe_3m","func_3m","severe_3m","pain_6m","severe_3m","func_6m","severe_6m","pain_12m","pain_6m","severe_6m","pain_12m","func_12m","severe_12m","pain_6m","severe_12m","uln_base","radn_base","neck_base","ct_base","ta_base","neck_base","neck_base","ta_base","ta_base"],"smooth":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"dashes":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"width":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"font.size":[18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18],"font.color":["black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black"],"shadow":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot","physics":false},"manipulation":{"enabled":false},"edges":{"arrows":"to","smooth":false},"physics":{"stabilization":false}},"groups":null,"width":"100%","height":"80vh","idselection":{"enabled":false,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":{"text":"Bayesian Network of CTS recovery","style":"font-family:Georgia, Times New Roman, Times, serif;font-weight:bold;font-size:20px;text-align:center;"},"submain":{"text":"","style":"font-family:Georgia, Times New Roman, Times, serif;font-size:12px;text-align:center;"},"footer":{"text":"Fig. 1 - Layout with Sugiyama","style":"font-family:Georgia, Times New Roman, Times, serif;font-size:12px;text-align:center;"},"background":null,"iconsRedraw":true,"highlight":{"enabled":true,"hoverNearest":false,"degree":1,"algorithm":"all","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":false,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"},"igraphlayout":{"type":"square"}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-f4e6b8a9f367a9d7473d">{"x":{"nodes":{"id":["grp","area","age","emg","duration","pain_base","func_base","severe_base","dep_base","pain_1m","func_1m","severe_1m","pain_3m","func_3m","severe_3m","pain_6m","func_6m","severe_6m","pain_12m","func_12m","severe_12m"],"label":[" grp"," area"," age"," emg"," duration"," pain_base"," func_base"," severe_base"," dep_base"," pain_1m"," func_1m"," severe_1m"," pain_3m"," func_3m"," severe_3m"," pain_6m"," func_6m"," severe_6m"," pain_12m"," func_12m"," severe_12m"],"x":[-0.454545454545455,0.636363636363636,0.818181818181818,0.454545454545455,1,-1,-0.454545454545455,-1,-0.363636363636364,-0.818181818181818,-0.909090909090909,-0.636363636363636,-0.545454545454545,-0.727272727272727,-0.181818181818182,-0.727272727272727,-0.727272727272727,-0.545454545454545,-0.909090909090909,0.363636363636364,-0.454545454545455],"y":[-1,-1,-1,-1,-1,-1,-0.75,-0.5,-0.5,-0.5,-0.75,-1,-0.25,0,0.25,0.75,0.25,0.5,1,0.5,0.75]},"edges":{"from":["grp","grp","grp","emg","pain_base","pain_base","func_base","func_base","dep_base","pain_1m","func_1m","func_1m","func_1m","severe_1m","severe_1m","severe_1m","pain_3m","pain_3m","pain_3m","func_3m","func_3m","severe_3m","pain_6m","func_6m","func_6m","func_6m","func_6m","func_6m","severe_6m","severe_6m"],"to":["func_1m","severe_3m","func_12m","func_12m","func_base","severe_base","severe_base","dep_base","pain_3m","pain_3m","pain_1m","pain_3m","func_3m","pain_1m","func_1m","severe_3m","func_3m","severe_3m","pain_6m","severe_3m","func_6m","severe_6m","pain_12m","pain_6m","severe_6m","pain_12m","func_12m","severe_12m","pain_6m","severe_12m"],"smooth":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"dashes":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],"width":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"font.size":[18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18],"font.color":["black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black","black"],"shadow":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot","physics":false},"manipulation":{"enabled":false},"edges":{"arrows":"to","smooth":false},"physics":{"stabilization":false}},"groups":null,"width":"100%","height":"80vh","idselection":{"enabled":false,"style":"width: 150px; height: 26px","useLabels":true,"main":"Select by id"},"byselection":{"enabled":false,"style":"width: 150px; height: 26px","multiple":false,"hideColor":"rgba(200,200,200,0.5)","highlight":false},"main":{"text":"Bayesian Network of CTS recovery","style":"font-family:Georgia, Times New Roman, Times, serif;font-weight:bold;font-size:20px;text-align:center;"},"submain":{"text":"","style":"font-family:Georgia, Times New Roman, Times, serif;font-size:12px;text-align:center;"},"footer":{"text":"Fig. 1 - Layout with Sugiyama","style":"font-family:Georgia, Times New Roman, Times, serif;font-size:12px;text-align:center;"},"background":null,"iconsRedraw":true,"highlight":{"enabled":true,"hoverNearest":false,"degree":1,"algorithm":"all","hideColor":"rgba(200,200,200,0.5)","labelOnly":true},"collapse":{"enabled":false,"fit":false,"resetHighlight":true,"clusterOptions":null,"keepCoord":true,"labelSuffix":"(cluster)"},"igraphlayout":{"type":"square"}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="performance-evaluation-using-nested-cross-validation." class="section level4">
 <h4>Performance evaluation using nested cross validation.</h4>
-<p>Not run yet.</p>
 <p>Inner is bootstrap resampling for model averaging. Outer is bootstrap resampling k = 25 for performance evaluation.</p>
-<pre class="r"><code>set.seed (1256)
+<pre class="r"><code>set.seed (1245)
 
 flds &lt;- createFolds(1:nrow(df.bn), 
                             k = 10, returnTrain = TRUE)
 n_boot = 200
-doParallel::registerDoParallel(7)
 
 corr.df.list &lt;- list()
 
@@ -822,7 +999,7 @@ for (k in seq_along(flds)) {
   train &lt;-  df.bn [flds[[k]], ] %&gt;% as.data.frame()
   test &lt;- df.bn [-flds[[k]], ] %&gt;% as.data.frame()
   
-  doParallel::registerDoParallel(7)
+  
   ############
   
   boot2 &lt;- boot.strength(train,
@@ -858,22 +1035,286 @@ corr.df &lt;- bind_cols (corr.df.list) %&gt;%
   apply (1, mean)
 
 names (corr.df) &lt;- num.var</code></pre>
-<pre class="r"><code>corr.df</code></pre>
-<pre><code>       area         age    duration   pain_base   func_base severe_base 
- 0.06639855 -0.10427296  0.03138296  0.21201146  0.45468078  0.49379270 
-   dep_base     pain_1m     func_1m   severe_1m     pain_3m     func_3m 
- 0.33910836  0.68501290  0.79584542  0.57758982  0.78845325  0.69547839 
-  severe_3m     pain_6m     func_6m   severe_6m    pain_12m    func_12m 
- 0.79161182  0.70549565  0.85728936  0.79530070  0.64397620  0.80991103 
- severe_12m   medn_base    uln_base   radn_base   neck_base     ct_base 
- 0.67490796  0.76113173  0.58105758  0.74690423  0.70459492  0.68785777 
-    ta_base 
- 0.75301214 </code></pre>
+<pre class="r"><code>corr.df </code></pre>
+<pre><code>    area          age     duration    pain_base    func_base  severe_base </code></pre>
+<p>-0.235157623 -0.113856083 -0.004330285 0.283785575 0.475795256 0.466466429 dep_base pain_1m func_1m severe_1m pain_3m func_3m 0.450060619 0.652991599 0.782958596 0.657706145 0.789390969 0.790054248 severe_3m pain_6m func_6m severe_6m pain_12m func_12m 0.767440792 0.699536765 0.857330034 0.735874875 0.661973256 0.793320821 severe_12m 0.677909444</p>
 </div>
 </div>
+</div>
+<div id="correlation-performance-table" class="section level1">
+<h1>Correlation performance table</h1>
 </div>
 <div id="save-data" class="section level1">
 <h1>Save data</h1>
+</div>
+<div id="report" class="section level1">
+<h1>Report</h1>
+<div id="influence-on-group-on-function-at-12-month" class="section level2">
+<h2>Influence on group on function at 12 month</h2>
+<pre class="r"><code>set.seed (123)
+
+sim = cpdist(fit, nodes = c(&quot;grp&quot;, &quot;func_12m&quot;), n = 10^4,
+               evidence = (TRUE))
+
+mod &lt;- lm(func_12m ~ grp, data = sim)
+
+summary (mod)</code></pre>
+<pre><code>
+Call:
+lm(formula = func_12m ~ grp, data = sim)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.0900 -0.3526 -0.0100  0.3507  2.0499 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 1.439107   0.007442 193.389   &lt;2e-16 ***
+grp2        0.089763   0.010634   8.441   &lt;2e-16 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.5316 on 9998 degrees of freedom
+Multiple R-squared:  0.007076,  Adjusted R-squared:  0.006977 
+F-statistic: 71.25 on 1 and 9998 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>df_plot &lt;- sim %&gt;%
+  group_by(grp) %&gt;%
+  summarize (Mean = mean (func_12m),
+             Sd = sd (func_12m)) %&gt;%
+  ggplot () +
+  geom_bar (aes (x = grp, y = Mean), stat = &quot;identity&quot;) + 
+  scale_x_discrete(labels=c(&quot;1&quot; = &quot;MT&quot;, 
+                            &quot;2&quot; = &quot;Surgery&quot;)) +
+  geom_errorbar(aes (x = grp, ymin = Mean - Sd, ymax = Mean + Sd), width = 0) + 
+  xlab (&quot;Group&quot;) +
+  ylab (&quot;Function 12m&quot;) +
+  theme_cowplot()</code></pre>
+<pre><code>`summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre class="r"><code>df_plot</code></pre>
+<p><img src="figure/2-bn_analysis.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="what-happens-when-func_1m-was-unchanged" class="section level3">
+<h3>What happens when func_1m was unchanged</h3>
+<pre class="r"><code>set.seed (123)
+avg.mutilated = mutilated(avg, evidence = list(func_1m  = 0))
+#strength.plot(avg.mutilated, boot)
+
+fitted.mutilated = bn.fit (avg.mutilated , df.bn, method = &quot;mle&quot;)
+fitted.mutilated$func_1m = list(coef = c(&quot;(Intercept)&quot; = 0), sd = 0)
+
+sim = cpdist(fitted.mutilated , nodes = c(&quot;grp&quot;, &quot;func_12m&quot;), n = 10^4,
+               evidence = (TRUE))
+
+mod &lt;- lm(func_12m ~ grp, data = sim)
+
+summary (mod)</code></pre>
+<pre><code>
+Call:
+lm(formula = func_12m ~ grp, data = sim)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.10634 -0.34455 -0.00336  0.34088  1.93805 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 1.073754   0.007228 148.557  &lt; 2e-16 ***
+grp2        0.034930   0.010329   3.382 0.000723 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.5163 on 9998 degrees of freedom
+Multiple R-squared:  0.001143,  Adjusted R-squared:  0.001043 
+F-statistic: 11.44 on 1 and 9998 DF,  p-value: 0.0007228</code></pre>
+</div>
+</div>
+<div id="influence-on-baseline-pain-on-function-at-12-month" class="section level2">
+<h2>Influence on baseline pain on function at 12 month</h2>
+<pre class="r"><code>set.seed (123)
+
+sim = cpdist(fit, nodes = c(&quot;pain_base&quot;, &quot;func_12m&quot;), n = 10^4,
+               evidence = (TRUE))
+
+mod &lt;- lm(func_12m ~ pain_base, data = sim)
+
+summary (mod)</code></pre>
+<pre><code>
+Call:
+lm(formula = func_12m ~ pain_base, data = sim)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.12508 -0.35562 -0.00966  0.34814  2.10990 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 1.428436   0.023457  60.896   &lt;2e-16 ***
+pain_base   0.007811   0.003266   2.392   0.0168 *  
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.5333 on 9998 degrees of freedom
+Multiple R-squared:  0.0005717, Adjusted R-squared:  0.0004718 
+F-statistic: 5.719 on 1 and 9998 DF,  p-value: 0.0168</code></pre>
+<pre class="r"><code>sim %&gt;%
+  ggscatter(x = &quot;pain_base&quot;, y = &quot;func_12m&quot;, add = &quot;reg.line&quot;) +
+  stat_regline_equation(label.x = 3, label.y = 4)</code></pre>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="figure/2-bn_analysis.Rmd/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="what-happens-when-dep_base-was-unchanged" class="section level3">
+<h3>What happens when dep_base was unchanged</h3>
+<pre class="r"><code>set.seed (123)
+avg.mutilated = mutilated(avg, evidence = list(dep_base  = 0))
+#strength.plot(avg.mutilated, boot)
+
+fitted.mutilated = bn.fit (avg.mutilated , df.bn, method = &quot;mle&quot;)
+fitted.mutilated$dep_base = list(coef = c(&quot;(Intercept)&quot; = 0), sd = 0)
+
+sim = cpdist(fitted.mutilated, nodes = c(&quot;pain_base&quot;, &quot;func_12m&quot;), n = 10^4,
+               evidence = (TRUE))
+
+mod &lt;- lm(func_12m ~ pain_base, data = sim)
+
+summary (mod)</code></pre>
+<pre><code>
+Call:
+lm(formula = func_12m ~ pain_base, data = sim)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.16542 -0.35020 -0.00913  0.34734  2.07557 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 1.390981   0.023364  59.535   &lt;2e-16 ***
+pain_base   0.004212   0.003253   1.295    0.195    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.5312 on 9998 degrees of freedom
+Multiple R-squared:  0.0001676, Adjusted R-squared:  6.764e-05 
+F-statistic: 1.676 on 1 and 9998 DF,  p-value: 0.1954</code></pre>
+<pre class="r"><code>sim %&gt;%
+  ggscatter(x = &quot;pain_base&quot;, y = &quot;func_12m&quot;, add = &quot;reg.line&quot;) +
+  stat_regline_equation(label.x = 3, label.y = 4)</code></pre>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="figure/2-bn_analysis.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="influence-on-severity-at-1month-on-function-at-12-month" class="section level2">
+<h2>Influence on severity at 1month on function at 12 month</h2>
+<pre class="r"><code>set.seed (123)
+
+sim = cpdist(fit, nodes = c(&quot;severe_1m&quot;, &quot;func_12m&quot;), n = 10^4,
+               evidence = (TRUE))
+
+mod &lt;- lm(func_12m ~ severe_1m, data = sim)
+
+summary (mod)</code></pre>
+<pre><code>
+Call:
+lm(formula = func_12m ~ severe_1m, data = sim)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.09772 -0.35035 -0.01204  0.34508  2.01013 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  1.23048    0.01812   67.92   &lt;2e-16 ***
+severe_1m    0.14791    0.01015   14.57   &lt;2e-16 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.5279 on 9998 degrees of freedom
+Multiple R-squared:  0.02081,   Adjusted R-squared:  0.02071 
+F-statistic: 212.4 on 1 and 9998 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>sim %&gt;%
+  ggscatter(x = &quot;severe_1m&quot;, y = &quot;func_12m&quot;, add = &quot;reg.line&quot;) +
+  stat_regline_equation(label.x = 3, label.y = 4)</code></pre>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="figure/2-bn_analysis.Rmd/unnamed-chunk-22-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="what-happens-when-6-month-function-was-unchanged" class="section level3">
+<h3>What happens when 6 month function was unchanged</h3>
+<pre class="r"><code>set.seed (123)
+avg.mutilated = mutilated(avg, evidence = list(func_6m  = 0))
+#strength.plot(avg.mutilated, boot)
+
+fitted.mutilated = bn.fit (avg.mutilated , df.bn, method = &quot;mle&quot;)
+fitted.mutilated$func_6m = list(coef = c(&quot;(Intercept)&quot; = 0), sd = 0)
+
+sim = cpdist(fitted.mutilated, nodes = c(&quot;severe_1m&quot;, &quot;func_12m&quot;), n = 10^4,
+               evidence = (TRUE))
+
+mod &lt;- lm(func_12m ~ severe_1m, data = sim)
+
+summary (mod)</code></pre>
+<pre><code>
+Call:
+lm(formula = func_12m ~ severe_1m, data = sim)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.00982 -0.28169 -0.08793  0.17133  2.07530 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  0.221260   0.014436  15.327   &lt;2e-16 ***
+severe_1m   -0.006393   0.008087  -0.791    0.429    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.4207 on 9998 degrees of freedom
+Multiple R-squared:  6.252e-05, Adjusted R-squared:  -3.75e-05 
+F-statistic: 0.6251 on 1 and 9998 DF,  p-value: 0.4292</code></pre>
+<pre class="r"><code>sim %&gt;%
+  ggscatter(x = &quot;severe_1m&quot;, y = &quot;func_12m&quot;, add = &quot;reg.line&quot;) +
+  stat_regline_equation(label.x = 3, label.y = 4)</code></pre>
+<pre><code>`geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="figure/2-bn_analysis.Rmd/unnamed-chunk-24-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="influence-of-emg-on-function-at-12-month" class="section level2">
+<h2>Influence of EMG on function at 12 month</h2>
+<pre class="r"><code>set.seed (123)
+
+sim = cpdist(fit, nodes = c(&quot;emg&quot;, &quot;func_12m&quot;), n = 10^4,
+               evidence = (TRUE))
+
+mod &lt;- lm(func_12m ~ emg, data = sim)
+
+summary (aov(mod))</code></pre>
+<pre><code>              Df Sum Sq Mean Sq F value Pr(&gt;F)    
+emg            2   39.8  19.887   70.86 &lt;2e-16 ***
+Residuals   9997 2805.6   0.281                   
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>TukeyHSD(aov(mod))</code></pre>
+<pre><code>  Tukey multiple comparisons of means
+    95% family-wise confidence level
+
+Fit: aov(formula = mod)
+
+$emg
+           diff         lwr         upr   p adj
+2-1  0.13702213  0.10517451  0.16886975 0.00000
+3-1  0.01896211 -0.01501423  0.05293846 0.39058
+3-2 -0.11806001 -0.14676984 -0.08935018 0.00000</code></pre>
+<pre class="r"><code>df_plot &lt;- sim %&gt;%
+  group_by(emg) %&gt;%
+  summarize (Mean = mean (func_12m),
+             Sd = sd (func_12m)) %&gt;%
+  ggplot () +
+  geom_bar (aes (x = emg, y = Mean), stat = &quot;identity&quot;) + 
+  scale_x_discrete(labels=c(&quot;1&quot; = &quot;Mild&quot;, 
+                            &quot;2&quot; = &quot;Moderate&quot;,
+                            &quot;3&quot; = &quot;Severe&quot;)) +
+  geom_errorbar(aes (x = emg, ymin = Mean - Sd, ymax = Mean + Sd), width = 0) + 
+  xlab (&quot;EMG classification&quot;) +
+  ylab (&quot;Function 12m&quot;) +
+  theme_cowplot()</code></pre>
+<pre><code>`summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre class="r"><code>df_plot</code></pre>
+<p><img src="figure/2-bn_analysis.Rmd/unnamed-chunk-25-1.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -884,7 +1325,7 @@ names (corr.df) &lt;- num.var</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 4.0.2 (2020-06-22)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
-Running under: Windows 10 x64 (build 18363)
+Running under: Windows 10 x64 (build 19041)
 
 Matrix products: default
 
@@ -903,39 +1344,47 @@ other attached packages:
  [1] bnviewer_0.1.6      Rgraphviz_2.34.0    graph_1.68.0       
  [4] BiocGenerics_0.36.0 doParallel_1.0.16   iterators_1.0.13   
  [7] foreach_1.5.1       caret_6.0-86        lattice_0.20-41    
-[10] bnlearn_4.6.1       forcats_0.5.0       stringr_1.4.0      
-[13] dplyr_1.0.2         purrr_0.3.4         readr_1.4.0        
-[16] tidyr_1.1.2         tibble_3.0.4        ggplot2_3.3.3      
-[19] tidyverse_1.3.0    
+[10] bnlearn_4.6.1       officer_0.3.16      flextable_0.6.1    
+[13] ggpubr_0.4.0        cowplot_1.1.1       forcats_0.5.0      
+[16] stringr_1.4.0       dplyr_1.0.2         purrr_0.3.4        
+[19] readr_1.4.0         tidyr_1.1.2         tibble_3.0.4       
+[22] ggplot2_3.3.3       tidyverse_1.3.0    
 
 loaded via a namespace (and not attached):
- [1] nlme_3.1-151         fs_1.5.0             lubridate_1.7.9.2   
- [4] httr_1.4.2           rprojroot_2.0.2      tools_4.0.2         
- [7] backports_1.2.1      R6_2.5.0             rpart_4.1-15        
-[10] DBI_1.1.0            colorspace_2.0-0     nnet_7.3-14         
-[13] withr_2.3.0          tidyselect_1.1.0     compiler_4.0.2      
-[16] git2r_0.27.1         cli_2.2.0            rvest_0.3.6         
-[19] xml2_1.3.2           scales_1.1.1         digest_0.6.27       
-[22] rmarkdown_2.6        pkgconfig_2.0.3      htmltools_0.5.0     
-[25] dbplyr_2.0.0         htmlwidgets_1.5.3    rlang_0.4.10        
-[28] readxl_1.3.1         rstudioapi_0.13      visNetwork_2.0.9    
-[31] generics_0.1.0       jsonlite_1.7.2       ModelMetrics_1.2.2.2
-[34] magrittr_2.0.1       Matrix_1.2-18        Rcpp_1.0.6          
-[37] munsell_0.5.0        fansi_0.4.1          lifecycle_0.2.0     
-[40] stringi_1.5.3        whisker_0.4          pROC_1.16.2         
-[43] yaml_2.2.1           MASS_7.3-53          plyr_1.8.6          
-[46] recipes_0.1.15       promises_1.1.1       crayon_1.3.4        
-[49] haven_2.3.1          splines_4.0.2        hms_0.5.3           
-[52] knitr_1.30           pillar_1.4.7         igraph_1.2.6        
-[55] reshape2_1.4.4       codetools_0.2-18     stats4_4.0.2        
-[58] reprex_0.3.0         glue_1.4.2           evaluate_0.14       
-[61] data.table_1.14.0    modelr_0.1.8         vctrs_0.3.6         
-[64] httpuv_1.5.4         cellranger_1.1.0     gtable_0.3.0        
-[67] assertthat_0.2.1     xfun_0.20            gower_0.2.2         
-[70] prodlim_2019.11.13   broom_0.7.4.9000     later_1.1.0.1       
-[73] class_7.3-17         survival_3.2-7       timeDate_3043.102   
-[76] workflowr_1.6.2      lava_1.6.8.1         ellipsis_0.3.1      
-[79] ipred_0.9-9         </code></pre>
+ [1] colorspace_2.0-0     ggsignif_0.6.0       ellipsis_0.3.1      
+ [4] class_7.3-17         rio_0.5.16           rprojroot_2.0.2     
+ [7] base64enc_0.1-3      fs_1.5.0             rstudioapi_0.13     
+[10] farver_2.0.3         prodlim_2019.11.13   fansi_0.4.1         
+[13] lubridate_1.7.9.2    xml2_1.3.2           codetools_0.2-18    
+[16] splines_4.0.2        knitr_1.30           polynom_1.4-0       
+[19] jsonlite_1.7.2       workflowr_1.6.2      pROC_1.16.2         
+[22] broom_0.7.4.9000     dbplyr_2.0.0         compiler_4.0.2      
+[25] httr_1.4.2           backports_1.2.1      assertthat_0.2.1    
+[28] Matrix_1.2-18        cli_2.2.0            later_1.1.0.1       
+[31] visNetwork_2.0.9     htmltools_0.5.0      tools_4.0.2         
+[34] igraph_1.2.6         gtable_0.3.0         glue_1.4.2          
+[37] reshape2_1.4.4       Rcpp_1.0.6           carData_3.0-4       
+[40] cellranger_1.1.0     vctrs_0.3.6          nlme_3.1-151        
+[43] timeDate_3043.102    xfun_0.20            gower_0.2.2         
+[46] ps_1.5.0             openxlsx_4.2.3       rvest_0.3.6         
+[49] lifecycle_0.2.0      rstatix_0.6.0        MASS_7.3-53         
+[52] scales_1.1.1         ipred_0.9-9          hms_0.5.3           
+[55] promises_1.1.1       yaml_2.2.1           curl_4.3            
+[58] gdtools_0.2.3        rpart_4.1-15         stringi_1.5.3       
+[61] corrplot_0.84        zip_2.1.1            lava_1.6.8.1        
+[64] rlang_0.4.10         pkgconfig_2.0.3      systemfonts_0.3.2   
+[67] evaluate_0.14        htmlwidgets_1.5.3    labeling_0.4.2      
+[70] recipes_0.1.15       tidyselect_1.1.0     plyr_1.8.6          
+[73] magrittr_2.0.1       R6_2.5.0             generics_0.1.0      
+[76] DBI_1.1.0            mgcv_1.8-33          pillar_1.4.7        
+[79] haven_2.3.1          whisker_0.4          foreign_0.8-81      
+[82] withr_2.3.0          survival_3.2-7       abind_1.4-5         
+[85] nnet_7.3-14          modelr_0.1.8         crayon_1.3.4        
+[88] car_3.0-10           uuid_0.1-4           rmarkdown_2.6       
+[91] readxl_1.3.1         data.table_1.14.0    git2r_0.27.1        
+[94] ModelMetrics_1.2.2.2 reprex_0.3.0         digest_0.6.27       
+[97] httpuv_1.5.4         stats4_4.0.2         munsell_0.5.0       </code></pre>
+</div>
 </div>
 </div>
 
