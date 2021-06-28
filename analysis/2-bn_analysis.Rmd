@@ -141,9 +141,9 @@ M <- cor(df.bn.num)
 corrplot::corrplot(M, method = "circle")
 ```
 
-## Discriptive
+## Descriptive
 
-```{r}
+```{r fig.height=15}
 
 ord <- names (df.bn) [!grepl ("emg", names (df.bn))]
 df_plot <- df.bn %>% 
@@ -165,11 +165,14 @@ df_plot <- df.bn %>%
   facet_wrap(~ var, ncol = 4, scales = "free") + 
   theme_cowplot()
 
+df_plot
 
+```
+
+```{r, eval = FALSE, include = FALSE}
 png ("../manuscript_bn/fig1.png", width = 10, height = 7, units = "in", res = 300)
 df_plot
 dev.off()
-  
 ```
 
 
@@ -187,8 +190,6 @@ boot <- boot.strength(df.bn,
 ```
 
 #### Get averaged model
-
-"Underneath" the model is a complex mathematical relationship between each variables.The figure is meant to illustrate a complex model simply. Interpretation of a Bayesian Network model should be natural, the arrows reflect the direction of relationship. Example, `grp` influences `cts_func_12m` partly by `cts_func_1m` and partly directly. The thickness of the arrows reflect how common one would expect to find such a relationship should many separate experiments be collected. Whether the arrows reflect causal relationships really depend if we think these variables represent an exhaustive list of plausible biological causes. In this case, I do not think we can say it is causal, but we can certainly understand a complex relationship driving recovery.
 
 ```{r}
 
@@ -236,7 +237,7 @@ renderGraph(g)
 ```
 
 
-```{r}
+```{r, eval = FALSE, include = FALSE}
 
 png ("../manuscript_bn/fig2.png", width = 10, height = 7, units = "in", res = 300)
 Rgraphviz::renderGraph(g)
@@ -256,7 +257,6 @@ viewer(avg,
 
 
 #### Performance evaluation using nested cross validation. 
-Not run yet.
 
 Inner is bootstrap resampling for model averaging. 
 Outer is bootstrap resampling k = 25 for performance evaluation.
@@ -315,13 +315,13 @@ names (corr.df) <- num.var
 
 ```
 
-```{r}
-corr.df
+```{r, results = "asis"}
+corr.df 
 ```
 
 # Correlation performance table
 
-```{r}
+```{r, eval = FALSE, include = FALSE}
 
 corr.df_ord <- corr.df[grepl ("pain|func|severe", names (corr.df))] 
 correlation <- data.frame(Variable = names (corr.df_ord),
@@ -485,6 +485,10 @@ df_plot <- sim %>%
   ylab ("Function 12m") +
   theme_cowplot()
 
+df_plot
+```
+
+```{r, eval = FALSE, include = FALSE}
 png ("../manuscript_bn/fig3.png", width = 6, height = 5, units = "in", res = 300)
 df_plot
 dev.off()
@@ -495,7 +499,7 @@ dev.off()
 ```{r}
 set.seed (123)
 avg.mutilated = mutilated(avg, evidence = list(func_1m  = 0))
-strength.plot(avg.mutilated, boot)
+#strength.plot(avg.mutilated, boot)
 
 fitted.mutilated = bn.fit (avg.mutilated , df.bn, method = "mle")
 fitted.mutilated$func_1m = list(coef = c("(Intercept)" = 0), sd = 0)
@@ -523,6 +527,14 @@ mod <- lm(func_12m ~ pain_base, data = sim)
 
 summary (mod)
 
+
+sim %>%
+  ggscatter(x = "pain_base", y = "func_12m", add = "reg.line") +
+  stat_regline_equation(label.x = 3, label.y = 4)
+
+```
+
+```{r, eval = FALSE, include = FALSE}
 png ("../manuscript_bn/fig4.png", width = 6, height = 5, units = "in", res = 300)
 sim %>%
   ggscatter(x = "pain_base", y = "func_12m", add = "reg.line") +
@@ -530,12 +542,13 @@ sim %>%
 dev.off()
 ```
 
+
 ### What happens when dep_base was unchanged
 
 ```{r}
 set.seed (123)
 avg.mutilated = mutilated(avg, evidence = list(dep_base  = 0))
-strength.plot(avg.mutilated, boot)
+#strength.plot(avg.mutilated, boot)
 
 fitted.mutilated = bn.fit (avg.mutilated , df.bn, method = "mle")
 fitted.mutilated$dep_base = list(coef = c("(Intercept)" = 0), sd = 0)
@@ -567,18 +580,27 @@ mod <- lm(func_12m ~ severe_1m, data = sim)
 
 summary (mod)
 
+
+sim %>%
+  ggscatter(x = "severe_1m", y = "func_12m", add = "reg.line") +
+  stat_regline_equation(label.x = 3, label.y = 4)
+
+```
+
+```{r, eval = FALSE, include = FALSE}
 png ("../manuscript_bn/fig5.png", width = 6, height = 5, units = "in", res = 300)
 sim %>%
   ggscatter(x = "severe_1m", y = "func_12m", add = "reg.line") +
   stat_regline_equation(label.x = 3, label.y = 4)
 dev.off()
 ```
+
 ### What happens when 6 month function was unchanged
 
 ```{r}
 set.seed (123)
 avg.mutilated = mutilated(avg, evidence = list(func_6m  = 0))
-strength.plot(avg.mutilated, boot)
+#strength.plot(avg.mutilated, boot)
 
 fitted.mutilated = bn.fit (avg.mutilated , df.bn, method = "mle")
 fitted.mutilated$func_6m = list(coef = c("(Intercept)" = 0), sd = 0)
@@ -625,7 +647,12 @@ df_plot <- sim %>%
   ylab ("Function 12m") +
   theme_cowplot()
 
+df_plot
+```
+
+```{r, eval = FALSE, include = FALSE}
 png ("../manuscript_bn/fig6.png", width = 6, height = 5, units = "in", res = 300)
 df_plot
 dev.off()
 ```
+
