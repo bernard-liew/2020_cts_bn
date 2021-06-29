@@ -52,7 +52,7 @@ return_marginal <- function (x) {
 
 dat <- readRDS ("output/dat.RDS")
 
-load ("output/bn_data.RData")
+load ("output/bn_data2.RData")
 
 ```
 
@@ -126,6 +126,8 @@ tiers_keep <- pair_var %>%
 
 bl <- anti_join(pair_var, tiers_keep, by = "rowname")  %>%
   filter (from != to) %>%
+  filter (!(grepl ("_12m", from) &
+          grepl ("_12m", to))) %>%
   select (from, to)
 
 
@@ -363,100 +365,10 @@ save(avg,
      corr.df, 
      df.bn, 
      fit,
-     file = "output/bn_data.RData")
+     file = "output/bn_data2.RData")
 
 ```
 
-
-```{r, eval = FALSE, include = FALSE}
-
-# Alternative BN modelling with change scores
-
-
-var.excl <- c(grep ("groc", names (dat), value = TRUE) ,
-              grep ("mean", names (dat), value = TRUE),
-              grep ("ppt", names (dat), value = TRUE), 
-              #"age", 
-              #"pain_years", 
-              #"pain_extent", 
-              "aff_side" 
-              #"emg"
-)
-dat2 = as.data.frame (dat)[, !names (dat) %in% var.excl] %>%
-  na.omit()
-
-dat3 <- dat2 %>%
-  mutate (dpain_1 = (worst_pain_1m - worst_pain_base)/1,
-          dpain_3 = (worst_pain_3m - worst_pain_base)/3,
-          dpain_6 = (worst_pain_6m - worst_pain_base)/6,
-          dpain_12 = (worst_pain_12m - worst_pain_base)/12,
-          dfunc_1 = (cts_func_1m - cts_func_base)/1,
-          dfunc_3 = (cts_func_3m - cts_func_base)/3,
-          dfunc_6 = (cts_func_6m - cts_func_base)/6,
-          dfunc_12 = (cts_func_12m - cts_func_base)/12,
-          dsevere_1 = (cts_severe_1m - cts_severe_base)/1,
-          dsevere_3 = (cts_severe_3m - cts_severe_base)/3,
-          dsevere_6 = (cts_severe_6m - cts_severe_base)/6,
-          dsevere_12 = (cts_severe_12m - cts_severe_base)/12,
-          .keep = "unused")
-
-dat3 <- dat3 %>%
-  pivot_longer(cols = matches ("dpain|dfunc|dsevere"),
-               names_to = c(".value", "time"),
-               names_pattern = "(\\D+)_(.*)") %>%
-  mutate (time = as.numeric (time)) %>%
-  rename (
-          area = pain_extent,
-          duration = pain_years,
-          dep = dep_base
-          )
-
-
-df.bn <- dat3 %>%
-  mutate (grp = factor (grp))
-
-df.bn2 <- df.bn %>%
-  mutate_all (as.numeric)
-
-rx.var <- "grp"
-demo.var = grep("area|age|emg|duration", colnames (df.bn), value = TRUE)
-time.var = grep("time", colnames (df.bn), value = TRUE)
-fup.var =  grep("dsevere|dfunc|dpain", colnames (df.bn), value = TRUE)
-
-
-pair_var <- expand.grid(from = names (df.bn),
-                        to = names (df.bn)) %>%
-  rownames_to_column()
-
-
-tiers_keep <- pair_var %>%
-  filter (!(grepl (paste0(c(rx.var, time.var), collapse = "|"),to))) %>%
-  filter (!(grepl (paste0(fup.var, collapse = "|"), from) &
-              grepl (paste0(demo.var, collapse = "|"),to))) %>%
-  filter (!(grepl (paste0(time.var, collapse = "|"), from) &
-              grepl (paste0(demo.var, collapse = "|"),to))) %>%
-  filter (!(grepl (paste0(rx.var, collapse = "|"), from) &
-              grepl (paste0(demo.var, collapse = "|"),to))) 
-
-bl <- anti_join(pair_var, tiers_keep, by = "rowname")  %>%
-  filter (from != to) %>%
-  select (from, to)
-
-
-set.seed (123)
-boot <- boot.strength(df.bn,
-                      R = 200,
-                      algorithm = "hc",
-                      algorithm.args = list (blacklist = bl))
-
-
-avg <-  averaged.network(boot, threshold = 0.5)
-fit <-  bn.fit (avg, df.bn2)
-g <- strength.plot(avg, boot, shape = "ellipse", render = FALSE)
-graph::nodeRenderInfo(g) = list(fontsize=18)
-renderGraph(g)
-
-```
 
 # Report
 
