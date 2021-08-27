@@ -19,7 +19,21 @@ library (cowplot)
 library (ggpubr)
 library (flextable)
 library (officer)
+# Parallel
+library (doParallel)
 
+# BN
+library (bnlearn)
+library (Rgraphviz)
+
+# BN to SEM conversion
+library (bnpa)
+
+#SEM
+library (lavaan)
+library (semPlot)
+library (nonnest2)
+library (semTools)
 ```
 
 # Load data
@@ -28,5 +42,225 @@ library (officer)
 df <- rio::import("data/Tension Type Headache Database.sav")
 
 skim (df)
+```
+
+
+# Tidy data
+
+https://psu-psychology.github.io/psy-597-SEM/09_model_comparison/model_comparison.html
+
+```{r}
+names (df) <- tolower (names(df))
+
+df <- map_df(df, function(x) {attributes(x) <- NULL;x})
+
+# Remove high missing
+df <- df %>% 
+  purrr::discard(~sum(is.na(.x))/length(.x)* 100 >=40)
+
+rm_vars <- c("trpsactive",
+             "trpslatent",
+             "general_health",
+             "vitality",
+             "social_function",
+             "emorional_role",
+             "mental_health",
+             "physical_function",
+             "phyusical_role",
+             grep ("udp", names (df), value = TRUE))
+  
+df2 <- df %>%
+  mutate (ppt_cx = (udp_c5c6_right + udp_c5c6_left)/2,
+          ppt_hx = (udp_temporal_right + udp_temporal_left)/2,
+          ppt_rm = (udp_iimeta_right + udp_iimeta_left + udp_tibial_right + udp_tibial_left )/4) %>%
+  dplyr::select (-all_of (rm_vars )) 
+
+new_names <- c("sex",
+               "age",
+               "years",
+               "hxPain",
+               "hxTime",
+               "hxFreq",
+               "trps",
+               "hdi_E",
+               "hdi_P",
+               "bodyP",
+               "sleep",
+               "dep",
+               "anx",
+               "ppt_cx",
+               "ppt_hx",
+               "ppt_rm")
+
+names (df2) <- new_names
+
+df2$sex <- factor (df2$sex)
+#df2$sex <- df2$sex -1
+```
+
+# Impute
+```{r}
+dat_imp <- mice::mice(df2)
+
+df3 <- complete(dat_imp) %>%
+  mutate_if(is.numeric, scale, center = TRUE, scale = TRUE)
+
+df3$sex <- as.numeric (df3$sex) - 1
+```
+
+
+# Structural equations model
+
+## Formula
+
+
+```{r}
+
+sem_form1 <- "
+
+  # paths
+  anx ~ bodyP + sleep + years
+  dep ~ anx
+  ppt_cx + ppt_hx + ppt_rm ~ trps + sex + age 
+  hxTime + hxFreq + hxPain ~ dep + ppt_cx + ppt_hx + ppt_rm
+  hdi_E + hdi_P ~ hxTime + hxFreq + hxPain + dep
+  
+  # # orthogonal factors
+  # sex ~~ 0*age
+  # trps ~~ 0*age
+  # trps ~~ 0*sex
+  # sleep ~~0*years
+
+  # # Variances and covariances
+  # 
+  # ppt_cx ~~ ppt_hx
+  # hxTime ~~ hxFreq
+  # hxTime ~~ hxPain
+  # hxPain~~ hxFreq
+  # bodyP ~~ sleep + years + trps + sex + age
+  # sleep ~~ trps 
+  
+"
+
+m1 <- sem (sem_form1, data = df3, conditional.x = FALSE)
+summary (m1)
+
+semPaths (m1, 
+          what = "est", 
+          layout = "tree2", 
+          curvePivot = TRUE, 
+          residuals = FALSE,
+          intercept = TRUE)
+fitMeasures(m1, fit.measures = c("rmsea", "pvalue", "cfi", "tli", "aic", "bic"))
+```
+
+# Bayesian networks
+
+## Create blacklist
+
+```{r}
+
+df.bn <- as.data.frame (df3) %>%
+  mutate (sex = factor (sex))
+
+demo.var = grep("age|sex|years", colnames (df.bn), value = TRUE)
+others.var = setdiff (names(df.bn), demo.var)
+
+pair_var <- expand.grid(from = names (df.bn),
+                        to = names (df.bn)) %>%
+  rownames_to_column()
+
+tiers_keep <- pair_var %>%
+  filter (!(grepl (paste0(demo.var, collapse = "|"),to))) 
+
+bl <- anti_join(pair_var, tiers_keep, by = "rowname")  %>%
+  filter (from != to) %>%
+  select (-rowname)%>%
+  mutate_all(as.character)
+
+```
+
+## Analysis
+
+```{r}
+n_boot <- 200
+
+set.seed (20200420)
+
+boot <- boot.strength(df.bn,
+                      R = n_boot,
+                      algorithm = "hc",
+                      algorithm.args = list (blacklist = bl))
+```
+
+## Plot
+
+### Set threshold
+
+```{r}
+set_thres <- 0.5 # try 0.5, 0.6, 0.7. 0.8, the higher to one the sparser the model
+
+avg <-  averaged.network(boot, threshold = set_thres)
+fit <-  bn.fit (avg, df.bn, method = "mle")
+
+
+g = strength.plot(avg, 
+                  boot, 
+                  shape = "rectangle",
+                  main = "Figure")
+
+graph::nodeRenderInfo(g) = list(fontsize=32)
+renderGraph(g)
+```
+
+
+## BN to SEM 
+
+### Method 1
+
+```{r}
+sem_form2 <- gera.pa.model(fit, df.bn)
+
+m2 <- lavaan::sem (sem_form2, data = df3, conditional.x = FALSE)
+summary (m2)
+
+semPaths (m2, what = "est", layout = "tree2", curvePivot = TRUE,  intercept = TRUE)
+fitMeasures(m2, fit.measures = c("rmsea", "pvalue", "cfi", "tli", "aic", "bic"))
+```
+
+
+### Method 2
+
+My method
+
+```{r}
+
+fits <- as.lm (avg, df.bn)
+fit.form <- map (fits, formula)
+fit.form <- fit.form[!grepl ("~ 1", fit.form)]
+
+sem_form3 <- map_chr (fit.form, deparse)
+
+m3 <- lavaan::sem (sem_form3, data = df3, conditional.x = FALSE)
+summary (m3)
+
+
+semPaths (m3, what = "est", layout = "tree2", curvePivot = TRUE,  intercept = TRUE, residuals = FALSE)
+fitMeasures(m3, fit.measures = c("rmsea", "pvalue", "cfi", "tli", "aic", "bic"))
+
+
+```
+
+
+# Compare
+
+```{r}
+vuongtest(m1, m2, adj = "bic")
+icci(m1, m2)
+
+
+fitMeasures(m1, fit.measures = c("rmsea", "pvalue", "cfi", "tli", "aic", "bic"))
+fitMeasures(m2, fit.measures = c("rmsea", "pvalue", "cfi", "tli", "aic", "bic"))
+
 ```
 
