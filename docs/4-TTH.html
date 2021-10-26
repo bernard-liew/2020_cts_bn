@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="bernard-liew" />
+
+<meta name="date" content="2021-06-23" />
+
+<title>4-TTH</title>
+
+<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">2020_cts_bn</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">4-TTH</h1>
+<h4 class="author">bernard-liew</h4>
+<h4 class="date">2021-06-23</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2021-10-26
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>2020_cts_bn/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20200907code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20200907)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20200907code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20200907)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree5ed8520bcc1b05ecf5cd92ecbaea7c2cfe0050f9targetblank5ed8520a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bernard-liew/2020_cts_bn/tree/5ed8520bcc1b05ecf5cd92ecbaea7c2cfe0050f9" target="_blank">5ed8520</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree5ed8520bcc1b05ecf5cd92ecbaea7c2cfe0050f9targetblank5ed8520a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/bernard-liew/2020_cts_bn/tree/5ed8520bcc1b05ecf5cd92ecbaea7c2cfe0050f9" target="_blank">5ed8520</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+
+Unstaged changes:
+    Modified:   output/res.RDS
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/4-TTH.Rmd</code>) and HTML (<code>docs/4-TTH.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bernard-liew/2020_cts_bn/blob/5ed8520bcc1b05ecf5cd92ecbaea7c2cfe0050f9/analysis/4-TTH.Rmd" target="_blank">5ed8520</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2021-10-26
+</td>
+<td>
+Publish SEM-BN analysis
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bernard-liew/2020_cts_bn/blob/7c12715d239eefdd203372d29a2730333562d271/analysis/4-TTH.Rmd" target="_blank">7c12715</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2021-08-27
+</td>
+<td>
+updated bn 2 sem code
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bernard-liew/2020_cts_bn/blob/77fcb3a5eae08ad4e71e752584000f5d6b61240f/analysis/4-TTH.Rmd" target="_blank">77fcb3a</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2021-06-23
+</td>
+<td>
+added tth data analysis
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="load-package" class="section level1">
+<h1>Load package</h1>
+<pre class="r"><code>rm (list = ls())
+# Helper
+library (tidyverse)
+library (skimr)
+library (flextable)
+library (officer)
+library (arsenal)
+library (kableExtra)
+
+# Parallel
+library (doParallel)
+
+# BN
+library (bnlearn)
+library (Rgraphviz)
+
+# BN to SEM conversion
+library (bnpa)
+
+#SEM
+library (lavaan)
+library (semPlot)
+library (nonnest2)
+library (semTools)</code></pre>
+</div>
+<div id="load-data" class="section level1">
+<h1>Load data</h1>
+<pre class="r"><code>#df &lt;- rio::import(&quot;data/Tension Type Headache Database.sav&quot;)
+res &lt;- readRDS(&quot;output/res.RDS&quot;)
+list2env(res,globalenv())</code></pre>
+<pre><code>&lt;environment: R_GlobalEnv&gt;</code></pre>
+<pre class="r"><code>#skim (df)</code></pre>
+</div>
+<div id="tidy-data" class="section level1">
+<h1>Tidy data</h1>
+<p><a href="https://psu-psychology.github.io/psy-597-SEM/09_model_comparison/model_comparison.html" class="uri">https://psu-psychology.github.io/psy-597-SEM/09_model_comparison/model_comparison.html</a></p>
+<pre class="r"><code>names (df) &lt;- tolower (names(df))
+
+df &lt;- map_df(df, function(x) {attributes(x) &lt;- NULL;x})
+
+# Remove high missing
+df &lt;- df %&gt;% 
+  purrr::discard(~sum(is.na(.x))/length(.x)* 100 &gt;=40)
+
+rm_vars &lt;- c(&quot;trpsactive&quot;,
+             &quot;trpslatent&quot;,
+             &quot;general_health&quot;,
+             &quot;vitality&quot;,
+             &quot;social_function&quot;,
+             &quot;emorional_role&quot;,
+             &quot;mental_health&quot;,
+             &quot;physical_function&quot;,
+             &quot;phyusical_role&quot;,
+             &quot;bodily_pain&quot;,
+             grep (&quot;udp&quot;, names (df), value = TRUE))
+  
+df2 &lt;- df %&gt;%
+  mutate (ppt_cx = (udp_c5c6_right + udp_c5c6_left)/2,
+          ppt_hx = (udp_temporal_right + udp_temporal_left)/2,
+          ppt_rm = (udp_iimeta_right + udp_iimeta_left + udp_tibial_right + udp_tibial_left )/4) %&gt;%
+  dplyr::select (-all_of (rm_vars )) 
+
+new_names &lt;- c(&quot;Sex&quot;,
+               &quot;Age&quot;,
+               &quot;YearsP&quot;,
+               &quot;HInten&quot;,
+               &quot;HDura&quot;,
+               &quot;HFreq&quot;,
+               &quot;TrPs&quot;,
+               &quot;HDI_E&quot;,
+               &quot;HDI_P&quot;,
+               &quot;Sleep&quot;,
+               &quot;Dep&quot;,
+               &quot;Anx&quot;,
+               &quot;PPTcx&quot;,
+               &quot;PPThx&quot;,
+               &quot;PPTrm&quot;)
+
+names (df2) &lt;- new_names
+
+df2$Sex &lt;- factor (df2$Sex)
+#df2$sex &lt;- df2$sex -1</code></pre>
+</div>
+<div id="descriptives" class="section level1">
+<h1>Descriptives</h1>
+<pre class="r"><code>meanNsd_transform &lt;- function (x) {
+
+  m &lt;- round (x[[1]][1], 2)
+  s &lt;- round (x[[1]][2], 2)
+
+  m_s &lt;- paste0(m, &quot;(&quot;, s, &quot;)&quot;)
+
+  return (m_s)
+}
+
+tab1 &lt;- tableby ( ~. , data = df2, digits = 2, digits.p = 2) %&gt;%
+  as.data.frame() %&gt;%
+  filter (!term %in% c(&quot;Nmiss&quot;, &quot;range&quot;)) %&gt;%
+  select (-c(group.term:term, variable.type, Total)) 
+
+
+tab2 &lt;-  tab1[-c (1, seq (4, 34, 2)),]
+tab2$label &lt;- c(&quot;Sex-Male&quot;, &quot;Sex-Female&quot;, &quot;Age(years)&quot;, &quot;Years with headache&quot;, 
+                &quot;Headache intensity&quot;, &quot;Headache duration (hrs)&quot;, &quot;Headache frequency&quot;,
+                &quot;Trigger points&quot;, &quot;HDI-emotion&quot;, &quot;HDI- physical&quot;, 
+                &quot;Sleep&quot;, &quot;Depressive symptoms&quot;, &quot;Anxiety symptoms&quot;,
+                &quot;PPT-cervical&quot;, &quot;PPT-head&quot;, &quot;PPT-remote&quot;)
+
+for(row in 1:nrow(tab2)) {
+    tab2[row, 2] &lt;- meanNsd_transform (tab2[row, 2])
+  }
+
+
+colnames (tab2) &lt;- c (&quot;Variables&quot;, 
+                      &quot;Summary value&quot;)
+
+my_path &lt;- paste0(&quot;../manuscript_tth/table_2&quot;, 
+                  &quot;baseline&quot;,
+                  &quot;.docx&quot;)
+
+ft &lt;- flextable(tab2) %&gt;%
+  set_caption(caption = &quot; Table 2.Baseline descriptive characteristics of cohort&quot;) %&gt;%
+  autofit() 
+
+my_doc &lt;- read_docx()  %&gt;% 
+  body_add_flextable(ft)
+
+print (my_doc, target = my_path)</code></pre>
+<pre class="r"><code>tab2 %&gt;%
+  kbl() %&gt;%
+  kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+Variables
+</th>
+<th style="text-align:left;">
+Summary value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:left;">
+Sex-Male
+</td>
+<td style="text-align:left;">
+59(28.37)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:left;">
+Sex-Female
+</td>
+<td style="text-align:left;">
+149(71.63)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+5
+</td>
+<td style="text-align:left;">
+Age(years)
+</td>
+<td style="text-align:left;">
+44.72(14.37)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+7
+</td>
+<td style="text-align:left;">
+Years with headache
+</td>
+<td style="text-align:left;">
+10.34(11.25)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+9
+</td>
+<td style="text-align:left;">
+Headache intensity
+</td>
+<td style="text-align:left;">
+6.1(2.65)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+11
+</td>
+<td style="text-align:left;">
+Headache duration (hrs)
+</td>
+<td style="text-align:left;">
+7.41(4.35)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+13
+</td>
+<td style="text-align:left;">
+Headache frequency
+</td>
+<td style="text-align:left;">
+16.82(9.45)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+15
+</td>
+<td style="text-align:left;">
+Trigger points
+</td>
+<td style="text-align:left;">
+6.15(3.69)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+17
+</td>
+<td style="text-align:left;">
+HDI-emotion
+</td>
+<td style="text-align:left;">
+19.07(13.24)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+19
+</td>
+<td style="text-align:left;">
+HDI- physical
+</td>
+<td style="text-align:left;">
+22.8(12.26)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+21
+</td>
+<td style="text-align:left;">
+Sleep
+</td>
+<td style="text-align:left;">
+8.01(4.39)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+23
+</td>
+<td style="text-align:left;">
+Depressive symptoms
+</td>
+<td style="text-align:left;">
+7.92(4.45)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+25
+</td>
+<td style="text-align:left;">
+Anxiety symptoms
+</td>
+<td style="text-align:left;">
+9.91(4.66)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+27
+</td>
+<td style="text-align:left;">
+PPT-cervical
+</td>
+<td style="text-align:left;">
+227.91(136.61)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+29
+</td>
+<td style="text-align:left;">
+PPT-head
+</td>
+<td style="text-align:left;">
+213.32(94.46)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+31
+</td>
+<td style="text-align:left;">
+PPT-remote
+</td>
+<td style="text-align:left;">
+341.13(151.74)
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="impute" class="section level1">
+<h1>Impute</h1>
+<pre class="r"><code>dat_imp &lt;- mice::mice(df2, seed = 155)
+
+df3 &lt;- complete(dat_imp) %&gt;%
+  mutate_if(is.numeric, scale, center = TRUE, scale = TRUE)
+
+df3$sex &lt;- as.numeric (df3$sex) - 1</code></pre>
+</div>
+<div id="structural-equations-model" class="section level1">
+<h1>Structural equations model</h1>
+<pre class="r"><code>sem_form1 &lt;- &quot;
+  # paths
+  Anx ~  YearsP + Sex
+  Dep ~ Anx
+  TrPs ~ YearsP + Sex + Anx
+  PPTcx + PPThx + PPTrm ~  TrPs + Dep
+  HDura + HFreq + HInten ~ PPTcx + PPThx + PPTrm + Age 
+  Sleep ~ HDura + HFreq + HInten 
+  HDI_E + HDI_P ~ HDura + HFreq + HInten + Sleep
+&quot;
+
+
+m1 &lt;- sem (sem_form1, data = df3, conditional.x = FALSE)
+summary (m1)
+
+
+rm_cov &lt;- summary (m1)$PE %&gt;%
+  filter (op == &quot;~~&quot;) %&gt;%
+  filter (!is.na(pvalue)) %&gt;%
+  filter (lhs != rhs)
+
+if (nrow (rm_cov) &gt;= 1) {
+  rm_cov &lt;- paste0(rm_cov$lhs, 
+                 rm_cov$op, 
+                 paste0(&quot;0*&quot;, rm_cov$rhs))
+  sem_form1 &lt;- c(sem_form1,
+               rm_cov)
+  
+}
+
+m1 &lt;- sem (sem_form1, data = df3, conditional.x = FALSE)
+m1_2 &lt;- sem (sem_form1, data = df3, conditional.x = FALSE, se =  &quot;boot&quot;,
+             bootstrap = 1000)
+
+param1 &lt;- parameterEstimates (m1_2,
+                              se = TRUE,
+                              zstat = TRUE,
+                              pvalue = TRUE,
+                              ci = TRUE,
+                              level = 0.95,
+                              boot.ci.type = &quot;perc&quot;)
+#summary (m1)</code></pre>
+<pre class="r"><code>semPaths (m1, 
+          what = &quot;path&quot;, 
+          layout = &quot;tree3&quot;, 
+          curvePivot = TRUE, 
+          residuals = FALSE,
+          intercept = TRUE,
+          fixedStyle = c(adjustcolor( &quot;white&quot;, alpha.f = 0), 0),
+          rotation = 2,
+          curve = TRUE,
+          freeStyle = c(&quot;black&quot;, 1))</code></pre>
+<p><img src="figure/4-TTH.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="report" class="section level2">
+<h2>Report</h2>
+<pre class="r"><code># Export lavaan table
+param_ex &lt;- param1 %&gt;%
+  filter (op == &quot;~&quot;) %&gt;%
+  rename (DV = lhs,
+          IV = rhs,
+          Coef = est,
+          SE = se,
+          `2.5%CI` = ci.lower,
+          `97.5%CI` = ci.upper) %&gt;%
+  mutate_if (is.numeric, round, 3) %&gt;%
+  select ( DV, IV, Coef, SE, `2.5%CI`, `97.5%CI`, pvalue, - c(op, z))
+
+astx &lt;- ifelse(param_ex$pvalue &lt; 0.05, &quot;*&quot;, &quot;&quot;)
+
+# Export figure
+
+png (&quot;../manuscript_tth/fig1.png&quot;, height = 8, width = 15, units = &quot;in&quot;, res = 100)
+semPaths (m1, 
+          what = &quot;path&quot;, 
+          layout = &quot;tree3&quot;, 
+          whatLabels= &quot;no&quot;,
+          curve = TRUE,
+          fixedStyle = c(adjustcolor( &quot;white&quot;, alpha.f = 0), 0),
+          residuals = FALSE,
+          nCharNodes = 0,
+          intercept = TRUE,
+          edgeLabels = astx,
+          edge.label.cex = 1,
+          edge.label.position = 0.4,
+          # trans = FALSE,
+          # fade = FALSE,
+          freeStyle = c(&quot;black&quot;, 1),
+          rotation = 2)
+
+dev.off()
+
+# Export lavaan table
+param_ex &lt;- param_ex  %&gt;%
+  arrange (desc(abs (Coef)))
+
+
+my_path &lt;- paste0(&quot;../manuscript_tth/sm_table1&quot;, 
+                  &quot;theory&quot;,
+                  &quot;.docx&quot;)
+
+ft &lt;- flextable(param_ex) %&gt;%
+  set_caption(caption = &quot; Table 1.Parameter estimates for model theory&quot;) %&gt;%
+  autofit() 
+
+my_doc &lt;- read_docx()  %&gt;% 
+  body_add_flextable(ft)
+
+print (my_doc, target = my_path)</code></pre>
+</div>
+</div>
+<div id="bayesian-networks" class="section level1">
+<h1>Bayesian networks</h1>
+<div id="create-blacklist" class="section level2">
+<h2>Create blacklist</h2>
+<pre class="r"><code>df.bn &lt;- as.data.frame (df3) %&gt;%
+  mutate (Sex = factor (Sex))
+
+demo.var = grep(&quot;Age|Sex|YearsP&quot;, colnames (df.bn), value = TRUE)
+physiol.var = grep(&quot;PPT|TrPs&quot;, colnames (df.bn), value = TRUE)
+others.var = setdiff (names(df.bn), c(demo.var, physiol.var))
+
+pair_var &lt;- expand.grid(from = names (df.bn),
+                        to = names (df.bn)) %&gt;%
+  rownames_to_column()
+
+tiers_keep &lt;- pair_var %&gt;%
+  filter (!(grepl (paste0(demo.var, collapse = &quot;|&quot;),to))) %&gt;%
+  filter (! (grepl (paste0(others.var, collapse = &quot;|&quot;), from) &amp; 
+            grepl (paste0(physiol.var, collapse = &quot;|&quot;), to)))
+
+
+bl &lt;- anti_join(pair_var, tiers_keep, by = &quot;rowname&quot;)  %&gt;%
+  filter (from != to) %&gt;%
+  select (-rowname)%&gt;%
+  mutate_all(as.character)</code></pre>
+</div>
+<div id="analysis" class="section level2">
+<h2>Analysis</h2>
+<pre class="r"><code>n_boot &lt;- 1000
+
+set.seed (20200424)
+
+boot &lt;- boot.strength(df.bn,
+                      R = n_boot,
+                      algorithm = &quot;hc&quot;,
+                      algorithm.args = list (blacklist = bl))</code></pre>
+</div>
+<div id="set-threshold" class="section level2">
+<h2>Set threshold</h2>
+<pre class="r"><code>set_thres &lt;- seq (0.5, 0.8, 0.01) # try 0.5, 0.6, 0.7. 0.8, the higher to one the sparser the model
+
+avg_list &lt;- vector (&quot;list&quot;, length (set_thres))
+deg_list &lt;- vector (&quot;list&quot;, length (set_thres))
+
+for (n in seq_along(set_thres)) {
+  
+  avg_list[[n]] &lt;- averaged.network(boot, threshold = set_thres[n])
+  deg_list[[n]] &lt;- sum (map(bnlearn::nodes(avg_list[[n]]), bnlearn::degree, obj =  avg_list[[n]]) == 0)
+}
+
+deg &lt;- unlist (deg_list)
+
+thres &lt;- set_thres[tail(which(deg ==0),1)]
+thres</code></pre>
+<pre><code>[1] 0.71</code></pre>
+<pre class="r"><code>avg &lt;-  averaged.network(boot, threshold = thres)
+#avg &lt;- set.arc(avg, &quot;dep&quot;, &quot;hdi_E&quot;)
+fit &lt;-  bn.fit (avg, df.bn, method = &quot;mle&quot;)
+
+
+g = strength.plot(avg, 
+                  boot, 
+                  shape = &quot;rectangle&quot;,
+                  main = &quot;Figure&quot;)</code></pre>
+<p><img src="figure/4-TTH.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># graph::nodeRenderInfo(g) = list(fontsize=32)
+# renderGraph(g)</code></pre>
+</div>
+<div id="bn-to-sem" class="section level2">
+<h2>BN to SEM</h2>
+<div id="create-initial-model" class="section level3">
+<h3>Create initial model</h3>
+<pre class="r"><code>sem_form2 &lt;- gera.pa.model(fit, df.bn)</code></pre>
+<pre><code>
+Mounting a PA input model...</code></pre>
+<pre class="r"><code>m2 &lt;- lavaan::sem (sem_form2, data = df3, conditional.x = FALSE)</code></pre>
+</div>
+<div id="remove-covariance" class="section level3">
+<h3>Remove covariance</h3>
+<pre class="r"><code>rm_cov &lt;- summary (m2)$PE %&gt;%
+  filter (op == &quot;~~&quot;) %&gt;%
+  filter (!is.na(pvalue)) %&gt;%
+  filter (lhs != rhs)</code></pre>
+<pre><code>lavaan 0.6-9 ended normally after 34 iterations
+
+  Estimator                                         ML
+  Optimization method                           NLMINB
+  Number of model parameters                        36
+                                                      
+  Number of observations                           208
+                                                      
+Model Test User Model:
+                                                      
+  Test statistic                               209.951
+  Degrees of freedom                                74
+  P-value (Chi-square)                           0.000
+
+Parameter Estimates:
+
+  Standard errors                             Standard
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+  HInten ~                                            
+    Sleep     (c1)    0.230    0.067    3.461    0.001
+  HFreq ~                                             
+    HDura     (c2)    0.334    0.065    5.107    0.000
+  TrPs ~                                              
+    Age       (c3)   -0.303    0.066   -4.597    0.000
+    YearsP    (c4)    0.258    0.066    3.910    0.000
+  HDI_E ~                                             
+    Age       (c5)   -0.205    0.056   -3.652    0.000
+    HFreq     (c6)    0.285    0.056    5.095    0.000
+    Dep       (c7)    0.462    0.056    8.255    0.000
+  HDI_P ~                                             
+    TrPs      (c8)    0.158    0.036    4.343    0.000
+    HDI_E     (c9)    0.773    0.037   20.896    0.000
+    PPTcx    (c10)   -0.201    0.037   -5.452    0.000
+  Sleep ~                                             
+    HDI_E    (c11)    0.232    0.067    3.479    0.001
+    Dep      (c12)    0.379    0.066    5.728    0.000
+  Dep ~                                               
+    PPTcx    (c13)   -0.398    0.064   -6.258    0.000
+  Anx ~                                               
+    TrPs     (c14)   -0.210    0.067   -3.129    0.002
+  PPTcx ~                                             
+    Sex      (c15)   -0.849    0.142   -5.994    0.000
+  PPThx ~                                             
+    PPTcx    (c16)    0.804    0.041   19.532    0.000
+  PPTrm ~                                             
+    Sex      (c17)   -0.445    0.084   -5.308    0.000
+    PPTcx    (c18)    0.292    0.061    4.817    0.000
+    PPThx    (c19)    0.508    0.059    8.628    0.000
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+ .HInten ~~                                           
+   .HDI_P             0.014    0.035    0.411    0.681
+   .Anx               0.086    0.065    1.326    0.185
+   .PPTrm             0.052    0.034    1.514    0.130
+ .HDI_P ~~                                            
+   .Anx              -0.046    0.035   -1.300    0.194
+   .PPTrm             0.022    0.019    1.196    0.232
+ .Anx ~~                                              
+   .PPTrm             0.033    0.034    0.976    0.329
+
+Variances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+   .HInten            0.930    0.091   10.198    0.000
+   .HFreq             0.884    0.087   10.198    0.000
+   .TrPs              0.867    0.085   10.198    0.000
+   .HDI_E             0.649    0.064   10.198    0.000
+   .HDI_P             0.274    0.027   10.198    0.000
+   .Sleep             0.713    0.070   10.198    0.000
+   .Dep               0.837    0.082   10.198    0.000
+   .Anx               0.943    0.093   10.198    0.000
+   .PPTcx             0.849    0.083   10.198    0.000
+   .PPThx             0.351    0.034   10.198    0.000
+   .PPTrm             0.259    0.025   10.198    0.000</code></pre>
+<pre class="r"><code>if (nrow (rm_cov) &gt;= 1) {
+  rm_cov &lt;- paste0(rm_cov$lhs, 
+                 rm_cov$op, 
+                 paste0(&quot;0*&quot;, rm_cov$rhs))
+  
+}
+
+fits &lt;- as.lm (avg, df.bn)</code></pre>
+<pre><code>Warning in model.response(mf, &quot;numeric&quot;): using type = &quot;numeric&quot; with a factor
+response will be ignored</code></pre>
+<pre><code>Warning in Ops.factor(y, z$residuals): &#39;-&#39; not meaningful for factors</code></pre>
+<pre class="r"><code>fit.form &lt;- map (fits, formula)
+fit.form &lt;- fit.form[!grepl (&quot;~ 1&quot;, fit.form)]
+
+sem_form3 &lt;- map_chr (fit.form, deparse)
+sem_form3 &lt;- c(sem_form3,
+               rm_cov)
+
+m3 &lt;- lavaan::sem (sem_form3, data = df3, conditional.x = FALSE)
+m3_2 &lt;- sem (sem_form3, data = df3, conditional.x = FALSE, se =  &quot;boot&quot;,
+             bootstrap = 1000)
+
+param3 &lt;- parameterEstimates (m3_2,
+                              se = TRUE,
+                              ci = TRUE,
+                              level = 0.95,
+                              boot.ci.type = &quot;perc&quot;)</code></pre>
+<pre class="r"><code>semPaths (m3, 
+          what = &quot;path&quot;, 
+          layout = &quot;tree3&quot;, 
+          curvePivot = TRUE, 
+          residuals = FALSE,
+          intercept = TRUE,
+          fixedStyle = c(adjustcolor( &quot;white&quot;, alpha.f = 0), 0),
+          rotation = 2,
+          curve = TRUE,
+          freeStyle = c(&quot;black&quot;, 1))</code></pre>
+<p><img src="figure/4-TTH.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="report-1" class="section level3">
+<h3>Report</h3>
+<pre class="r"><code># Export lavaan table
+param_ex &lt;- param3 %&gt;%
+  filter (op == &quot;~&quot;) %&gt;%
+  rename (DV = lhs,
+          IV = rhs,
+          Coef = est,
+          SE = se,
+          `2.5%CI` = ci.lower,
+          `97.5%CI` = ci.upper) %&gt;%
+  mutate_if (is.numeric, round, 3) %&gt;%
+  select ( DV, IV, Coef, SE, `2.5%CI`, `97.5%CI`, pvalue, - c(op, z))
+
+astx &lt;- ifelse(param_ex$pvalue &lt; 0.05, &quot;*&quot;, &quot;&quot;)
+
+
+png (&quot;../manuscript_tth/fig2.png&quot;, height = 8, width = 15, units = &quot;in&quot;, res = 100)
+semPaths (m3, 
+          what = &quot;path&quot;, 
+          layout = &quot;tree3&quot;, 
+          whatLabels= &quot;no&quot;,
+          curve = TRUE,
+          fixedStyle = c(adjustcolor( &quot;white&quot;, alpha.f = 0), 0),
+          residuals = FALSE,
+          nCharNodes = 0,
+          intercept = TRUE,
+          edgeLabels = astx,
+          edge.label.cex = 1,
+          edge.label.position = 0.4,
+          # trans = FALSE,
+          # fade = FALSE,
+          freeStyle = c(&quot;black&quot;, 1),
+          rotation = 2)
+
+dev.off()
+
+# Export lavaan table
+param_ex &lt;- param_ex  %&gt;%
+  arrange (desc(abs (Coef)))
+
+
+my_path &lt;- paste0(&quot;../manuscript_tth/sm_table2&quot;, 
+                  &quot;bn&quot;,
+                  &quot;.docx&quot;)
+
+ft &lt;- flextable(param_ex) %&gt;%
+  set_caption(caption = &quot; Table 2.Parameter estimates for model BN&quot;) %&gt;%
+  autofit() 
+
+my_doc &lt;- read_docx()  %&gt;% 
+  body_add_flextable(ft)
+
+print (my_doc, target = my_path)</code></pre>
+</div>
+</div>
+</div>
+<div id="compare-sem-models" class="section level1">
+<h1>Compare SEM models</h1>
+<pre class="r"><code>fitMeasures(m1, fit.measures = c(&quot;rmsea&quot;, &quot;pvalue&quot;, &quot;cfi&quot;, &quot;tli&quot;, &quot;aic&quot;, &quot;bic&quot;))</code></pre>
+<pre><code>   rmsea   pvalue      cfi      tli      aic      bic 
+   0.251    0.000    0.261   -0.124 6819.064 6975.929 </code></pre>
+<pre class="r"><code>fitMeasures(m3, fit.measures = c(&quot;rmsea&quot;, &quot;pvalue&quot;, &quot;cfi&quot;, &quot;tli&quot;, &quot;aic&quot;, &quot;bic&quot;))</code></pre>
+<pre><code>   rmsea   pvalue      cfi      tli      aic      bic 
+   0.091    0.000    0.884    0.857 5470.051 5570.177 </code></pre>
+<pre class="r"><code>vuongtest(m1, m3, adj = &quot;bic&quot;)</code></pre>
+<pre><code>
+Model 1 
+ Class: lavaan 
+ Call: lavaan::lavaan(model = sem_form1, data = df3, conditional.x = FALSE, ...
+
+Model 2 
+ Class: lavaan 
+ Call: lavaan::lavaan(model = sem_form3, data = df3, conditional.x = FALSE, ...
+
+Variance test 
+  H0: Model 1 and Model 2 are indistinguishable 
+  H1: Model 1 and Model 2 are distinguishable 
+    w2 = 5.024,   p = 2.08e-09
+
+Non-nested likelihood ratio test 
+  H0: Model fits are equal for the focal population 
+  H1A: Model 1 fits better than Model 2 
+    z = -21.743,   p = 1
+  H1B: Model 2 fits better than Model 1 
+    z = -21.743,   p = &lt; 2.2e-16</code></pre>
+<pre class="r"><code>#icci(m1, m3)</code></pre>
+</div>
+<div id="save-data" class="section level1">
+<h1>Save data</h1>
+<pre class="r"><code>res &lt;- list (m0 = m0,
+             m1 = m1,
+             m1_2 = m1_2,
+             m3 = m3,
+             m3_2 = m3_2,
+             df = df,
+             df3 = df3,
+             boot = boot)
+
+saveRDS (res,
+         &quot;output/res.RDS&quot;)</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.0.2 (2020-06-22)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 19042)
+
+Matrix products: default
+
+locale:
+[1] LC_COLLATE=English_United Kingdom.1252 
+[2] LC_CTYPE=English_United Kingdom.1252   
+[3] LC_MONETARY=English_United Kingdom.1252
+[4] LC_NUMERIC=C                           
+[5] LC_TIME=English_United Kingdom.1252    
+
+attached base packages:
+[1] grid      parallel  stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] semTools_0.5-3      nonnest2_0.5-5      semPlot_1.1.2      
+ [4] lavaan_0.6-9        bnpa_0.3.0          Rgraphviz_2.34.0   
+ [7] graph_1.68.0        BiocGenerics_0.36.0 bnlearn_4.6.1      
+[10] doParallel_1.0.16   iterators_1.0.13    foreach_1.5.1      
+[13] kableExtra_1.3.1    arsenal_3.5.0       officer_0.3.16     
+[16] flextable_0.6.1     skimr_2.1.2         forcats_0.5.0      
+[19] stringr_1.4.0       dplyr_1.0.2         purrr_0.3.4        
+[22] readr_1.4.0         tidyr_1.1.2         tibble_3.0.4       
+[25] ggplot2_3.3.3       tidyverse_1.3.0    
+
+loaded via a namespace (and not attached):
+  [1] readxl_1.3.1        uuid_0.1-4          backports_1.2.1    
+  [4] BDgraph_2.63        Hmisc_4.4-2         workflowr_1.6.2    
+  [7] systemfonts_0.3.2   igraph_1.2.6        plyr_1.8.6         
+ [10] repr_1.1.0          splines_4.0.2       TH.data_1.0-10     
+ [13] digest_0.6.27       htmltools_0.5.0     matrixcalc_1.0-3   
+ [16] fansi_0.4.1         magrittr_2.0.1      Rsolnp_1.16        
+ [19] checkmate_2.0.0     lisrelToR_0.1.4     cluster_2.1.0      
+ [22] openxlsx_4.2.3      modelr_0.1.8        sandwich_3.0-0     
+ [25] jpeg_0.1-8.1        sem_3.1-11          colorspace_2.0-0   
+ [28] rvest_0.3.6         haven_2.3.1         xfun_0.25          
+ [31] crayon_1.3.4        jsonlite_1.7.2      lme4_1.1-26        
+ [34] regsem_1.6.2        zoo_1.8-8           survival_3.2-7     
+ [37] glue_1.4.2          gtable_0.3.0        emmeans_1.6.1      
+ [40] webshot_0.5.2       mi_1.0              abind_1.4-5        
+ [43] scales_1.1.1        mvtnorm_1.1-1       DBI_1.1.0          
+ [46] Rcpp_1.0.6          viridisLite_0.3.0   xtable_1.8-4       
+ [49] htmlTable_2.1.0     tmvnsim_1.0-2       foreign_0.8-81     
+ [52] Formula_1.2-4       stats4_4.0.2        truncnorm_1.0-8    
+ [55] htmlwidgets_1.5.3   httr_1.4.2          RColorBrewer_1.1-2 
+ [58] ellipsis_0.3.1      XML_3.99-0.5        pkgconfig_2.0.3    
+ [61] nnet_7.3-14         kutils_1.70         dbplyr_2.0.0       
+ [64] reshape2_1.4.4      tidyselect_1.1.0    rlang_0.4.10       
+ [67] later_1.1.0.1       munsell_0.5.0       cellranger_1.1.0   
+ [70] tools_4.0.2         cli_2.2.0           generics_0.1.0     
+ [73] broom_0.7.9         fdrtool_1.2.16      evaluate_0.14      
+ [76] arm_1.11-2          yaml_2.2.1          knitr_1.30         
+ [79] fs_1.5.0            zip_2.1.1           glasso_1.11        
+ [82] pbapply_1.4-3       nlme_3.1-151        whisker_0.4        
+ [85] xml2_1.3.2          compiler_4.0.2      rstudioapi_0.13    
+ [88] png_0.1-7           huge_1.3.4.1        reprex_0.3.0       
+ [91] statmod_1.4.35      pbivnorm_0.6.0      stringi_1.5.3      
+ [94] highr_0.8           ps_1.5.0            qgraph_1.6.5       
+ [97] rockchalk_1.8.144   gdtools_0.2.3       lattice_0.20-41    
+[100] Matrix_1.2-18       psych_2.0.12        nloptr_1.2.2.2     
+[103] vctrs_0.3.6         CompQuadForm_1.4.3  pillar_1.4.7       
+[106] lifecycle_0.2.0     estimability_1.3    OpenMx_2.18.1      
+[109] corpcor_1.6.9       data.table_1.14.0   httpuv_1.5.4       
+[112] R6_2.5.0            latticeExtra_0.6-29 promises_1.1.1     
+[115] gridExtra_2.3       codetools_0.2-18    gtools_3.8.2       
+[118] boot_1.3-25         MASS_7.3-53         assertthat_0.2.1   
+[121] rjson_0.2.20        rprojroot_2.0.2     withr_2.3.0        
+[124] mnormt_2.0.2        multcomp_1.4-15     hms_0.5.3          
+[127] rpart_4.1-15        coda_0.19-4         minqa_1.2.4        
+[130] rmarkdown_2.10      carData_3.0-4       d3Network_0.5.2.1  
+[133] git2r_0.27.1        lubridate_1.7.9.2   base64enc_0.1-3    </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
