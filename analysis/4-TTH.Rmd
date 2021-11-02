@@ -263,6 +263,9 @@ param1 <- parameterEstimates (m1_2,
                               ci = TRUE,
                               level = 0.95,
                               boot.ci.type = "perc")
+
+param1 <- param1 %>%
+  mutate (pvalue_adj = ifelse (pvalue < (0.05/2), "s", "ns"))
 #summary (m1)
 
 
@@ -298,7 +301,7 @@ param_ex <- param1 %>%
   mutate_if (is.numeric, round, 3) %>%
   select ( DV, IV, Coef, SE, `2.5%CI`, `97.5%CI`, pvalue, - c(op, z))
 
-astx <- ifelse(param_ex$pvalue < 0.05, "*", "")
+astx <- ifelse(param_ex$pvalue < (0.05/2), "*", "")
 
 # Export figure
 
@@ -464,6 +467,9 @@ param3 <- parameterEstimates (m3_2,
                               level = 0.95,
                               boot.ci.type = "perc")
 
+param3_adj <- param3 %>%
+  mutate (pvalue_adj = ifelse (pvalue < (0.05/46), "s", "ns"))
+
 
 ```
 
@@ -498,7 +504,7 @@ param_ex <- param3 %>%
   mutate_if (is.numeric, round, 3) %>%
   select ( DV, IV, Coef, SE, `2.5%CI`, `97.5%CI`, pvalue, - c(op, z))
 
-astx <- ifelse(param_ex$pvalue < 0.05, "*", "")
+astx <- ifelse(param_ex$pvalue < (0.05/2), "*", "")
 
 
 png ("../manuscript_tth/fig2.png", height = 8, width = 15, units = "in", res = 100)
@@ -543,8 +549,8 @@ print (my_doc, target = my_path)
 # Compare SEM models
 
 ```{r}
-fitMeasures(m1, fit.measures = c("rmsea", "pvalue", "cfi", "tli", "aic", "bic"))
-fitMeasures(m3, fit.measures = c("rmsea", "pvalue", "cfi", "tli", "aic", "bic"))
+fitMeasures(m1, fit.measures = c("rmsea", "pvalue", "cfi", "tli", "srmr", "nnfi"))
+fitMeasures(m3, fit.measures = c("rmsea", "pvalue", "cfi", "tli", "srmr", "nnfi"))
 
 
 vuongtest(m1, m3, adj = "bic")
