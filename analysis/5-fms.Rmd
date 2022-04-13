@@ -1,0 +1,677 @@
+---
+title: "5-fms"
+author: "bernard-liew"
+date: "2021-11-11"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+# Load package
+
+```{r, message=F, warning=F}
+
+rm (list = ls())
+# Helper
+library (tidyverse)
+library (skimr)
+library (flextable)
+library (officer)
+library (arsenal)
+library (kableExtra)
+library (mice)
+library (rstatix)
+
+# Parallel
+library (doParallel)
+
+# BN
+library (bnlearn)
+library (Rgraphviz)
+
+#SEM
+library (lavaan)
+library (semPlot)
+library (semptools)
+library (semTools)
+
+```
+
+# Load data
+
+```{r}
+df <- rio::import("data/Data SP-FMS-PF-EXP Study for Bernard.sav") 
+
+df <- map_df (df, function(x) {attributes(x) <- NULL;x})
+
+```
+
+# Explore data
+
+```{r}
+#skim (df)
+
+miss_row <- apply(df, 1, function(x) sum(is.na(x)))
+
+df2 <- df [(miss_row/ncol(df)) < 0.5, ] 
+```
+
+# Descriptives
+
+```{r, eval = FALSE}
+
+meanNsd_transform <- function (x) {
+
+  m <- round (x[[1]][1], 2)
+  s <- round (x[[1]][2], 2)
+
+  m_s <- paste0(m, "(", s, ")")
+
+  return (m_s)
+}
+
+tab1 <- tableby ( ~. , data = df2, digits = 2, digits.p = 2) %>%
+  as.data.frame() %>%
+  filter (!term %in% c("Nmiss", "range")) %>%
+  dplyr::select (-c(group.term:term, variable.type, Total)) 
+
+
+tab2 <-  tab1[-seq (1, 61, 2),]
+tab2$label <- c("Age(years)",
+                "Weight (kg)",
+                "Height (m)",
+                "Bmi",
+                "Numbers of years diagnosed",
+                "Mean pain",
+                "Worst pain",
+                "Pain activity",
+                "Pain extent ventral",
+                "Pain extent Dorsal",
+                "PPT mastoid",
+                "PPT trapezius",
+                "PPT rlbow",
+                "PPT hand",
+                "PPT posterior iliac",
+                "PPT trochanter",
+                "PPT knee",
+                "PPT tibialis",
+                "TUG",
+                "FIQ",
+                "FHAQ",
+                "EQ5DL",
+                "LANSS",
+                "Pain detect",
+                "CSI",
+                "HADS anxiety",
+                "HADS depression",
+                "Vigilance",
+                "Catastotrophizing",
+                "Fear",
+                "Sleep")
+
+
+  
+
+for(row in 1:nrow(tab2)) {
+    tab2[row, 2] <- meanNsd_transform (tab2[row, 2])
+}
+
+tab2[,2] <- unlist (tab2[,2])
+
+
+# colnames (tab2) <- c ("Variables", 
+#                       "Summary value")
+# 
+# my_path <- paste0("../manuscript_fms/table1",
+#                   ".docx")
+# 
+# ft <- flextable(tab2) %>%
+#   set_caption(caption = " Table 1.Baseline descriptive characteristics of cohort") %>%
+#   autofit()
+# 
+# my_doc <- read_docx()  %>%
+#   body_add_flextable(ft)
+# 
+# print (my_doc, target = my_path)
+```
+
+```{r eval = FALSE, include = FALSE}
+tab2 %>%
+  kbl() %>%
+  kable_styling()
+```
+
+## Change names
+
+```{r}
+new_names <- c(
+  "age",
+  "wt",
+  "ht",
+  "bmi",
+  "yrsDx",
+  "meanP",
+  "worstP",
+  "Pact",
+  "PextDor",
+  "PextVent",
+  "PPTmast",
+  "PPTtrapz",
+  "PPTelb",
+  "PPThand",
+  "PPTiliac",
+  "PPTtroc",
+  "PPTknee",
+  "PPTtib",
+  "tug",
+  "fiq",
+  "fhaq",
+  "eq5d",
+  "lanss",
+  "painDetect",
+  "csi",
+  "anx",
+  "dep",
+  "vigil",
+  "catas",
+  "fear",
+  "sleep"
+  )
+
+names (df2) <- new_names
+```
+
+```{r}
+res <- readRDS("output/res2.RDS")
+list2env(res,globalenv())
+```
+
+
+# Impute
+
+```{r, eval = FALSE}
+#dat_imp <-  mice::mice(df2, m = 20, seed = 155, maxit = 30, meth = "rf")
+
+# saveRDS(dat_imp,
+#         "output/dat_imp.RDS")
+
+dat_imp <- readRDS ("output/dat_imp.RDS")
+
+plot (dat_imp)
+
+df3 <- mice::complete(dat_imp, "all") %>%
+  map( ~ .x %>%
+         mutate_if (is.numeric, scale, center = TRUE, scale = TRUE) %>%
+         dplyr::select (-c(wt, ht, meanP, eq5d, fhaq, age, bmi)))
+
+```
+
+
+# Correlations
+
+```{r}
+c <- cor(df3[[1]], method = "pearson", use = "complete.obs")
+corrplot::corrplot(c, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45)
+```
+
+# Measurement model using CFA
+
+## Model
+
+```{r, eval = FALSE, include = FALSE}
+## Latent variable
+cfa_form0 <- "
+  Sensitivity =~ PPTmast + PPTtrapz + PPTelb + PPThand + PPTiliac + PPTtroc + PPTknee + PPTtib 
+  Severity =~  PextDor + PextVent + Pact + worstP
+  Sensitization =~ lanss + painDetect + csi
+  Distress =~ anx + dep + vigil + catas + fear
+
+  lanss    ~~    painDetect
+  anx      ~~    dep
+  csi      ~~    anx
+"
+
+cfa0_dummy <- cfa (cfa_form0, 
+                   data = df3[[1]], 
+                   std.lv = FALSE, 
+                   auto.fix.first = TRUE, 
+                   estimator = "MLR",
+                   se = "robust.huber.white")
+p0 <- semPlotModel(cfa0_dummy )
+
+cfa0 <- cfa.mi (cfa_form0, 
+             data = df3, 
+             std.lv = FALSE, 
+             auto.fix.first = TRUE, 
+             estimator = "MLR",
+             se = "robust.huber.white")
+
+summary (cfa0)
+
+modificationIndices.mi(cfa0)  %>%
+  as_data_frame() %>%
+  arrange(-mi) %>%
+  filter(mi > 11) %>%
+  dplyr::select(lhs, op, rhs, mi, epc)
+
+res1 <- residuals(cfa0, type = "cor")$cov %>% 
+  cor_gather() %>%
+  mutate (form = paste0(var1, "~~", var2))  %>%
+  filter (abs(cor) > 0.10) %>%
+  arrange (abs(cor))
+
+round (fitMeasures(cfa0, 
+            #fit.measures = c("rmsea", "pvalue", "cfi", "tli", "srmr", "nnfi"), 
+            test = "D2" , 
+            pool.robust = TRUE)[c("rmsea", "pvalue", "cfi", "tli", "srmr", "nnfi")],3)
+```
+
+## Plot
+
+```{r, eval = FALSE}
+
+cfa0_dummy <- cfa (cfa_form0, 
+                   data = df3[[1]], 
+                   std.lv = FALSE, 
+                   auto.fix.first = TRUE, 
+                   estimator = "MLR",
+                   se = "robust.huber.white")
+
+fig <- semPlotModel(cfa0_dummy)
+x = data.frame (summary (cfa0))
+fig@Pars$est <- x$est[1: length (fig@Pars$est)]
+
+fig2 <- semPaths (fig, 
+          what = "path", 
+          whatLabels= "est",
+          nCharNodes = 0,
+          freeStyle = c( "black","1"),
+          edge.label.cex = 0.5,
+          residuals = FALSE)
+
+indicator_order  <- c("PPTmast", "PPTtrapz","PPTelb", "PPThand", 
+                      "PPTiliac" , "PPTtroc" , "PPTknee" , "PPTtib", 
+                      "PextDor" , "PextVent", "Pact" , "worstP",
+                      "lanss", "painDetect" , "csi", 
+                      "anx" , "dep" , "vigil" , "catas" , "fear")
+
+indicator_factor <- c("Sensitivity", "Sensitivity","Sensitivity", "Sensitivity", 
+                      "Sensitivity", "Sensitivity","Sensitivity", "Sensitivity",  
+                      "Severity" , "Severity", "Severity" , "Severity",
+                      "Sensitization", "Sensitization" , "Sensitization", 
+                      "Distress" , "Distress" , "Distress" , "Distress" , "Distress")
+
+
+factor_layout <- matrix(c(NA, "Sensitivity", NA, NA, NA, "Severity",
+                          NA,NA, NA, NA, NA, NA,
+                          NA,NA, NA, NA, NA, NA,
+                          NA,"Sensitization", NA, NA, NA, "Distress"),
+                          byrow = TRUE, 4, 6)
+
+factor_point_to <-  matrix(c(NA,"up", NA, NA, NA, "right",
+                          NA,NA, NA, NA, NA, NA,
+                          NA,NA, NA, NA, NA, NA,
+                          NA,"down", NA, NA, NA, "down"),
+                          byrow = TRUE, 4, 6)
+
+indicator_spread <- c(Sensitivity = 5,
+                    Severity = 4,
+                    Sensitization = 4,
+                    Distress = 4)
+
+indicator_push <- c(Sensitivity =2,
+                    Severity = 2,
+                    Sensitization = 2,
+                    Distress = 2)
+
+fig_mod <- set_sem_layout(fig2, 
+                     indicator_order = indicator_order,
+                     indicator_factor = indicator_factor,
+                     factor_layout = factor_layout,
+                     factor_point_to = factor_point_to,
+                     indicator_push = indicator_push,
+                     indicator_spread = indicator_spread)
+plot(fig_mod)
+
+
+
+# png ("../manuscript_fms/fig1.png", height = 10, width = 15, units = "in", res = 100)
+# plot(fig_mod)
+# dev.off()
+
+```
+
+
+## Bootstrap
+
+```{r}
+l2 = c(LETTERS, sort(do.call("paste0", expand.grid(LETTERS, LETTERS))))
+```
+
+
+# Mediation
+
+```{r, eval = FALSE, include = FALSE}
+sem_form0 <- "
+  # Latent
+  Sensitivity =~ PPTmast + PPTtrapz + PPTelb + PPThand + PPTiliac + PPTtroc + PPTknee + PPTtib 
+  Severity =~  PextDor + PextVent + Pact + worstP
+  Sensitization =~ lanss + painDetect + csi
+  Distress =~ anx + dep + vigil + catas + fear
+  
+  
+  lanss    ~~    painDetect
+  anx      ~~    dep
+  csi      ~~    anx
+
+  # paths
+  
+  Severity ~ b1*Sensitization + b2*Sensitivity + b3*sleep + c*Distress
+  
+  Sensitization ~ a1*Distress
+  Sensitivity ~ a2*Distress
+  sleep ~ a3*Distress
+  
+  ind1 := a1*b1
+  ind2 := a2*b2
+  ind3 := a3*b3
+  total := c + (a1*b1) + (a2*b2) + (a3*b3)
+  
+  contrast1 := ind1-ind2
+  contrast2 := ind1-ind3
+  contrast3 := ind2-ind3
+  
+  Sensitization ~~ Sensitivity
+  Sensitization ~~ sleep
+  sleep ~~ Sensitivity
+"
+
+
+m0 <- sem.mi (sem_form0, 
+           data = df3, 
+           orthogonal = TRUE, 
+           std.lv = FALSE, 
+           auto.fix.first = TRUE, 
+           estimator = "MLR",
+           se = "robust.huber.white")
+
+summary (m0)
+
+round (fitMeasures(m0, 
+            test = "D2" , 
+            pool.robust = TRUE)[c("rmsea", "pvalue", "cfi", "tli", "srmr", "nnfi")],3)
+```
+
+## Montecarlo bootstrap coefficients
+
+
+```{r, eval = FALSE}
+
+myParams <- c("a1", "b1", "a2", "b2", "a3", "b3", "c")
+
+(coefs <- coef(m0)[myParams]) 
+(AsyCovMat <- vcov(m0)[myParams, myParams])
+
+expres <- c(  a1 = "a1",
+              a2 = "a2",
+              a3 = "a3",
+              b1 = "b1",
+              b2 = "b2",
+              b3 = "b3",
+              c = "c",
+              ind1 = "a1*b1",
+              ind2 = "a2*b2",
+              ind3 = "a3*b3",
+              total = "c + (a1*b1) + (a2*b2) + (a3*b3)",
+              contrast1 = "ind1-ind2",
+              contrast2 = "ind1-ind3",
+              contrast3 = "ind2-ind3")
+
+
+m0_coef <- monteCarloCI(expr = expres,
+                        ACM = AsyCovMat,
+                        coefs = coefs)
+m0_coef <- m0_coef %>%
+  rownames_to_column("label")
+```
+
+
+## Plot
+
+```{r, eval = FALSE}
+
+m0_dummy <- sem (sem_form0, 
+                   data = df3[[1]], 
+                   std.lv = FALSE, 
+                   auto.fix.first = TRUE, 
+                   estimator = "MLR",
+                   se = "robust.huber.white")
+
+fig <- semPlotModel(m0_dummy )
+
+x = data.frame (summary (m0))
+fig@Pars$est <- x$est[1: length (fig@Pars$est)]
+
+manifest_var <- c("PPTmast", "PPTtrapz","PPTelb", "PPThand", "PPTiliac" , "PPTtroc" , "PPTknee" , "PPTtib", "PextDor" , "PextVent", "Pact" , "yrsDx" , "worstP", "lanss", "painDetect" , "csi", "anx" , "dep" , "vigil" , "catas" , "fear")
+
+fig2 <- drop_nodes(fig, manifest_var)
+
+fig2 <- semPaths (fig2, 
+          what = "path", 
+          whatLabels= "est",
+          fixedStyle = c( "white","0"),
+          freeStyle = c( "black","1"),
+          residuals = FALSE,
+          nCharNodes = 0,
+          curveAdjacent = c("cov", "reg"),
+          curvature = 2,
+          intercept = TRUE,
+          edge.label.cex = 0.8,
+          nodeLabels = c("Sleep", "Sens", "Severity", "Senstz", "Distress"),
+          exoCov = FALSE,
+          color = list (lat = "grey", man = "white"),
+          edge.label.position = 0.5)
+
+indicator_order  <- c("Sleep", "Sens", "Severity", "Senstz", "Distress")
+
+indicator_factor <- c("Sleep", "Sens", "Severity", "Senstz", "Distress")
+
+factor_layout <- matrix(c(NA,NA, NA, NA, "Sens", NA,  NA, 
+                          NA, NA, NA,NA, NA, NA,NA,
+                          NA,NA, NA, "Senstz", NA,  NA, NA,
+                          NA,NA, NA, NA, NA,  NA, NA, 
+                          "Distress",NA, NA, NA, NA,  NA, "Severity", 
+                          NA,NA, NA, NA, NA,  NA, NA, 
+                          NA,NA, NA, NA, NA,  NA, NA,
+                          NA,NA, NA, NA, "Sleep", NA,  NA),
+                          byrow = TRUE, 8, 7)
+
+factor_point_to <-  matrix(c(NA,NA, NA, NA, "left", NA,  NA, 
+                          NA, NA, NA,NA, NA, NA,NA,
+                          NA,NA, NA, "left", NA,  NA, NA,
+                          NA,NA, NA, NA, NA,  NA, NA, 
+                          "left",NA, NA, NA, NA,  NA, "left", 
+                          NA,NA, NA, NA, NA,  NA, NA, 
+                          NA,NA, NA, NA, NA,  NA, NA,
+                          NA,NA, NA, NA, "left", NA,  NA),
+                          byrow = TRUE, 8, 7)
+
+fig_mod <- set_sem_layout(fig2, 
+                     indicator_order = indicator_order,
+                     indicator_factor = indicator_factor,
+                     factor_layout = factor_layout,
+                     factor_point_to = factor_point_to)
+plot(fig_mod)
+
+
+# png ("../manuscript_fms/fig2.png", height = 10, width = 15, units = "in", res = 100)
+# plot(fig_mod)
+# dev.off()
+```
+
+
+## Report
+
+```{r, eval = FALSE}
+# Export lavaan table
+param_ex<- summary (m0, standardized = TRUE) %>%
+  filter (op != "~~") %>%
+  rename (DV = lhs,
+          IV = rhs,
+          Coef = est,
+          SE = se,
+          Pval = pvalue) %>%
+  data.frame () %>%
+  left_join(m0_coef, by = c("label")) %>%
+  rename (`LB` = ci.lower,
+          `UB` = ci.upper) %>%
+  mutate_if (is.numeric, round, 3) %>%
+  mutate (Sig = ifelse (Pval < 0.05, "s", "ns")) %>%
+  mutate (Type = case_when(
+    op == "=~" ~ "LV",
+    op == "~" ~ "Reg",
+    TRUE ~ "Med"
+  )) %>%
+  dplyr::select ( DV, IV, Coef, SE, `LB`, `UB`,Pval, Sig, Type) %>%
+  mutate (Coef = as.numeric (Coef)) 
+
+param_ex$DV[28:34] <- c("Indirect 1", "Indirect 2", "Indirect 3",
+                        "Total", "Indirect Contrast 1", "Indirect Contrast 2", "Indirect Contrast 3")
+param_ex$IV[28:34] <- c("Sensitization", "Sensitivity", "Sleep",
+                        " ", 
+                        "Indirect 1 - Indirect 2", "Indirect 1 - Indirect 3", "Indirect 2 - Indirect 3")
+
+param_ex <- param_ex%>%
+  mutate (Type = factor (Type, levels = c("Med", "Reg", "LV"))) %>%
+  arrange (Type, DV)
+
+
+# Export lavaan table
+
+# my_path <- paste0("../manuscript_fms/table2", 
+#                   ".docx")
+# 
+# ft <- flextable(param_ex) %>%
+#   set_caption(caption = " Table 2.Parameter estimates for model") %>%
+#   autofit() 
+# 
+# my_doc <- read_docx()  %>% 
+#   body_add_flextable(ft)
+# 
+# print (my_doc, target = my_path)
+```
+
+# Sensitivity analysis
+
+```{r, eval = FALSE, include = FALSE}
+sens.model <- "
+
+  # Latent
+  Sensitivity =~ PPTmast + PPTtrapz + PPTelb + PPThand + PPTiliac + PPTtroc + PPTknee + PPTtib 
+  Severity =~  PextDor + PextVent + Pact + worstP
+  Sensitization =~ lanss + painDetect + csi
+  Distress =~ anx + dep + vigil + catas + fear
+  
+  
+  lanss    ~~    painDetect
+  anx      ~~    dep
+  csi      ~~    anx
+
+  # paths
+  
+  Severity ~ b1*Sensitization + b2*Sensitivity + b3*sleep + c*Distress
+  
+  Sensitization ~ a1*Distress
+  Sensitivity ~ a2*Distress
+  sleep ~ a3*Distress
+  
+  Sensitization ~~ Sensitivity
+  Sensitization ~~ sleep
+  sleep ~~ Sensitivity
+  
+  Sensitivity ~ phantom1*phantom
+  Severity ~ phantom2*phantom
+  Sensitization ~ phantom3*phantom
+  Distress ~ phantom4*phantom
+  sleep ~ phantom5*phantom
+
+  phantom =~ 0 # added for mean of zero
+  phantom ~~ 1*phantom # added for unit variance
+"
+
+paths <- "  
+  Severity ~ b1*Sensitization + b2*Sensitivity + b3*sleep + c*Distress
+  
+  Sensitization ~ a1*Distress
+  Sensitivity ~ a2*Distress
+  sleep ~ a3*Distress
+  
+  Sensitization ~~ Sensitivity
+  Sensitization ~~ sleep
+  sleep ~~ Sensitivity
+"
+
+my.sa <- sa.aco(data= df3[[1]], 
+                model = sem_form0, 
+                sens.model = sens.model,
+                paths = paths,
+                opt.fun = 4,
+                seed = 144,
+               orthogonal = TRUE, 
+               std.lv = FALSE, 
+               auto.fix.first = TRUE, 
+               estimator = "MLR",
+               se = "robust.huber.white")
+
+tables <- sens.tables(my.sa)
+
+
+tab <- tables$sens.summary %>%
+  mutate (change = abs ((mean.est.sens - model.est)/model.est) *100)%>%
+  arrange (desc(change))%>%
+  mutate_all (round, 3) %>%
+  rownames_to_column(var = "path") %>%
+  separate (path, c("DV", "IV"), sep = "~") %>%
+  dplyr::select (-model.pvalue) %>%
+  rename (`Original coef` = model.est,
+          `Mean perturbed coef` = mean.est.sens,
+          `Min perturbed coef` = min.est.sens,
+          `Max perturbed coef` = max.est.sens,
+          `% Change` = change)
+
+# 
+# my_path <- paste0("../manuscript_tth/sm_table3", 
+#                   "sens",
+#                   ".docx")
+# 
+# ft <- flextable(tab) %>%
+#   set_caption(caption = " Table 2.Parameter estimates for model BN") %>%
+#   autofit() 
+# 
+# my_doc <- read_docx()  %>% 
+#   body_add_flextable(ft)
+# 
+# print (my_doc, target = my_path)
+```
+
+
+# Save data
+
+```{r, eval = FALSE}
+res <- list (cfa0 = cfa0,
+             cfa0_coef = cfa0_coef,
+             m0 = m0,
+             m0_coef = m0_coef,
+             m1 = m1,
+             m1_coef = m1_coef,
+             df = df,
+             dat_imp = dat_imp,
+             df3 = df3,
+             my.sa = my.sa,
+             boot = boot)
+
+saveRDS (res,
+         "output/res2.RDS")
+```
+
