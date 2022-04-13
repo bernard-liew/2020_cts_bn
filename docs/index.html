@@ -13,8 +13,8 @@
 
 <title>Home</title>
 
-<script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -297,7 +297,7 @@ $(document).ready(function () {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-11-02
+<strong>Last updated:</strong> 2022-04-13
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -328,16 +328,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree32b270461b7aa05b13842631a537cd5f82bd554etargetblank32b2704a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bernard-liew/2020_cts_bn/tree/32b270461b7aa05b13842631a537cd5f82bd554e" target="_blank">32b2704</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree696614cd5916f916f6339082baac57d9f222c54ftargetblank696614ca"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bernard-liew/2020_cts_bn/tree/696614cd5916f916f6339082baac57d9f222c54f" target="_blank">696614c</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree32b270461b7aa05b13842631a537cd5f82bd554etargetblank32b2704a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree696614cd5916f916f6339082baac57d9f222c54ftargetblank696614ca" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/bernard-liew/2020_cts_bn/tree/32b270461b7aa05b13842631a537cd5f82bd554e" target="_blank">32b2704</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/bernard-liew/2020_cts_bn/tree/696614cd5916f916f6339082baac57d9f222c54f" target="_blank">696614c</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -348,9 +348,15 @@ Ignored files:
     Ignored:    .Rproj.user/
 
 Untracked files:
+    Untracked:  Untitled/
+    Untracked:  code/sem_mi.R
     Untracked:  data/Data SP-FMS-PF-EXP Study for Bernard.sav
+    Untracked:  output/dat_imp.RDS
+    Untracked:  output/res2.RDS
 
 Unstaged changes:
+    Modified:   analysis/2-bn_analysis.Rmd
+    Modified:   analysis/4-TTH.Rmd
     Modified:   output/res.RDS
 
 </code></pre>
@@ -390,6 +396,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bernard-liew/2020_cts_bn/blob/696614cd5916f916f6339082baac57d9f222c54f/analysis/index.Rmd" target="_blank">696614c</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2022-04-13
+</td>
+<td>
+tidied fms analysis
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/bernard-liew/2020_cts_bn/22b3ae72303449de4d0df41c241b3e6382f2d6d7/docs/index.html" target="_blank">22b3ae7</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2021-11-02
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -521,6 +561,7 @@ Start workflowr project.
 <p><a href="2-bn_analysis.html">This code performs BN analysis</a></p>
 <p><a href="3-network.html">This code performs network analysis</a></p>
 <p><a href="4-TTH.html">This code performs SEM-BN analysis</a></p>
+<p><a href="5-fms.html">This code performs Mediation analysis for FMS</a></p>
 
 
 <!-- Adjust MathJax settings so that all math formulae are shown using

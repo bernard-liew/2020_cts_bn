@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="bernard-liew" />
+
+<meta name="date" content="2021-11-11" />
+
+<title>5-fms</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">2020_cts_bn</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">5-fms</h1>
+<h4 class="author">bernard-liew</h4>
+<h4 class="date">2021-11-11</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-04-13
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>2020_cts_bn/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20200907code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20200907)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20200907code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20200907)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree696614cd5916f916f6339082baac57d9f222c54ftargetblank696614ca"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/bernard-liew/2020_cts_bn/tree/696614cd5916f916f6339082baac57d9f222c54f" target="_blank">696614c</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcombernardliew2020ctsbntree696614cd5916f916f6339082baac57d9f222c54ftargetblank696614ca" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/bernard-liew/2020_cts_bn/tree/696614cd5916f916f6339082baac57d9f222c54f" target="_blank">696614c</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+
+Untracked files:
+    Untracked:  Untitled/
+    Untracked:  code/sem_mi.R
+    Untracked:  data/Data SP-FMS-PF-EXP Study for Bernard.sav
+    Untracked:  output/dat_imp.RDS
+    Untracked:  output/res2.RDS
+
+Unstaged changes:
+    Modified:   analysis/2-bn_analysis.Rmd
+    Modified:   analysis/4-TTH.Rmd
+    Modified:   output/res.RDS
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/5-fms.Rmd</code>) and HTML (<code>docs/5-fms.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/bernard-liew/2020_cts_bn/blob/696614cd5916f916f6339082baac57d9f222c54f/analysis/5-fms.Rmd" target="_blank">696614c</a>
+</td>
+<td>
+bernard-liew
+</td>
+<td>
+2022-04-13
+</td>
+<td>
+tidied fms analysis
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="load-package" class="section level1">
+<h1>Load package</h1>
+<pre class="r"><code>rm (list = ls())
+# Helper
+library (tidyverse)
+library (skimr)
+library (flextable)
+library (officer)
+library (arsenal)
+library (kableExtra)
+library (mice)
+library (rstatix)
+
+# Parallel
+library (doParallel)
+
+# BN
+library (bnlearn)
+library (Rgraphviz)
+
+#SEM
+library (lavaan)
+library (semPlot)
+library (semptools)
+library (semTools)</code></pre>
+</div>
+<div id="load-data" class="section level1">
+<h1>Load data</h1>
+<pre class="r"><code>df &lt;- rio::import(&quot;data/Data SP-FMS-PF-EXP Study for Bernard.sav&quot;) 
+
+df &lt;- map_df (df, function(x) {attributes(x) &lt;- NULL;x})</code></pre>
+</div>
+<div id="explore-data" class="section level1">
+<h1>Explore data</h1>
+<pre class="r"><code>#skim (df)
+
+miss_row &lt;- apply(df, 1, function(x) sum(is.na(x)))
+
+df2 &lt;- df [(miss_row/ncol(df)) &lt; 0.5, ] </code></pre>
+</div>
+<div id="descriptives" class="section level1">
+<h1>Descriptives</h1>
+<pre class="r"><code>meanNsd_transform &lt;- function (x) {
+
+  m &lt;- round (x[[1]][1], 2)
+  s &lt;- round (x[[1]][2], 2)
+
+  m_s &lt;- paste0(m, &quot;(&quot;, s, &quot;)&quot;)
+
+  return (m_s)
+}
+
+tab1 &lt;- tableby ( ~. , data = df2, digits = 2, digits.p = 2) %&gt;%
+  as.data.frame() %&gt;%
+  filter (!term %in% c(&quot;Nmiss&quot;, &quot;range&quot;)) %&gt;%
+  dplyr::select (-c(group.term:term, variable.type, Total)) 
+
+
+tab2 &lt;-  tab1[-seq (1, 61, 2),]
+tab2$label &lt;- c(&quot;Age(years)&quot;,
+                &quot;Weight (kg)&quot;,
+                &quot;Height (m)&quot;,
+                &quot;Bmi&quot;,
+                &quot;Numbers of years diagnosed&quot;,
+                &quot;Mean pain&quot;,
+                &quot;Worst pain&quot;,
+                &quot;Pain activity&quot;,
+                &quot;Pain extent ventral&quot;,
+                &quot;Pain extent Dorsal&quot;,
+                &quot;PPT mastoid&quot;,
+                &quot;PPT trapezius&quot;,
+                &quot;PPT rlbow&quot;,
+                &quot;PPT hand&quot;,
+                &quot;PPT posterior iliac&quot;,
+                &quot;PPT trochanter&quot;,
+                &quot;PPT knee&quot;,
+                &quot;PPT tibialis&quot;,
+                &quot;TUG&quot;,
+                &quot;FIQ&quot;,
+                &quot;FHAQ&quot;,
+                &quot;EQ5DL&quot;,
+                &quot;LANSS&quot;,
+                &quot;Pain detect&quot;,
+                &quot;CSI&quot;,
+                &quot;HADS anxiety&quot;,
+                &quot;HADS depression&quot;,
+                &quot;Vigilance&quot;,
+                &quot;Catastotrophizing&quot;,
+                &quot;Fear&quot;,
+                &quot;Sleep&quot;)
+
+
+  
+
+for(row in 1:nrow(tab2)) {
+    tab2[row, 2] &lt;- meanNsd_transform (tab2[row, 2])
+}
+
+tab2[,2] &lt;- unlist (tab2[,2])
+
+
+# colnames (tab2) &lt;- c (&quot;Variables&quot;, 
+#                       &quot;Summary value&quot;)
+# 
+# my_path &lt;- paste0(&quot;../manuscript_fms/table1&quot;,
+#                   &quot;.docx&quot;)
+# 
+# ft &lt;- flextable(tab2) %&gt;%
+#   set_caption(caption = &quot; Table 1.Baseline descriptive characteristics of cohort&quot;) %&gt;%
+#   autofit()
+# 
+# my_doc &lt;- read_docx()  %&gt;%
+#   body_add_flextable(ft)
+# 
+# print (my_doc, target = my_path)</code></pre>
+<div id="change-names" class="section level2">
+<h2>Change names</h2>
+<pre class="r"><code>new_names &lt;- c(
+  &quot;age&quot;,
+  &quot;wt&quot;,
+  &quot;ht&quot;,
+  &quot;bmi&quot;,
+  &quot;yrsDx&quot;,
+  &quot;meanP&quot;,
+  &quot;worstP&quot;,
+  &quot;Pact&quot;,
+  &quot;PextDor&quot;,
+  &quot;PextVent&quot;,
+  &quot;PPTmast&quot;,
+  &quot;PPTtrapz&quot;,
+  &quot;PPTelb&quot;,
+  &quot;PPThand&quot;,
+  &quot;PPTiliac&quot;,
+  &quot;PPTtroc&quot;,
+  &quot;PPTknee&quot;,
+  &quot;PPTtib&quot;,
+  &quot;tug&quot;,
+  &quot;fiq&quot;,
+  &quot;fhaq&quot;,
+  &quot;eq5d&quot;,
+  &quot;lanss&quot;,
+  &quot;painDetect&quot;,
+  &quot;csi&quot;,
+  &quot;anx&quot;,
+  &quot;dep&quot;,
+  &quot;vigil&quot;,
+  &quot;catas&quot;,
+  &quot;fear&quot;,
+  &quot;sleep&quot;
+  )
+
+names (df2) &lt;- new_names</code></pre>
+<pre class="r"><code>res &lt;- readRDS(&quot;output/res2.RDS&quot;)
+list2env(res,globalenv())</code></pre>
+<pre><code>&lt;environment: R_GlobalEnv&gt;</code></pre>
+</div>
+</div>
+<div id="impute" class="section level1">
+<h1>Impute</h1>
+<pre class="r"><code>#dat_imp &lt;-  mice::mice(df2, m = 20, seed = 155, maxit = 30, meth = &quot;rf&quot;)
+
+# saveRDS(dat_imp,
+#         &quot;output/dat_imp.RDS&quot;)
+
+dat_imp &lt;- readRDS (&quot;output/dat_imp.RDS&quot;)
+
+plot (dat_imp)
+
+df3 &lt;- mice::complete(dat_imp, &quot;all&quot;) %&gt;%
+  map( ~ .x %&gt;%
+         mutate_if (is.numeric, scale, center = TRUE, scale = TRUE) %&gt;%
+         dplyr::select (-c(wt, ht, meanP, eq5d, fhaq, age, bmi)))</code></pre>
+</div>
+<div id="correlations" class="section level1">
+<h1>Correlations</h1>
+<pre class="r"><code>c &lt;- cor(df3[[1]], method = &quot;pearson&quot;, use = &quot;complete.obs&quot;)
+corrplot::corrplot(c, type = &quot;upper&quot;, order = &quot;hclust&quot;, 
+         tl.col = &quot;black&quot;, tl.srt = 45)</code></pre>
+<p><img src="figure/5-fms.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="measurement-model-using-cfa" class="section level1">
+<h1>Measurement model using CFA</h1>
+<div id="model" class="section level2">
+<h2>Model</h2>
+</div>
+<div id="plot" class="section level2">
+<h2>Plot</h2>
+<pre class="r"><code>cfa0_dummy &lt;- cfa (cfa_form0, 
+                   data = df3[[1]], 
+                   std.lv = FALSE, 
+                   auto.fix.first = TRUE, 
+                   estimator = &quot;MLR&quot;,
+                   se = &quot;robust.huber.white&quot;)
+
+fig &lt;- semPlotModel(cfa0_dummy)
+x = data.frame (summary (cfa0))
+fig@Pars$est &lt;- x$est[1: length (fig@Pars$est)]
+
+fig2 &lt;- semPaths (fig, 
+          what = &quot;path&quot;, 
+          whatLabels= &quot;est&quot;,
+          nCharNodes = 0,
+          freeStyle = c( &quot;black&quot;,&quot;1&quot;),
+          edge.label.cex = 0.5,
+          residuals = FALSE)
+
+indicator_order  &lt;- c(&quot;PPTmast&quot;, &quot;PPTtrapz&quot;,&quot;PPTelb&quot;, &quot;PPThand&quot;, 
+                      &quot;PPTiliac&quot; , &quot;PPTtroc&quot; , &quot;PPTknee&quot; , &quot;PPTtib&quot;, 
+                      &quot;PextDor&quot; , &quot;PextVent&quot;, &quot;Pact&quot; , &quot;worstP&quot;,
+                      &quot;lanss&quot;, &quot;painDetect&quot; , &quot;csi&quot;, 
+                      &quot;anx&quot; , &quot;dep&quot; , &quot;vigil&quot; , &quot;catas&quot; , &quot;fear&quot;)
+
+indicator_factor &lt;- c(&quot;Sensitivity&quot;, &quot;Sensitivity&quot;,&quot;Sensitivity&quot;, &quot;Sensitivity&quot;, 
+                      &quot;Sensitivity&quot;, &quot;Sensitivity&quot;,&quot;Sensitivity&quot;, &quot;Sensitivity&quot;,  
+                      &quot;Severity&quot; , &quot;Severity&quot;, &quot;Severity&quot; , &quot;Severity&quot;,
+                      &quot;Sensitization&quot;, &quot;Sensitization&quot; , &quot;Sensitization&quot;, 
+                      &quot;Distress&quot; , &quot;Distress&quot; , &quot;Distress&quot; , &quot;Distress&quot; , &quot;Distress&quot;)
+
+
+factor_layout &lt;- matrix(c(NA, &quot;Sensitivity&quot;, NA, NA, NA, &quot;Severity&quot;,
+                          NA,NA, NA, NA, NA, NA,
+                          NA,NA, NA, NA, NA, NA,
+                          NA,&quot;Sensitization&quot;, NA, NA, NA, &quot;Distress&quot;),
+                          byrow = TRUE, 4, 6)
+
+factor_point_to &lt;-  matrix(c(NA,&quot;up&quot;, NA, NA, NA, &quot;right&quot;,
+                          NA,NA, NA, NA, NA, NA,
+                          NA,NA, NA, NA, NA, NA,
+                          NA,&quot;down&quot;, NA, NA, NA, &quot;down&quot;),
+                          byrow = TRUE, 4, 6)
+
+indicator_spread &lt;- c(Sensitivity = 5,
+                    Severity = 4,
+                    Sensitization = 4,
+                    Distress = 4)
+
+indicator_push &lt;- c(Sensitivity =2,
+                    Severity = 2,
+                    Sensitization = 2,
+                    Distress = 2)
+
+fig_mod &lt;- set_sem_layout(fig2, 
+                     indicator_order = indicator_order,
+                     indicator_factor = indicator_factor,
+                     factor_layout = factor_layout,
+                     factor_point_to = factor_point_to,
+                     indicator_push = indicator_push,
+                     indicator_spread = indicator_spread)
+plot(fig_mod)
+
+
+
+# png (&quot;../manuscript_fms/fig1.png&quot;, height = 10, width = 15, units = &quot;in&quot;, res = 100)
+# plot(fig_mod)
+# dev.off()</code></pre>
+</div>
+<div id="bootstrap" class="section level2">
+<h2>Bootstrap</h2>
+<pre class="r"><code>l2 = c(LETTERS, sort(do.call(&quot;paste0&quot;, expand.grid(LETTERS, LETTERS))))</code></pre>
+</div>
+</div>
+<div id="mediation" class="section level1">
+<h1>Mediation</h1>
+<div id="montecarlo-bootstrap-coefficients" class="section level2">
+<h2>Montecarlo bootstrap coefficients</h2>
+<pre class="r"><code>myParams &lt;- c(&quot;a1&quot;, &quot;b1&quot;, &quot;a2&quot;, &quot;b2&quot;, &quot;a3&quot;, &quot;b3&quot;, &quot;c&quot;)
+
+(coefs &lt;- coef(m0)[myParams]) 
+(AsyCovMat &lt;- vcov(m0)[myParams, myParams])
+
+expres &lt;- c(  a1 = &quot;a1&quot;,
+              a2 = &quot;a2&quot;,
+              a3 = &quot;a3&quot;,
+              b1 = &quot;b1&quot;,
+              b2 = &quot;b2&quot;,
+              b3 = &quot;b3&quot;,
+              c = &quot;c&quot;,
+              ind1 = &quot;a1*b1&quot;,
+              ind2 = &quot;a2*b2&quot;,
+              ind3 = &quot;a3*b3&quot;,
+              total = &quot;c + (a1*b1) + (a2*b2) + (a3*b3)&quot;,
+              contrast1 = &quot;ind1-ind2&quot;,
+              contrast2 = &quot;ind1-ind3&quot;,
+              contrast3 = &quot;ind2-ind3&quot;)
+
+
+m0_coef &lt;- monteCarloCI(expr = expres,
+                        ACM = AsyCovMat,
+                        coefs = coefs)
+m0_coef &lt;- m0_coef %&gt;%
+  rownames_to_column(&quot;label&quot;)</code></pre>
+</div>
+<div id="plot-1" class="section level2">
+<h2>Plot</h2>
+<pre class="r"><code>m0_dummy &lt;- sem (sem_form0, 
+                   data = df3[[1]], 
+                   std.lv = FALSE, 
+                   auto.fix.first = TRUE, 
+                   estimator = &quot;MLR&quot;,
+                   se = &quot;robust.huber.white&quot;)
+
+fig &lt;- semPlotModel(m0_dummy )
+
+x = data.frame (summary (m0))
+fig@Pars$est &lt;- x$est[1: length (fig@Pars$est)]
+
+manifest_var &lt;- c(&quot;PPTmast&quot;, &quot;PPTtrapz&quot;,&quot;PPTelb&quot;, &quot;PPThand&quot;, &quot;PPTiliac&quot; , &quot;PPTtroc&quot; , &quot;PPTknee&quot; , &quot;PPTtib&quot;, &quot;PextDor&quot; , &quot;PextVent&quot;, &quot;Pact&quot; , &quot;yrsDx&quot; , &quot;worstP&quot;, &quot;lanss&quot;, &quot;painDetect&quot; , &quot;csi&quot;, &quot;anx&quot; , &quot;dep&quot; , &quot;vigil&quot; , &quot;catas&quot; , &quot;fear&quot;)
+
+fig2 &lt;- drop_nodes(fig, manifest_var)
+
+fig2 &lt;- semPaths (fig2, 
+          what = &quot;path&quot;, 
+          whatLabels= &quot;est&quot;,
+          fixedStyle = c( &quot;white&quot;,&quot;0&quot;),
+          freeStyle = c( &quot;black&quot;,&quot;1&quot;),
+          residuals = FALSE,
+          nCharNodes = 0,
+          curveAdjacent = c(&quot;cov&quot;, &quot;reg&quot;),
+          curvature = 2,
+          intercept = TRUE,
+          edge.label.cex = 0.8,
+          nodeLabels = c(&quot;Sleep&quot;, &quot;Sens&quot;, &quot;Severity&quot;, &quot;Senstz&quot;, &quot;Distress&quot;),
+          exoCov = FALSE,
+          color = list (lat = &quot;grey&quot;, man = &quot;white&quot;),
+          edge.label.position = 0.5)
+
+indicator_order  &lt;- c(&quot;Sleep&quot;, &quot;Sens&quot;, &quot;Severity&quot;, &quot;Senstz&quot;, &quot;Distress&quot;)
+
+indicator_factor &lt;- c(&quot;Sleep&quot;, &quot;Sens&quot;, &quot;Severity&quot;, &quot;Senstz&quot;, &quot;Distress&quot;)
+
+factor_layout &lt;- matrix(c(NA,NA, NA, NA, &quot;Sens&quot;, NA,  NA, 
+                          NA, NA, NA,NA, NA, NA,NA,
+                          NA,NA, NA, &quot;Senstz&quot;, NA,  NA, NA,
+                          NA,NA, NA, NA, NA,  NA, NA, 
+                          &quot;Distress&quot;,NA, NA, NA, NA,  NA, &quot;Severity&quot;, 
+                          NA,NA, NA, NA, NA,  NA, NA, 
+                          NA,NA, NA, NA, NA,  NA, NA,
+                          NA,NA, NA, NA, &quot;Sleep&quot;, NA,  NA),
+                          byrow = TRUE, 8, 7)
+
+factor_point_to &lt;-  matrix(c(NA,NA, NA, NA, &quot;left&quot;, NA,  NA, 
+                          NA, NA, NA,NA, NA, NA,NA,
+                          NA,NA, NA, &quot;left&quot;, NA,  NA, NA,
+                          NA,NA, NA, NA, NA,  NA, NA, 
+                          &quot;left&quot;,NA, NA, NA, NA,  NA, &quot;left&quot;, 
+                          NA,NA, NA, NA, NA,  NA, NA, 
+                          NA,NA, NA, NA, NA,  NA, NA,
+                          NA,NA, NA, NA, &quot;left&quot;, NA,  NA),
+                          byrow = TRUE, 8, 7)
+
+fig_mod &lt;- set_sem_layout(fig2, 
+                     indicator_order = indicator_order,
+                     indicator_factor = indicator_factor,
+                     factor_layout = factor_layout,
+                     factor_point_to = factor_point_to)
+plot(fig_mod)
+
+
+# png (&quot;../manuscript_fms/fig2.png&quot;, height = 10, width = 15, units = &quot;in&quot;, res = 100)
+# plot(fig_mod)
+# dev.off()</code></pre>
+</div>
+<div id="report" class="section level2">
+<h2>Report</h2>
+<pre class="r"><code># Export lavaan table
+param_ex&lt;- summary (m0, standardized = TRUE) %&gt;%
+  filter (op != &quot;~~&quot;) %&gt;%
+  rename (DV = lhs,
+          IV = rhs,
+          Coef = est,
+          SE = se,
+          Pval = pvalue) %&gt;%
+  data.frame () %&gt;%
+  left_join(m0_coef, by = c(&quot;label&quot;)) %&gt;%
+  rename (`LB` = ci.lower,
+          `UB` = ci.upper) %&gt;%
+  mutate_if (is.numeric, round, 3) %&gt;%
+  mutate (Sig = ifelse (Pval &lt; 0.05, &quot;s&quot;, &quot;ns&quot;)) %&gt;%
+  mutate (Type = case_when(
+    op == &quot;=~&quot; ~ &quot;LV&quot;,
+    op == &quot;~&quot; ~ &quot;Reg&quot;,
+    TRUE ~ &quot;Med&quot;
+  )) %&gt;%
+  dplyr::select ( DV, IV, Coef, SE, `LB`, `UB`,Pval, Sig, Type) %&gt;%
+  mutate (Coef = as.numeric (Coef)) 
+
+param_ex$DV[28:34] &lt;- c(&quot;Indirect 1&quot;, &quot;Indirect 2&quot;, &quot;Indirect 3&quot;,
+                        &quot;Total&quot;, &quot;Indirect Contrast 1&quot;, &quot;Indirect Contrast 2&quot;, &quot;Indirect Contrast 3&quot;)
+param_ex$IV[28:34] &lt;- c(&quot;Sensitization&quot;, &quot;Sensitivity&quot;, &quot;Sleep&quot;,
+                        &quot; &quot;, 
+                        &quot;Indirect 1 - Indirect 2&quot;, &quot;Indirect 1 - Indirect 3&quot;, &quot;Indirect 2 - Indirect 3&quot;)
+
+param_ex &lt;- param_ex%&gt;%
+  mutate (Type = factor (Type, levels = c(&quot;Med&quot;, &quot;Reg&quot;, &quot;LV&quot;))) %&gt;%
+  arrange (Type, DV)
+
+
+# Export lavaan table
+
+# my_path &lt;- paste0(&quot;../manuscript_fms/table2&quot;, 
+#                   &quot;.docx&quot;)
+# 
+# ft &lt;- flextable(param_ex) %&gt;%
+#   set_caption(caption = &quot; Table 2.Parameter estimates for model&quot;) %&gt;%
+#   autofit() 
+# 
+# my_doc &lt;- read_docx()  %&gt;% 
+#   body_add_flextable(ft)
+# 
+# print (my_doc, target = my_path)</code></pre>
+</div>
+</div>
+<div id="sensitivity-analysis" class="section level1">
+<h1>Sensitivity analysis</h1>
+</div>
+<div id="save-data" class="section level1">
+<h1>Save data</h1>
+<pre class="r"><code>res &lt;- list (cfa0 = cfa0,
+             cfa0_coef = cfa0_coef,
+             m0 = m0,
+             m0_coef = m0_coef,
+             m1 = m1,
+             m1_coef = m1_coef,
+             df = df,
+             dat_imp = dat_imp,
+             df3 = df3,
+             my.sa = my.sa,
+             boot = boot)
+
+saveRDS (res,
+         &quot;output/res2.RDS&quot;)</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.2 (2021-11-01)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 19042)
+
+Matrix products: default
+
+locale:
+[1] LC_COLLATE=English_United Kingdom.1252 
+[2] LC_CTYPE=English_United Kingdom.1252   
+[3] LC_MONETARY=English_United Kingdom.1252
+[4] LC_NUMERIC=C                           
+[5] LC_TIME=English_United Kingdom.1252    
+
+attached base packages:
+[1] grid      parallel  stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] semTools_0.5-5      semptools_0.2.9.3   semPlot_1.1.2      
+ [4] lavaan_0.6-9        Rgraphviz_2.38.0    graph_1.72.0       
+ [7] BiocGenerics_0.40.0 bnlearn_4.7         doParallel_1.0.16  
+[10] iterators_1.0.13    foreach_1.5.1       rstatix_0.7.0      
+[13] mice_3.13.0         kableExtra_1.3.4    arsenal_3.6.3      
+[16] officer_0.4.0       flextable_0.6.9     skimr_2.1.3        
+[19] forcats_0.5.1       stringr_1.4.0       dplyr_1.0.7        
+[22] purrr_0.3.4         readr_2.0.2         tidyr_1.1.4        
+[25] tibble_3.1.6        ggplot2_3.3.5       tidyverse_1.3.1    
+
+loaded via a namespace (and not attached):
+  [1] utf8_1.2.2          tidyselect_1.1.1    lme4_1.1-27.1      
+  [4] htmlwidgets_1.5.4   munsell_0.5.0       codetools_0.2-18   
+  [7] withr_2.5.0         colorspace_2.0-2    highr_0.9          
+ [10] OpenMx_2.19.8       knitr_1.37          uuid_1.0-2         
+ [13] rstudioapi_0.13     stats4_4.1.2        mi_1.0             
+ [16] emmeans_1.7.0       git2r_0.28.0        repr_1.1.3         
+ [19] mnormt_2.0.2        rprojroot_2.0.2     TH.data_1.1-0      
+ [22] coda_0.19-4         vctrs_0.3.8         generics_0.1.1     
+ [25] xfun_0.30           R6_2.5.1            arm_1.12-2         
+ [28] assertthat_0.2.1    promises_1.2.0.1    scales_1.1.1       
+ [31] multcomp_1.4-17     nnet_7.3-16         gtable_0.3.0       
+ [34] sandwich_3.0-1      workflowr_1.6.2     rlang_1.0.2        
+ [37] systemfonts_1.0.3   splines_4.1.2       broom_0.7.12       
+ [40] checkmate_2.0.0     yaml_2.2.1          reshape2_1.4.4     
+ [43] abind_1.4-5         modelr_0.1.8        backports_1.4.1    
+ [46] httpuv_1.6.3        Hmisc_4.6-0         tools_4.1.2        
+ [49] psych_2.1.9         ellipsis_0.3.2      jquerylib_0.1.4    
+ [52] RColorBrewer_1.1-2  Rsolnp_1.16         Rcpp_1.0.8         
+ [55] plyr_1.8.6          base64enc_0.1-3     rockchalk_1.8.144  
+ [58] rpart_4.1-15        pbapply_1.5-0       zoo_1.8-9          
+ [61] qgraph_1.9          haven_2.4.3         cluster_2.1.2      
+ [64] fs_1.5.0            magrittr_2.0.1      data.table_1.14.2  
+ [67] openxlsx_4.2.4      reprex_2.0.1        truncnorm_1.0-8    
+ [70] tmvnsim_1.0-2       mvtnorm_1.1-3       whisker_0.4        
+ [73] hms_1.1.1           evaluate_0.14       xtable_1.8-4       
+ [76] XML_3.99-0.8        rio_0.5.27          jpeg_0.1-9         
+ [79] readxl_1.3.1        gridExtra_2.3       compiler_4.1.2     
+ [82] crayon_1.4.2        minqa_1.2.4         htmltools_0.5.2    
+ [85] corpcor_1.6.10      later_1.3.0         tzdb_0.2.0         
+ [88] Formula_1.2-4       RcppParallel_5.1.4  lubridate_1.8.0    
+ [91] DBI_1.1.1           corrplot_0.91       kutils_1.70        
+ [94] dbplyr_2.1.1        MASS_7.3-54         boot_1.3-28        
+ [97] Matrix_1.3-4        car_3.0-12          cli_3.2.0          
+[100] igraph_1.2.7        pkgconfig_2.0.3     sem_3.1-13         
+[103] foreign_0.8-81      xml2_1.3.2          pbivnorm_0.6.0     
+[106] svglite_2.0.0       bslib_0.3.1         webshot_0.5.2      
+[109] estimability_1.3    rvest_1.0.2         digest_0.6.28      
+[112] rmarkdown_2.11      cellranger_1.1.0    htmlTable_2.3.0    
+[115] lisrelToR_0.1.4     gdtools_0.2.3       curl_4.3.2         
+[118] gtools_3.9.2        nloptr_1.2.2.2      lifecycle_1.0.1    
+[121] nlme_3.1-153        glasso_1.11         jsonlite_1.8.0     
+[124] carData_3.0-4       viridisLite_0.4.0   fansi_0.5.0        
+[127] pillar_1.6.4        lattice_0.20-45     fastmap_1.1.0      
+[130] httr_1.4.2          survival_3.2-13     glue_1.6.1         
+[133] zip_2.2.0           fdrtool_1.2.17      png_0.1-7          
+[136] stringi_1.7.5       sass_0.4.0          regsem_1.8.0       
+[139] latticeExtra_0.6-29</code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
