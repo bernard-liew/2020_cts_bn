@@ -19,6 +19,8 @@ library (flextable)
 library (officer)
 library (arsenal)
 library (kableExtra)
+library (mice)
+library (rstatix)
 
 # Parallel
 library (doParallel)
@@ -27,21 +29,19 @@ library (doParallel)
 library (bnlearn)
 library (Rgraphviz)
 
-# BN to SEM conversion
-library (bnpa)
-
 #SEM
 library (lavaan)
 library (semPlot)
-library (nonnest2)
+library (semptools)
 library (semTools)
+library (SEMsens)
 ```
 
 # Load data
 
 ```{r}
-#df <- rio::import("data/Tension Type Headache Database.sav")
-res <- readRDS("output/res.RDS")
+df <- rio::import("data/Tension Type Headache Database.sav")
+res <- readRDS("output/res2.RDS")
 list2env(res,globalenv())
 #skim (df)
 ```
@@ -105,7 +105,7 @@ df2$Sex <- factor (df2$Sex)
 
 png ("../manuscript_tth/sm_fig1.png", height = 8, width = 15, units = "in", res = 100)
 DataExplorer::plot_missing (df2) + 
-  theme_cowplot()
+  cowplot::theme_cowplot()
 dev.off()
 ```
 
@@ -144,18 +144,18 @@ for(row in 1:nrow(tab2)) {
 colnames (tab2) <- c ("Variables", 
                       "Summary value")
 
-my_path <- paste0("../manuscript_tth/table_2", 
-                  "baseline",
-                  ".docx")
-
-ft <- flextable(tab2) %>%
-  set_caption(caption = " Table 2.Baseline descriptive characteristics of cohort") %>%
-  autofit() 
-
-my_doc <- read_docx()  %>% 
-  body_add_flextable(ft)
-
-print (my_doc, target = my_path)
+# my_path <- paste0("../manuscript_tth/table_2", 
+#                   "baseline",
+#                   ".docx")
+# 
+# ft <- flextable(tab2) %>%
+#   set_caption(caption = " Table 2.Baseline descriptive characteristics of cohort") %>%
+#   autofit() 
+# 
+# my_doc <- read_docx()  %>% 
+#   body_add_flextable(ft)
+# 
+# print (my_doc, target = my_path)
 ```
 
 ```{r}
@@ -168,17 +168,133 @@ tab2 %>%
 # Impute
 
 ```{r, eval = FALSE}
-dat_imp <- mice::mice(df2, seed = 155)
+dat_imp <- mice::mice(df2, m = 20, seed = 155, maxit = 30, meth = "rf")
 
-df3 <- complete(dat_imp) %>%
-  mutate_if(is.numeric, scale, center = TRUE, scale = TRUE)
+plot (dat_imp)
 
-df3$sex <- as.numeric (df3$sex) - 1
+df3 <- mice::complete(dat_imp, "all") %>%
+  map( ~ .x %>%
+         mutate_if (is.numeric, scale, center = TRUE, scale = TRUE) %>%
+         mutate (Sex = as.numeric (Sex) - 1))
+```
+
+# Correlations
+
+```{r}
+c <- cor(df3[[1]][,-1], method = "pearson", use = "complete.obs")
+corrplot::corrplot(c, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45)
+```
+
+# Measurement model using CFA
+
+## Model
+
+```{r, eval = FALSE, include = FALSE}
+## Latent variable
+cfa_form0 <- "
+  # Latent
+  Sensitivity =~ PPTcx + PPThx + PPTrm 
+  Severity =~ HDura + HFreq + HInten
+  Disability =~  HDI_P + HDI_E
+  Distress =~ Dep + Anx
+  
+  # HInten~~Anx
+  # PPThx~~HInten
+  # PPTcx~~HDura
+  # PPTcx~~HInten
+"
+
+cfa0_dummy <- cfa (cfa_form0, 
+                   data = df3[[1]], 
+                   std.lv = FALSE, 
+                   auto.fix.first = TRUE, 
+                   estimator = "MLR",
+                   se = "robust.huber.white")
+p0 <- semPlotModel(cfa0_dummy )
+
+cfa0 <- cfa.mi (cfa_form0, 
+             data = df3, 
+             std.lv = FALSE, 
+             auto.fix.first = TRUE, 
+             estimator = "MLR",
+             se = "robust.huber.white")
+
+summary (cfa0)
+
+res1 <- residuals(cfa0, type = "cor")$cov %>% 
+  cor_gather() %>%
+  mutate (form = paste0(var1, "~~", var2))  %>%
+  filter (abs(cor) > 0.10) %>%
+  arrange (abs(cor))
+
+round (fitMeasures(cfa0, 
+            #fit.measures = c("rmsea", "pvalue", "cfi", "tli", "srmr", "nnfi"), 
+            test = "D2" , 
+            pool.robust = TRUE)[c("rmsea", "pvalue", "cfi", "tli", "srmr", "nnfi")],3)
+```
+
+## Plot
+
+```{r, eval = FALSE}
+
+cfa0_dummy <- cfa (cfa_form0, 
+                   data = df3[[1]], 
+                   std.lv = FALSE, 
+                   auto.fix.first = TRUE, 
+                   estimator = "MLR",
+                   se = "robust.huber.white")
+
+fig <- semPlotModel(cfa0_dummy)
+
+x = data.frame (summary (cfa0, standardized = TRUE))
+fig@Pars$est <- x$est
+
+
+png ("../manuscript_tth/fig1.png", height = 10, width = 15, units = "in", res = 100)
+semPaths (fig, 
+          what = "path", 
+          whatLabels= "est",
+          curve = TRUE,
+          curvature = 2,
+          residuals = FALSE,
+          nCharNodes = 0,
+          intercept = TRUE,
+          edge.label.cex = 0.8,
+          #exoCov = FALSE,
+          color = list (lat = "grey", man = "white"),
+          edge.label.position = 0.5,
+          edge.color = "black")
+
+dev.off()
+
+```
+
+```{r}
+semPaths (fig, 
+          what = "path", 
+          whatLabels= "est",
+          curve = TRUE,
+          curvature = 2,
+          residuals = FALSE,
+          nCharNodes = 0,
+          intercept = TRUE,
+          edge.label.cex = 0.8,
+          #exoCov = FALSE,
+          color = list (lat = "grey", man = "white"),
+          edge.label.position = 0.5,
+          edge.color = "black")
+
+```
+
+## Bootstrap
+
+```{r}
+l2 = c(LETTERS, sort(do.call("paste0", expand.grid(LETTERS, LETTERS))))
 ```
 
 
-# Structural equations model
-
+# Theoretical model
 
 ```{r, eval = FALSE, include = FALSE}
 ## Latent variable
@@ -187,148 +303,174 @@ sem_form0 <- "
   Sensitivity =~ PPTcx + PPThx + PPTrm 
   Severity =~ HDura + HFreq + HInten
   Disability =~ HDI_E + HDI_P
+  Distress =~ Dep + Anx
 
   # paths
-  Anx ~  YearsP + Sex
-  Dep ~ Anx
-  TrPs ~ YearsP + Sex + Anx
-  Sensitivity ~ TrPs + Dep
-  Severity~ Sensitivity + Age 
+  Distress ~ YearsP + Sex
+  TrPs ~ YearsP + Sex
+  Sensitivity ~ TrPs + Distress
+  Severity ~ Sensitivity + Age 
   Sleep ~ Severity
   Disability ~ Severity + Sleep
   
-"
-
-m0 <- sem (sem_form0, data = df3, conditional.x = FALSE, orthogonal = TRUE)
-summary (m0)
-
-semPaths (m0, 
-          what = "est", 
-          layout = "tree3", 
-          whatLabels= "no",
-          curve = TRUE,
-          fixedStyle = c(adjustcolor( "white", alpha.f = 0), 0),
-          residuals = FALSE,
-          nCharNodes = 0,
-          intercept = TRUE,
-          # trans = FALSE,
-          # fade = FALSE,
-          freeStyle = c("black", 1),
-          rotation = 2)
-
-fitMeasures(m0, fit.measures = c("rmsea", "pvalue", "cfi", "tli", "aic", "bic"))
-```
-
-
-```{r, eval = FALSE}
-
-sem_form1 <- "
-  # paths
-  Anx ~  YearsP + Sex
-  Dep ~ Anx
-  TrPs ~ YearsP + Sex + Anx
-  PPTcx + PPThx + PPTrm ~  TrPs + Dep
-  HDura + HFreq + HInten ~ PPTcx + PPThx + PPTrm + Age 
-  Sleep ~ HDura + HFreq + HInten 
-  HDI_E + HDI_P ~ HDura + HFreq + HInten + Sleep
-"
-
-
-m1 <- sem (sem_form1, data = df3, conditional.x = FALSE)
-summary (m1)
-
-
-rm_cov <- summary (m1)$PE %>%
-  filter (op == "~~") %>%
-  filter (!is.na(pvalue)) %>%
-  filter (lhs != rhs)
-
-if (nrow (rm_cov) >= 1) {
-  rm_cov <- paste0(rm_cov$lhs, 
-                 rm_cov$op, 
-                 paste0("0*", rm_cov$rhs))
-  sem_form1 <- c(sem_form1,
-               rm_cov)
+  # HInten~~Anx
+  # PPThx~~HInten
+  # PPTcx~~HDura
+  # PPTcx~~HInten
   
-}
-
-m1 <- sem (sem_form1, data = df3, conditional.x = FALSE)
-m1_2 <- sem (sem_form1, data = df3, conditional.x = FALSE, se =  "boot",
-             bootstrap = 1000)
-
-param1 <- parameterEstimates (m1_2,
-                              se = TRUE,
-                              zstat = TRUE,
-                              pvalue = TRUE,
-                              ci = TRUE,
-                              level = 0.95,
-                              boot.ci.type = "perc")
-
-param1 <- param1 %>%
-  mutate (pvalue_adj = ifelse (pvalue < (0.05/2), "s", "ns"))
-#summary (m1)
+"
 
 
+m0 <- sem.mi (sem_form0, 
+           data = df3, 
+           orthogonal = TRUE, 
+           std.lv = FALSE, 
+           auto.fix.first = TRUE, 
+           estimator = "MLR",
+           se = "robust.huber.white")
+
+round (fitMeasures(m0, 
+            test = "D2" , 
+            pool.robust = TRUE)[c("rmsea", "pvalue", "cfi", "tli", "srmr", "nnfi")],3)
 ```
+
+
+## Plot
 
 ```{r}
-semPaths (m1, 
+
+m0_dummy <- sem (sem_form0, 
+                   data = df3[[1]], 
+                   std.lv = FALSE, 
+                   auto.fix.first = TRUE, 
+                   estimator = "MLR",
+                   se = "robust.huber.white")
+
+fig <- semPlotModel(m0_dummy )
+
+x = data.frame (summary (m0))
+fig@Pars$est <- x$est
+
+fig2 <- drop_nodes(fig, c("HDI_P", "HDI_E", "PPTcx", "PPThx", "PPTrm", "HDura", "HFreq", "HInten", "Dep", "Anx"))
+
+fig2 <- semPaths (fig2, 
           what = "path", 
-          layout = "tree3", 
-          curvePivot = TRUE, 
+          whatLabels= "est",
+          fixedStyle = c( "white","0"),
+          freeStyle = c( "black","1"),
           residuals = FALSE,
+          nCharNodes = 0,
+          curveAdjacent = c("cov", "reg"),
           intercept = TRUE,
-          fixedStyle = c(adjustcolor( "white", alpha.f = 0), 0),
-          rotation = 2,
-          curve = TRUE,
-          freeStyle = c("black", 1))
+          edge.label.cex = 0.8,
+          exoCov = FALSE,
+          color = list (lat = "grey", man = "white"),
+          edge.label.position = 0.5)
+
+indicator_order  <- c("Sensitivity", "Severity", "Disability", "Distress",
+                      "Age", "Sex", "YearsP", "Sleep", "TrPs")
+
+indicator_factor <- c("Sensitivity", "Severity", "Disability", "Distress",
+                      "Age", "Sex", "YearsP", "Sleep", "TrPs")
+
+factor_layout <- matrix(c(NA, "Sex",NA,"Sensitivity", NA,  NA, NA,
+                          NA, NA, NA,NA, NA, NA,NA,
+                          NA, NA, NA,NA, NA, NA,NA,
+                          "YearsP", NA,NA,NA,"Distress",NA,   NA,  
+                          NA, NA, NA,NA, NA, NA,NA,
+                          NA, NA, NA,NA, NA, NA,NA,
+                          NA, NA, "Severity", NA,"Disability", NA,NA,
+                          NA, NA, NA,NA, NA, NA,NA,
+                          NA, NA, NA,NA, NA, NA,NA,
+                          "TrPs", NA, "Age",NA, "Sleep", NA, NA),
+                          byrow = TRUE, 10, 7)
+
+factor_point_to <-  matrix(c(NA, "left",NA,"left",NA,    NA, NA,
+                             NA, NA, NA,NA, NA, NA,NA,
+                             NA, NA, NA,NA, NA, NA,NA,
+                             "left", NA, NA, NA,"left",NA, NA,  
+                             NA, NA, NA,NA, NA,NA, NA,
+                             NA, NA, NA,NA, NA, NA,NA,
+                             NA, NA, "left",NA, "left", NA,NA,
+                             NA, NA, NA,NA, NA, NA,NA,
+                             NA, NA, NA,NA, NA, NA,NA,
+                             "left", NA, "left",NA, "left", NA, NA),
+                          byrow = TRUE, 10, 7)
+
+fig_mod <- set_sem_layout(fig2, 
+                     indicator_order = indicator_order,
+                     indicator_factor = indicator_factor,
+                     factor_layout = factor_layout,
+                     factor_point_to = factor_point_to)
+plot(fig_mod)
+
 ```
 
+## Montecarlo bootstrap coefficients
+
+```{r}
+
+params <- l2[1: length (coef(m0 ))]
+
+paths <- coef(m0, standardized = TRUE)
+names(paths) <- params
+var_mat <- vcov(m0)
+colnames(var_mat) <- rownames(var_mat) <- params
+
+m0_coef <- monteCarloCI(expr = params,
+                           ACM = var_mat,
+                           coefs = paths)
+m0_coef$paths <- names(coef(m0))
+
+m0_coef <- m0_coef %>%
+  filter (!grepl ("~~", paths)) %>%
+  separate(paths, into = c("DV", "IV"), sep = "~|=~")
+```
 
 ## Report
 
 ```{r, eval = FALSE}
 
+fixed <- data.frame (DV = c("Sensitivity", "Severity", "Disability", "Distress"),
+                     IV = c("PPTcx", "HDura", "HDI_P", "Dep"),
+                     Coef = 1,
+                     SE = NA,
+                     `LB` = NA,
+                     `UB` = NA,
+                     Pval = NA,
+                     Sig = NA)
+
 # Export lavaan table
-param_ex <- param1 %>%
-  filter (op == "~") %>%
+param_ex<- summary (m0, standardized = TRUE) %>%
+  filter (op != "~~") %>%
   rename (DV = lhs,
           IV = rhs,
           Coef = est,
           SE = se,
-          `2.5%CI` = ci.lower,
-          `97.5%CI` = ci.upper) %>%
+          Pval = pvalue) %>%
+  data.frame () %>%
+  inner_join(m0_coef, by = c("DV", "IV")) %>%
+  rename (`LB` = ci.lower,
+          `UB` = ci.upper) %>%
   mutate_if (is.numeric, round, 3) %>%
-  select ( DV, IV, Coef, SE, `2.5%CI`, `97.5%CI`, pvalue, - c(op, z))
+  mutate (Sig = ifelse (Pval < 0.05/2, "s", "ns")) %>%
+  dplyr::select ( DV, IV, Coef, SE, `LB`, `UB`,Pval, Sig) %>%
+  mutate (Coef = as.numeric (Coef))%>%
+  bind_rows (fixed)%>%
+  mutate (type = ifelse (IV %in% c("PPTcx", "PPThx", "PPTrm", "HDura", "HFreq", "HInten",
+                                   "Dep", "Anx", "HDI_P", "HDI_E"), "LV", "Reg")) %>%
+  arrange (type, DV)
+
 
 astx <- ifelse(param_ex$pvalue < (0.05/2), "*", "")
 
 # Export figure
 
-png ("../manuscript_tth/fig1.png", height = 8, width = 15, units = "in", res = 100)
-semPaths (m1, 
-          what = "path", 
-          layout = "tree3", 
-          whatLabels= "no",
-          curve = TRUE,
-          fixedStyle = c(adjustcolor( "white", alpha.f = 0), 0),
-          residuals = FALSE,
-          nCharNodes = 0,
-          intercept = TRUE,
-          edgeLabels = astx,
-          edge.label.cex = 1,
-          edge.label.position = 0.4,
-          # trans = FALSE,
-          # fade = FALSE,
-          freeStyle = c("black", 1),
-          rotation = 2)
-
+png ("../manuscript_tth/fig2.png", height = 10, width = 20, units = "in", res = 100)
+plot(fig_mod)
 dev.off()
 
 # Export lavaan table
-param_ex <- param_ex  %>%
-  arrange (desc(abs (Coef)))
-
 
 my_path <- paste0("../manuscript_tth/sm_table1", 
                   "theory",
@@ -345,75 +487,150 @@ print (my_doc, target = my_path)
 ```
 
 
-# Bayesian networks
+# Bayesian latent networks
+
+
+```{r}
+df.bn <- as.data.frame (df3[[1]]) %>%
+  mutate (Sex = factor (Sex)) %>%
+  mutate (Sensitivity = as.numeric (NA),
+          Severity = as.numeric(NA),
+          Disability = as.numeric(NA),
+          Distress = as.numeric(NA))
+```
+
 
 ## Create blacklist
 
 ```{r}
 
-df.bn <- as.data.frame (df3) %>%
-  mutate (Sex = factor (Sex))
+#df.bn <- as.data.frame (df3) 
 
+sens.var = grep("PPT", colnames (df.bn), value = TRUE)
+severe.var = grep("HDura|HFreq|HInten", colnames (df.bn), value = TRUE)
+psych.var = grep("Dep|Anx", colnames (df.bn), value = TRUE)
+dis.var = grep("HDI", colnames (df.bn), value = TRUE)
 demo.var = grep("Age|Sex|YearsP", colnames (df.bn), value = TRUE)
-physiol.var = grep("PPT|TrPs", colnames (df.bn), value = TRUE)
-others.var = setdiff (names(df.bn), c(demo.var, physiol.var))
+physiol.var = grep("TrPs", colnames (df.bn), value = TRUE)
+others.var = setdiff (names(df.bn), c(demo.var, physiol.var, sens.var, severe.var, dis.var, psych.var))
+
 
 pair_var <- expand.grid(from = names (df.bn),
                         to = names (df.bn)) %>%
   rownames_to_column()
 
 tiers_keep <- pair_var %>%
-  filter (!(grepl (paste0(demo.var, collapse = "|"),to))) %>%
-  filter (! (grepl (paste0(others.var, collapse = "|"), from) & 
-            grepl (paste0(physiol.var, collapse = "|"), to)))
+  filter (!(grepl (paste0(c(sens.var, severe.var, dis.var, psych.var), collapse = "|"),to))) %>%
+  filter (!(grepl (paste0(c(sens.var, severe.var, dis.var, psych.var), collapse = "|"),from))) %>%
+  filter (!(grepl (paste0(c(demo.var), collapse = "|"),to))) %>%
+  filter (!(grepl ("Disability",from)))
 
 
 bl <- anti_join(pair_var, tiers_keep, by = "rowname")  %>%
   filter (from != to) %>%
-  select (-rowname)%>%
+  select (-rowname) %>%
   mutate_all(as.character)
 
+```
+
+
+## Create whitelist
+
+```{r}
+
+latent1 <- expand.grid(from = "Sensitivity",
+                        to = sens.var)
+latent2 <- expand.grid(from = "Severity",
+                        to = severe.var)
+latent3 <- expand.grid(from = "Disability",
+                        to = dis.var)
+latent4 <- expand.grid(from = "Distress",
+                        to = psych.var)
+
+wl <- latent1 %>%
+  bind_rows(latent2) %>%
+  bind_rows(latent3) %>%
+  bind_rows(latent4)
 ```
 
 ## Analysis
 
 ```{r, eval = FALSE}
-n_boot <- 1000
 
-set.seed (20200424)
+doParallel::registerDoParallel(7)
+#n_boot = 200
+############
+boot  =  foreach (N = 1: 20, .combine='c', .packages = c("tidyverse")) %do% {
+  
+            foreach (B = 1: 50, .packages = c("tidyverse")) %dopar% {
+              set.seed(2345)
+  
+              df.bn <- data.frame (df3[[N]])
+              df.bn <- mutate (df.bn,
+                               Sex = factor (Sex),
+                               Sensitivity = as.numeric (NA),
+                                Severity = as.numeric(NA),
+                                Disability = as.numeric(NA),
+                                Distress = as.numeric(NA)) 
 
-boot <- boot.strength(df.bn,
-                      R = n_boot,
-                      algorithm = "hc",
-                      algorithm.args = list (blacklist = bl))
+              boot.sample = df.bn[sample(nrow(df.bn), 
+                                                    nrow(df.bn), replace = TRUE), ]
+              
+              start = bnlearn::bn.fit(bnlearn::empty.graph(names(boot.sample)), boot.sample)
+              start$Sensitivity = list(coef = 0, sd = 1)
+              start$Severity = list(coef = 0, sd = 1)
+              start$Disability = list(coef = 0, sd = 1)
+              start$Distress = list(coef = 0, sd = 1)
+              
+              bnlearn::structural.em(boot.sample, 
+                                     start = start,
+                                     maximize.args = list(blacklist = bl,
+                                                          whitelist = wl))
+            }
+            
+}
+#############
+doParallel::stopImplicitCluster()  
 ```
 
 ## Set threshold
 
 ```{r message=FALSE, warning=FALSE}
 set_thres <- seq (0.5, 0.8, 0.01) # try 0.5, 0.6, 0.7. 0.8, the higher to one the sparser the model
+bootstr <-  custom.strength(boot, nodes = names(df.bn))
 
 avg_list <- vector ("list", length (set_thres))
 deg_list <- vector ("list", length (set_thres))
+deg_thres <- vector ("list", length (set_thres))
+
+
+thres_dag <- function (x) {
+  
+  if(x[1]>3 & x[2]>3 & x[3]>2 &x[4]>2)
+    1 else
+      0
+  
+}
 
 for (n in seq_along(set_thres)) {
   
-  avg_list[[n]] <- averaged.network(boot, threshold = set_thres[n])
-  deg_list[[n]] <- sum (map(bnlearn::nodes(avg_list[[n]]), bnlearn::degree, obj =  avg_list[[n]]) == 0)
+  avg_list[[n]] <- averaged.network(bootstr, threshold = set_thres[n])
+  degs <- map(bnlearn::nodes(avg_list[[n]]), bnlearn::degree, obj =  avg_list[[n]])
+  names(degs) <- bnlearn::nodes(avg_list[[n]])
+  degs[!grepl(c("Sens|Sever|Dis"), names (degs))] <- NULL
+  deg_list[[n]] <- unlist(degs)
+  deg_thres[[n]] <- thres_dag(deg_list[[n]])
 }
 
-deg <- unlist (deg_list)
+deg <- unlist (deg_thres)
 
-thres <- set_thres[tail(which(deg ==0),1)]
+thres <- set_thres[tail(which(deg ==1),1)]
 thres
 
-avg <-  averaged.network(boot, threshold = thres)
-#avg <- set.arc(avg, "dep", "hdi_E")
-fit <-  bn.fit (avg, df.bn, method = "mle")
-
+avg <-  averaged.network(bootstr, threshold = 0.5)
 
 g = strength.plot(avg, 
-                  boot, 
+                  bootstr, 
                   shape = "rectangle",
                   main = "Figure")
 
@@ -421,115 +638,169 @@ g = strength.plot(avg,
 # renderGraph(g)
 ```
 
-
 ## BN to SEM 
 
-### Create initial model
 
 ```{r}
-sem_form2 <- gera.pa.model(fit, df.bn)
+sem_form1 <- "
 
-m2 <- lavaan::sem (sem_form2, data = df3, conditional.x = FALSE)
-
-```
-
-
-### Remove covariance
-
-```{r}
-rm_cov <- summary (m2)$PE %>%
-  filter (op == "~~") %>%
-  filter (!is.na(pvalue)) %>%
-  filter (lhs != rhs)
-
-if (nrow (rm_cov) >= 1) {
-  rm_cov <- paste0(rm_cov$lhs, 
-                 rm_cov$op, 
-                 paste0("0*", rm_cov$rhs))
+  # Latent
+  Sensitivity =~ PPTcx + PPThx + PPTrm 
+  Severity =~ HDura + HFreq + HInten
+  Disability =~ HDI_E + HDI_P
+  Distress =~ Dep + Anx
   
-}
+  # Paths
+  Sensitivity ~ Sex
+  TrPs ~ Sensitivity + YearsP + Age
+  Sleep ~ Sensitivity + Age + Severity
+  Distress ~ Severity + Sleep
+  Disability ~ YearsP + Age + Sleep + Distress
+  
+  Disability ~~0*TrPs
+"
 
-fits <- as.lm (avg, df.bn)
-fit.form <- map (fits, formula)
-fit.form <- fit.form[!grepl ("~ 1", fit.form)]
+m1 <- sem.mi (sem_form1, 
+           data = df3, 
+           orthogonal = TRUE, 
+           std.lv = FALSE, 
+           auto.fix.first = TRUE, 
+           estimator = "MLR",
+           se = "robust.huber.white")
 
-sem_form3 <- map_chr (fit.form, deparse)
-sem_form3 <- c(sem_form3,
-               rm_cov)
+summary (m1)
 
-m3 <- lavaan::sem (sem_form3, data = df3, conditional.x = FALSE)
-m3_2 <- sem (sem_form3, data = df3, conditional.x = FALSE, se =  "boot",
-             bootstrap = 1000)
-
-param3 <- parameterEstimates (m3_2,
-                              se = TRUE,
-                              ci = TRUE,
-                              level = 0.95,
-                              boot.ci.type = "perc")
-
-param3_adj <- param3 %>%
-  mutate (pvalue_adj = ifelse (pvalue < (0.05/46), "s", "ns"))
-
-
+round (fitMeasures(m1, 
+            #fit.measures = c("rmsea", "pvalue", "cfi", "tli", "srmr", "nnfi"), 
+            test = "D2" , 
+            pool.robust = TRUE)[c("rmsea", "pvalue", "cfi", "tli", "srmr", "nnfi")],3)
 ```
+
+
+## Plot
 
 ```{r}
-semPaths (m3, 
-          what = "path", 
-          layout = "tree3", 
-          curvePivot = TRUE, 
-          residuals = FALSE,
-          intercept = TRUE,
-          fixedStyle = c(adjustcolor( "white", alpha.f = 0), 0),
-          rotation = 2,
-          curve = TRUE,
-          freeStyle = c("black", 1))
 
+m1_dummy <- sem (sem_form1, 
+                   data = df3[[1]], 
+                   std.lv = FALSE, 
+                   auto.fix.first = TRUE, 
+                   estimator = "MLR",
+                   se = "robust.huber.white")
+
+fig <- semPlotModel(m1_dummy )
+
+x = data.frame (summary (m1))
+fig@Pars$est <- x$est
+
+fig2 <- drop_nodes(fig, c("HDI_P", "HDI_E", "PPTcx", "PPThx", "PPTrm", "HDura", "HFreq", "HInten", "Dep", "Anx"))
+
+fig2 <- semPaths (fig2, 
+          what = "path", 
+          whatLabels= "est",
+          fixedStyle = c( "white","0"),
+          freeStyle = "black",
+          residuals = FALSE,
+          nCharNodes = 0,
+          intercept = TRUE,
+          edge.label.cex = 0.8,
+          exoCov = FALSE,
+          color = list (lat = "grey", man = "white"),
+          edge.label.position = 0.5,
+          edge.color = "black")
+
+indicator_order  <- c("Sensitivity", "Severity", "Disability", "Distress",
+                      "Age", "Sex", "YearsP", "Sleep", "TrPs")
+
+indicator_factor <- c("Sensitivity", "Severity", "Disability", "Distress",
+                      "Age", "Sex", "YearsP", "Sleep", "TrPs")
+
+factor_layout <- matrix(c("Sensitivity", NA, "Sleep", NA, "Distress", NA,
+                          NA, NA, NA, "Age", NA, "Disability",
+                          "Sex",  "TrPs", NA,NA, NA,NA,
+                          NA, NA, NA, "YearsP",  NA,"Severity"),
+                          byrow = TRUE, 4, 6)
+
+factor_point_to <-  matrix(c( "left", NA, "left", NA, "left",NA,
+                          NA, NA, NA, "left", NA,"left",
+                          "left", "lefts",NA,  NA, NA,NA,
+                          NA, NA, NA, "left",  NA,"left"),
+                          byrow = TRUE,4, 6)
+
+fig_mod <- set_sem_layout(fig2, 
+                     indicator_order = indicator_order,
+                     indicator_factor = indicator_factor,
+                     factor_layout = factor_layout,
+                     factor_point_to = factor_point_to)
+plot(fig_mod)
 ```
 
 
-### Report
+## Montecarlo bootstrap coefficients
+
+
+```{r}
+
+params <- l2[1: length (coef(m1 ))]
+
+paths <- coef(m1)
+names(paths) <- params
+var_mat <- vcov(m1)
+colnames(var_mat) <- rownames(var_mat) <- params
+
+m1_coef <- monteCarloCI(expr = params,
+                           ACM = var_mat,
+                           coefs = paths)
+m1_coef$paths <- names(coef(m1))
+
+
+m1_coef <- m1_coef %>%
+  filter (!grepl ("~~", paths)) %>%
+  separate(paths, into = c("DV", "IV"), sep = "~|=~")
+```
+
+## Report
 
 ```{r, eval = FALSE}
 
+
+fixed <- data.frame (DV = c("Sensitivity", "Severity", "Disability", "Distress"),
+                     IV = c("PPTcx", "HDura", "HDI_P", "Dep"),
+                     Coef = 1,
+                     SE = NA,
+                     `LB` = NA,
+                     `UB` = NA,
+                     Pval = NA,
+                     Sig = NA)
+
 # Export lavaan table
-param_ex <- param3 %>%
-  filter (op == "~") %>%
+param_ex<- summary (m1, standardized = TRUE) %>%
+  filter (op != "~~") %>%
   rename (DV = lhs,
           IV = rhs,
           Coef = est,
           SE = se,
-          `2.5%CI` = ci.lower,
-          `97.5%CI` = ci.upper) %>%
+          Pval = pvalue) %>%
+  data.frame () %>%
+  inner_join(m1_coef, by = c("DV", "IV")) %>%
+  rename (`LB` = ci.lower,
+          `UB` = ci.upper) %>%
   mutate_if (is.numeric, round, 3) %>%
-  select ( DV, IV, Coef, SE, `2.5%CI`, `97.5%CI`, pvalue, - c(op, z))
+  mutate (Sig = ifelse (Pval < 0.05/2, "s", "ns")) %>%
+  dplyr::select ( DV, IV, Coef, SE, `LB`, `UB`,Pval, Sig) %>%
+  mutate (Coef = as.numeric (Coef))%>%
+  bind_rows (fixed)%>%
+  mutate (type = ifelse (IV %in% c("PPTcx", "PPThx", "PPTrm", "HDura", "HFreq", "HInten",
+                                   "Dep", "Anx", "HDI_P", "HDI_E"), "LV", "Reg")) %>%
+  arrange (type, DV)
 
 astx <- ifelse(param_ex$pvalue < (0.05/2), "*", "")
 
 
-png ("../manuscript_tth/fig2.png", height = 8, width = 15, units = "in", res = 100)
-semPaths (m3, 
-          what = "path", 
-          layout = "tree3", 
-          whatLabels= "no",
-          curve = TRUE,
-          fixedStyle = c(adjustcolor( "white", alpha.f = 0), 0),
-          residuals = FALSE,
-          nCharNodes = 0,
-          intercept = TRUE,
-          edgeLabels = astx,
-          edge.label.cex = 1,
-          edge.label.position = 0.4,
-          # trans = FALSE,
-          # fade = FALSE,
-          freeStyle = c("black", 1),
-          rotation = 2)
+png ("../manuscript_tth/fig3.png", height = 8, width = 15, units = "in", res = 100)
+plot(fig_mod)
 
 dev.off()
-
-# Export lavaan table
-param_ex <- param_ex  %>%
-  arrange (desc(abs (Coef)))
 
 
 my_path <- paste0("../manuscript_tth/sm_table2", 
@@ -549,29 +820,130 @@ print (my_doc, target = my_path)
 # Compare SEM models
 
 ```{r}
+fitMeasures(m0, fit.measures = c("rmsea", "pvalue", "cfi", "tli", "srmr", "nnfi"))
 fitMeasures(m1, fit.measures = c("rmsea", "pvalue", "cfi", "tli", "srmr", "nnfi"))
-fitMeasures(m3, fit.measures = c("rmsea", "pvalue", "cfi", "tli", "srmr", "nnfi"))
 
 
-vuongtest(m1, m3, adj = "bic")
+#vuongtest(m0, m1, adj = "bic")
 #icci(m1, m3)
 
+```
+
+
+# Sensitivity analysis
+
+```{r}
+
+model <- "
+
+  # Latent
+  Sensitivity =~ PPTcx + PPThx + PPTrm 
+  Severity =~ HDura + HFreq + HInten
+  Disability =~ HDI_E + HDI_P
+  Distress =~ Dep + Anx
+  
+  # Paths
+  Sensitivity ~ Sex
+  TrPs ~ Sensitivity + YearsP + Age
+  Sleep ~ Sensitivity + Age + Severity
+  Distress ~ Severity + Sleep
+  Disability ~ YearsP + Age + Sleep + Distress
+  
+  Disability ~~0*TrPs
+"
+
+
+sens.model <- "
+
+  # Latent
+  Sensitivity =~ PPTcx + PPThx + PPTrm 
+  Severity =~ HDura + HFreq + HInten
+  Disability =~ HDI_E + HDI_P
+  Distress =~ Dep + Anx
+  
+  # Paths
+  Sensitivity ~ Sex
+  TrPs ~ Sensitivity + YearsP + Age
+  Sleep ~ Sensitivity + Age + Severity
+  Distress ~ Severity + Sleep
+  Disability ~ YearsP + Age + Sleep + Distress
+  
+  Disability ~~0*TrPs
+  
+  Sensitivity ~ phantom1*phantom
+  TrPs ~ phantom2*phantom
+  Severity ~ phantom3*phantom
+  Disability ~ phantom4*phantom
+  Distress ~ phantom5*phantom
+  YearsP ~ phantom6*phantom
+  Sleep ~ phantom7*phantom
+  
+  phantom =~ 0 # added for mean of zero
+  phantom ~~ 1*phantom # added for unit variance
+"
+
+my.sa <- sa.aco(data= df3[[1]], 
+                model = model, 
+                sens.model = sens.model,
+                opt.fun = 4, 
+                k = 100,
+                measurement = TRUE,
+                max.iter = 30, 
+                seed = 144,
+               orthogonal = TRUE, 
+               std.lv = FALSE, 
+               auto.fix.first = TRUE, 
+               estimator = "MLR",
+               se = "robust.huber.white")
+
+tables <- sens.tables(my.sa)
+
+
+tab <- tables$sens.summary %>%
+  mutate (change = abs ((mean.est.sens - model.est)/model.est) *100)%>%
+  arrange (desc(change))%>%
+  mutate_all (round, 3) %>%
+  rownames_to_column(var = "path") %>%
+  separate (path, c("DV", "IV"), sep = "~") %>%
+  select (-model.pvalue) %>%
+  rename (`Original coef` = model.est,
+          `Mean perturbed coef` = mean.est.sens,
+          `Min perturbed coef` = min.est.sens,
+          `Max perturbed coef` = max.est.sens,
+          `% Change` = change)
+
+
+my_path <- paste0("../manuscript_tth/sm_table3", 
+                  "sens",
+                  ".docx")
+
+ft <- flextable(tab) %>%
+  set_caption(caption = " Table 2.Parameter estimates for model BN") %>%
+  autofit() 
+
+my_doc <- read_docx()  %>% 
+  body_add_flextable(ft)
+
+print (my_doc, target = my_path)
 ```
 
 
 # Save data
 
 ```{r, eval = FALSE}
-res <- list (m0 = m0,
+res <- list (cfa0 = cfa0,
+             cfa0_coef = cfa0_coef,
+             m0 = m0,
+             m0_coef = m0_coef,
              m1 = m1,
-             m1_2 = m1_2,
-             m3 = m3,
-             m3_2 = m3_2,
+             m1_coef = m1_coef,
              df = df,
+             dat_imp = dat_imp,
              df3 = df3,
+             my.sa = my.sa,
              boot = boot)
 
 saveRDS (res,
-         "output/res.RDS")
+         "output/res2.RDS")
 ```
 

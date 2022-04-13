@@ -384,6 +384,8 @@ mod <- lm(func_12m ~ grp, data = sim)
 
 summary (mod)
 
+confint(mod)
+
 df_plot <- sim %>%
   group_by(grp) %>%
   summarize (Mean = mean (func_12m),
@@ -423,7 +425,7 @@ mod <- lm(func_12m ~ grp, data = sim)
 
 summary (mod)
 
-
+confint(mod)
 ```
 
 
@@ -438,7 +440,7 @@ sim = cpdist(fit, nodes = c("pain_base", "func_12m"), n = 10^4,
 mod <- lm(func_12m ~ pain_base, data = sim)
 
 summary (mod)
-
+confint(mod)
 
 sim %>%
   ggscatter(x = "pain_base", y = "func_12m", add = "reg.line") +
@@ -471,7 +473,7 @@ sim = cpdist(fitted.mutilated, nodes = c("pain_base", "func_12m"), n = 10^4,
 mod <- lm(func_12m ~ pain_base, data = sim)
 
 summary (mod)
-
+confint(mod)
 
 sim %>%
   ggscatter(x = "pain_base", y = "func_12m", add = "reg.line") +
@@ -491,7 +493,7 @@ sim = cpdist(fit, nodes = c("severe_1m", "func_12m"), n = 10^4,
 mod <- lm(func_12m ~ severe_1m, data = sim)
 
 summary (mod)
-
+confint(mod)
 
 sim %>%
   ggscatter(x = "severe_1m", y = "func_12m", add = "reg.line") +
@@ -523,7 +525,7 @@ sim = cpdist(fitted.mutilated, nodes = c("severe_1m", "func_12m"), n = 10^4,
 mod <- lm(func_12m ~ severe_1m, data = sim)
 
 summary (mod)
-
+confint(mod)
 
 sim %>%
   ggscatter(x = "severe_1m", y = "func_12m", add = "reg.line") +
